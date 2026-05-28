@@ -1,10 +1,10 @@
 # agent-toolkit
 
-My own toolkit for AI Agentic Coding
+My own toolkit for AI Agentic Coding — a collection of reusable, project-agnostic tools.
 
 ## Rules
 
-This is a collection of project-agnostic rules I use in all of my projects, I apply them at user level rather than per-project.
+This is a collection of generic rules I use in all of my projects, I apply them at user level rather than per-project.
 
 Each file in [`rules/`](rules) is a single, self-contained behavioral rule.
 
