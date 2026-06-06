@@ -5,4 +5,5 @@
 .claude/worktrees/**
 .claude/settings.local.json
 .claude/plans/**
+.claude/__pycache__
 CLAUDE.local.md
