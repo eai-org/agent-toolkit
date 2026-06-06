@@ -1,12 +1,18 @@
 ---
 name: context-checkup
-description: Audit what auto-loads into a Claude Code session's context window and suggest lean, reversible fixes. Use when the user asks what's loaded at startup, wants to cut context bloat or startup tokens, or keep the context window lean.
+description: Audit what auto-loads into an agent session's context window and suggest lean, reversible fixes to cut startup tokens.
+disable-model-invocation: true
+license: MIT
+metadata:
+  author: Francesco Borzì
+  version: "1.0"
 ---
 
 # Context checkup
 
-Find what eats the session's context at startup, quantify it, and propose **reversible** trims
-ranked by payoff. Read-only — measure and recommend; change settings only on explicit approval.
+Find what loads **automatically** into the session's context at startup, quantify it, and propose
+**reversible** trims ranked by payoff — shrink the startup context window by cutting what isn't
+worth its tokens. Read-only — measure and recommend; change settings only on explicit approval.
 
 ## Mental model (spend attention top-down)
 
@@ -17,12 +23,14 @@ Cost hierarchy, biggest first:
    descriptions** (every available one's description loads every session).
 3. **MCP server instructions** — load per enabled server at startup; a chatty preamble can dwarf its
    tool names.
-4. **MCP tool names** — ~10 tokens each. Cheap. Don't over-optimize; 30 names ≈ 300 tokens isn't
-   worth a recommendation.
+4. **MCP tool names** — ~10 tokens each. Cheap; 30 names ≈ 300 tokens isn't worth a recommendation.
 
 Rules: **measure, never guess** — `wc`/count, then attach a rough token figure to each finding.
 **Rank by tokens-saved × reversibility.** Distinguish **auto-loaded** from **lazy-linked** (nested
 AGENTS.md referenced from a parent are *not* loaded — don't flag them).
+
+Tool-name counts, the skills/agents/commands lists, and tool-search status come from the **session's
+system-reminders**, not disk — read them from your own context.
 
 ## Checklist
 
@@ -34,12 +42,10 @@ to root** + global `~/.claude/CLAUDE.md`. Expand `@import` lines (recursive). `w
 
 **2. Descriptions (often the largest unexamined chunk).** Skim the in-session lists of **skills,
 subagent types, and slash commands** — their descriptions are always loaded. Many rarely-used
-entries = standing cost. These live in *your session's system-reminders*, not on disk — read them
-from context.
+entries = standing cost.
 
 **3. MCP servers.** From `.mcp.json` + settings, list enabled servers. Count tool **names** per
-server (from the deferred-tools system-reminder in context). Note any server with long
-**instructions**. Flag servers irrelevant to the user's actual work.
+server; note any server with long **instructions**. Flag servers irrelevant to the user's work.
 
 **4. Enablement levers.** Read `~/.claude/settings.json`, project `.claude/settings.json`,
 `.claude/settings.local.json`. Check `enableAllProjectMcpServers`, `enabledMcpjsonServers`,
@@ -63,5 +69,3 @@ for f in CLAUDE.md AGENTS.md ../CLAUDE.md ~/.claude/CLAUDE.md; do [ -f "$f" ] &&
 # enabled MCP + settings
 cat .mcp.json; cat .claude/settings.json .claude/settings.local.json ~/.claude/settings.json 2>/dev/null
 ```
-MCP tool-name counts, the skills/agents/commands lists, and tool-search status come from the
-**session's system-reminders**, not disk — read them from your own context.

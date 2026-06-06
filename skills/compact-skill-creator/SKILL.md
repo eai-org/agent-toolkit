@@ -48,7 +48,8 @@ Compress *within* a type — but never starve a Mandatory trigger to save a few 
   Code", "Claude", etc.). When improving a skill, flag and fix violations.
 - **Project-agnostic — best-effort.** Default to generic wording. Couple to a project/framework/tool
   only when the skill's purpose requires it; when you must, keep it explicit and contained —
-  declared up front or in a referenced doc.
+  declared up front or in a referenced doc — but skip a standalone declaration when the body already
+  names the coupled artifacts throughout, since restating them only duplicates.
 
 ## Progressive disclosure — when to split
 

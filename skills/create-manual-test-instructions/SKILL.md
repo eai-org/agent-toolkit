@@ -2,6 +2,7 @@
 name: create-manual-test-instructions
 description: Turn a ticket or requirements document into a concise QA manual-test file a non-author can follow. Invoke manually only.
 disable-model-invocation: true
+context: fork
 license: MIT
 metadata:
   author: Francesco Borzì
