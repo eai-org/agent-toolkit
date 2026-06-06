@@ -11,8 +11,9 @@ metadata:
 # Compact skill creator
 
 Author a new skill, or improve an existing one, so it carries **all** its rules and intent in
-the **least text possible**. Skills load into the agent's context, so every wasted word is a standing
-cost. Be interactive: gather what you need, draft, then apply only on approval.
+the **least text possible**. Cost has two tiers: the `description` sits in context *every* session
+— the skill's most expensive text — while the body loads only when the skill triggers. Both stay lean.
+Be interactive: gather what you need, draft, then apply only on approval.
 
 ## Core principle
 
