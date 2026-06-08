@@ -100,6 +100,13 @@ Identify every attachment **and** every inline image referenced in the descripti
 `attachment-<N>.<ext>` in order of first appearance, keeping the original extension. `<N>` runs
 across both combined.
 
+**Always try to fetch — across every connected MCP.** Beyond tracker-hosted attachments, the ticket
+may link external design assets (e.g. a Figma frame, a Confluence/ADO resource) reachable through
+their own MCP. Use whichever MCP fits the source to pull them down; don't pre-declare a link
+unfetchable. If a fitting MCP is connected but **not authenticated**, don't silently skip —
+proactively run its auth flow (surface the login URL, complete the handshake) without waiting to be
+asked, then fetch. When it's unclear whether an asset can or should be downloaded, ask the user.
+
 Download each **straight to disk** — `curl -fSL <url> -o attachment-<N>.<ext>`, or the MCP
 attachment tool's save-to-path variant. **Never** route an attachment as inline base64 through the
 model and re-emit it: output caps (~100k chars) truncate it silently — valid header, missing
@@ -112,7 +119,7 @@ character boundary signals base64 truncation. On failure, re-download to disk; i
 as **not downloaded** and warn — never reference a corrupt file. Then, per file:
 
 - **Downloaded** → reference the local file.
-- **Not downloaded** (no attachment tool, auth failure, etc.) → still reference the local file and
+- **Not downloaded** (no fitting MCP/attachment tool, auth that couldn't be completed, etc.) → still reference the local file and
   the source URL, and add it to the list to warn about. Don't block — the ticket is usable either
   way.
 
