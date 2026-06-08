@@ -90,6 +90,9 @@ loads **only when the agent follows the pointer** — that is the lever.
      reading only it, would an agent open the skill for the intended task (must be yes) and skip it
      for a similar but unrelated task (must be no)? Reword until both hold.
    - Duplication/filler gone?
-   - When removing text: list each removed item and confirm it is filler/duplication, not intent.
-6. **Present** the proposed change as a diff with a token/word delta (for improve mode); apply only
-   on approval.
+   - Removal audit against the **rendered diff, not memory**: read every removed line — and every
+     reordered or merged one, which count as removals — and confirm each drops only duplication or
+     filler, never a rule, instruction, edge case, or nuance. After a merge, re-verify the result
+     still carries every item from both sources.
+6. **Present** the proposed change as a diff with a word/token delta **measured from the files**
+   (e.g. `wc -w` before vs. after — never estimated) (for improve mode); apply only on approval.
