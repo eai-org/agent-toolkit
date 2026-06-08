@@ -22,12 +22,14 @@ approves. The skill proposes; the user stays in control of every change. Two way
 "Skill/doc" means any standing instruction: a `SKILL.md`, `AGENTS.md`/`CLAUDE.md`, a
 coding-standards or convention doc, a rules file — anything that guides future agents.
 
-## Hard rule: confirm before applying
+## Hard rules
 
-The skill's job is to **suggest**, never to change text on its own. Never edit a skill or doc
-without the user's explicit go-ahead on the concrete change — present the proposed change as a diff
-and apply only on approval. This holds whether the user invoked the skill or the agent
-self-triggered.
+- **Confirm before applying.** The skill's job is to **suggest**, never to change text on its own.
+  Never edit a skill or doc without the user's explicit go-ahead on the concrete change — present it
+  as a diff and apply only on approval, whether the user invoked the skill or the agent
+  self-triggered.
+- **Editing a `SKILL.md` → always invoke [compact-skill-creator](../compact-skill-creator/SKILL.md)**
+  to keep skills compact and ergonomic; never edit one directly.
 
 ## Recognize a persistable correction (self-trigger)
 
@@ -52,7 +54,5 @@ Whenever unsure whether it generalizes, ask the user.
    If the lesson **reverses** an existing rule, surface that explicitly — show the old rule, the
    feedback, and the proposed replacement — and never overwrite it silently; the contradiction may
    mean the feedback is context-specific, not a true reversal.
-4. **Skill target → delegate to [compact-skill-creator](../compact-skill-creator/SKILL.md)** in
-   improve mode (pass the path) so the change stays token-economic; its show-then-apply-on-approval
-   flow satisfies the confirmation rule. For a non-skill doc, present the diff yourself.
-5. **Apply on approval** only.
+4. **Apply the edit.** Skill-file target → use the compact-skill-creator route (see Hard rules).
+   Non-skill doc → present the diff yourself. Either way, apply only on approval.

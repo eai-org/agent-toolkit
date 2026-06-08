@@ -100,9 +100,16 @@ Identify every attachment **and** every inline image referenced in the descripti
 `attachment-<N>.<ext>` in order of first appearance, keeping the original extension. `<N>` runs
 across both combined.
 
-Try to download each into the output directory — via the MCP's attachment tool, or `curl` on the
-content URL (trackers often expose a URL usable with the same auth the MCP uses; if a plain fetch
-401s, retry with the tracker's bearer token if you can obtain one). Then, per file:
+Download each **straight to disk** — `curl -fSL <url> -o attachment-<N>.<ext>`, or the MCP
+attachment tool's save-to-path variant. **Never** route an attachment as inline base64 through the
+model and re-emit it: output caps (~100k chars) truncate it silently — valid header, missing
+trailer, won't open. (Content URLs often share the MCP's auth; on 401, retry with the tracker's
+bearer token if obtainable.)
+
+**Verify integrity, not just transfer** — non-empty; matches `Content-Length` if sent; type trailer
+present (PNG `IEND`, JPEG `FFD9`, PDF `%%EOF`). A size that's an exact multiple of 3 near a round
+character boundary signals base64 truncation. On failure, re-download to disk; if still bad, treat
+as **not downloaded** and warn — never reference a corrupt file. Then, per file:
 
 - **Downloaded** → reference the local file.
 - **Not downloaded** (no attachment tool, auth failure, etc.) → still reference the local file and
