@@ -50,6 +50,12 @@ Compress *within* a type — but never starve a Mandatory trigger to save a few 
   only when the skill's purpose requires it; when you must, keep it explicit and contained —
   declared up front or in a referenced doc — but skip a standalone declaration when the body already
   names the coupled artifacts throughout, since restating them only duplicates.
+- **Tool-agnostic — follow the skill's stance.** When a skill operates over an external tool/service
+  with interchangeable equivalents (design tools, trackers, cloud providers, …): if the skill is
+  already agnostic — treating such tools as a class, naming specific ones only as examples —
+  **preserve that**; new or edited content must stay generic, never hardcode a lone vendor as the
+  sole path. Otherwise it's a nice-to-have: prefer generic wording, and when unsure whether to
+  generalize or couple, ask the user.
 
 ## Progressive disclosure — when to split
 
