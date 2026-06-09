@@ -85,7 +85,7 @@ loads **only when the agent follows the pointer** — that is the lever.
 3. **Metadata.** Always include the frontmatter fields; never hardcode their values. Creating: infer
    defaults from context (sibling `SKILL.md` files, `git config user.name`, repo `LICENSE`), ask the
    user to confirm or override, and start version at `"1.0"`. Improving: preserve existing fields,
-   and ask the user whether to bump the version or add any missing field.
+   and flag any missing one.
 4. **Draft** (create) or **improve** (existing). Improving cuts redundancy *and* adds or clarifies
    where the skill is vague, under-specified, or missing a rule — loop back to intake for more
    questions if gaps surface.
@@ -100,5 +100,7 @@ loads **only when the agent follows the pointer** — that is the lever.
      reordered or merged one, which count as removals — and confirm each drops only duplication or
      filler, never a rule, instruction, edge case, or nuance. After a merge, re-verify the result
      still carries every item from both sources.
-6. **Present** the proposed change as a diff with a word/token delta **measured from the files**
-   (e.g. `wc -w` before vs. after — never estimated) (for improve mode); apply only on approval.
+6. **Present & confirm.** Show the proposed change as a diff with a word/token delta **measured from
+   the files** (e.g. `wc -w` before vs. after — never estimated). In improve mode the same prompt
+   **must** also ask whether to bump the version — **never apply a skill edit without putting the
+   version-bump decision to the user.** Apply only on approval.
