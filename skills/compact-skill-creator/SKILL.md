@@ -5,7 +5,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Compact skill creator

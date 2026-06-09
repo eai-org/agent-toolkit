@@ -6,7 +6,7 @@ context: fork
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Create manual test instructions
