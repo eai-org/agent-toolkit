@@ -54,6 +54,31 @@ Start a new session and run `/context` to confirm everything is loaded. Rules an
 the user level (all projects); to scope them to one project, symlink into that repo's
 `.claude/rules/` or `.claude/skills/` instead.
 
+## Install with agentwheel
+
+[agentwheel](https://github.com/NestDevLab/agentwheel) installs this repo's rules **and** skills
+into your agent and keeps them in sync — Claude, Codex, Copilot, and other runtimes, from one
+source. This repo ships an [`openpack.json`](openpack.json) manifest, so it's a first-class
+package (requires agentwheel ≥ 0.8). Run it from where you want it installed (`~` for user level,
+or a project root):
+
+```sh
+npx agentwheel sync github:FrancescoBorzi/agent-toolkit --adapter claude
+```
+
+Swap `--adapter claude` for `codex`, `copilot`, etc. to target other agents. Add `--dry-run` to
+preview, or `--mode tracking` to follow this repo (`agentwheel update` pulls future changes).
+
+Only want specific pieces instead of everything? Select them by `<type>/<name>` — for example, one
+skill plus one rule:
+
+```sh
+npx agentwheel sync github:FrancescoBorzi/agent-toolkit --adapter claude \
+  --select skills/run-nx-checks,rules/no-nonsense-comments.md
+```
+
+`--select` is repeatable or comma-separated.
+
 ## Install skills via skills.sh
 
 You can also use the [skills.sh](https://skills.sh/) installer to install the skills from this repo:
