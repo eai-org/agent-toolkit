@@ -5,7 +5,7 @@ context: fork
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.0"
+  version: "1.1"
 ---
 
 # PR review fetcher
@@ -100,8 +100,11 @@ never alter or translate them.
 ## Next step
 
 State clearly when done, using **project-relative paths**. List any thread whose status needed a
-user decision and how it was marked. Then end with this exact copy-pasteable line:
+user decision and how it was marked. Then hand off the next phase as a
+**single copy-pasteable launch command** — session name and prompt combined, so one paste starts the
+session. Use the launch syntax of the agent tool in use (vendor-agnostic — `claude` below is only
+the example), naming the session `refine-<slug>`:
 
 ```
-Next step: /refine-ticket <output-dir>/<slug>.PR-REVIEW.md
+claude --name refine-<slug> "/refine-ticket <output-dir>/<slug>.PR-REVIEW.md"
 ```
