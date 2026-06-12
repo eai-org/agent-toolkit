@@ -3,7 +3,23 @@
   "name": "FrancescoBorzi/agent-toolkit",
   "version": "0.1.0",
   "provides": [
-    { "type": "rules", "path": "rules" },
-    { "type": "skills", "path": "skills" }
+    {
+      "type": "rules",
+      "path": "rules",
+      "items": {
+        "self-improve-on-correction.md": {
+          "requires": ["skills/self-improve"]
+        }
+      }
+    },
+    {
+      "type": "skills",
+      "path": "skills",
+      "items": {
+        "self-improve": {
+          "requires": ["skills/compact-skill-creator"]
+        }
+      }
+    }
   ]
 }
