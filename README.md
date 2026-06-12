@@ -83,6 +83,34 @@ The manifest also marks hard internal dependencies. For example, selecting `skil
 also installs `skills/compact-skill-creator`, and selecting
 `rules/self-improve-on-correction.md` also installs `skills/self-improve`.
 
+## Artifact relationships
+
+Some skills and rules form a workflow or rely on each other. Hard dependencies are encoded in
+[`openpack.json`](openpack.json); suggested next steps remain documented in the skill text.
+
+```mermaid
+flowchart TD
+  fetch_ticket["fetch-ticket"] --> refine["refine-ticket"]
+  fetch_pr["fetch-pr-review"] --> refine
+  refine --> manual["create-manual-test-instructions"]
+  refine --> plan["create-implementation-plan"]
+
+  self_rule["self-improve-on-correction rule"] --> self["self-improve"]
+  self --> compact["compact-skill-creator"]
+
+  plans_rule["plans-directory rule"] -. informs .-> fetch_ticket
+  plans_rule -. informs .-> fetch_pr
+  plans_rule -. informs .-> refine
+  plans_rule -. informs .-> manual
+  plans_rule -. informs .-> plan
+
+  docs_rule["self-contained-docs rule"] -. informs .-> fetch_ticket
+  docs_rule -. informs .-> fetch_pr
+  docs_rule -. informs .-> refine
+  docs_rule -. informs .-> manual
+  docs_rule -. informs .-> plan
+```
+
 ## Install skills via skills.sh
 
 You can also use the [skills.sh](https://skills.sh/) installer to install the skills from this repo:
