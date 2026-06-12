@@ -5,7 +5,7 @@ disable-model-invocation: true
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.1"
+  version: "1.2"
 ---
 
 # Create Implementation Plan
@@ -120,11 +120,10 @@ State clearly when done that the plan file is ready, referring to it by its **pr
 execution session** with a clean context that reads **only the plan file**, implements it, then runs
 the project's validation (lint, tests, build).
 
-End by giving the user a concrete, copy-pasteable prompt to kick off that session, quoting the
-plan's project-relative path, e.g.:
+End with a **single copy-pasteable launch command** — session name and prompt combined, so one
+paste starts the execution session. Use the launch syntax of the agent tool in use
+(vendor-agnostic — `claude` below is only the example). Name the session `execute-plan-<slug>`,
+where `<slug>` is the plan filename's slug (without id prefix or extension), so the phase is
+recognizable in the session list, e.g.:
 
-> Next step, run this prompt on a new session: "Execute the plan `.claude/plans/123-some-task/123-some-task.PLAN.md`"
-
-If the agent platform supports naming or labelling a session, suggest naming it after the feature —
-the slug from the plan's filename (without the id prefix or extension), e.g.
-`implement-report-approval` — so the implementation session is easy to find later.
+> claude --name execute-plan-report-approval "Execute the plan `.claude/plans/123-report-approval/123-report-approval.PLAN.md`"

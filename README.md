@@ -1,12 +1,26 @@
 # agent-toolkit
 
-My own toolkit for AI Agentic Coding — a collection of reusable, project-agnostic tools that I use
+My own toolkit for AI Agentic Coding: a collection of reusable, project-agnostic tools that I use
 across multiple projects.
 
-- **Rules** — generic behavioral rules I apply at user level across all projects. Each file in
+- **Rules**: generic behavioral rules I apply at user level across all projects. Each file in
   [`rules/`](rules) is a single, self-contained rule.
-- **Skills** — skills I reuse across projects. Each lives in its own directory under
+- **Skills**: skills I reuse across projects. Each lives in its own directory under
   [`skills/`](skills) with a `SKILL.md` describing its trigger, allowed tools, and steps.
+
+## Quick Install / Update
+
+Install in one command:
+
+```sh
+git clone https://github.com/FrancescoBorzi/agent-toolkit.git && cd agent-toolkit && ./install.sh
+```
+
+Update in one command:
+
+```sh
+cd agent-toolkit && git pull && ./install.sh
+```
 
 ## Install via symlinks
 
@@ -21,7 +35,7 @@ override this.
 First clone the repo (or your own fork):
 
 ```sh
-git clone git@github.com:FrancescoBorzi/agent-toolkit.git && cd agent-toolkit
+git clone https://github.com/FrancescoBorzi/agent-toolkit.git && cd agent-toolkit
 ```
 
 Then you can run:
@@ -57,8 +71,8 @@ the user level (all projects); to scope them to one project, symlink into that r
 ## Install with agentwheel
 
 [agentwheel](https://github.com/NestDevLab/agentwheel) installs this repo's rules **and** skills
-into your agent and keeps them in sync — Claude, Codex, Copilot, and other runtimes, from one
-source. This repo ships an [`openpack.json`](openpack.json) manifest, so it's a first-class
+into your agent and keeps them in sync across Claude, Codex, Copilot, and other runtimes, from
+one source. This repo ships an [`openpack.json`](openpack.json) manifest, so it's a first-class
 OpenPack package (requires agentwheel ≥ 0.9.0). Run it from where you want it installed (`~` for
 user level, or a project root):
 
@@ -69,7 +83,7 @@ npx agentwheel sync github:FrancescoBorzi/agent-toolkit --adapter claude
 Swap `--adapter claude` for `codex`, `copilot`, etc. to target other agents. Add `--dry-run` to
 preview, or `--mode tracking` to follow this repo (`agentwheel update` pulls future changes).
 
-Only want specific pieces instead of everything? Select them by `<type>/<name>` — for example, one
+Only want specific pieces instead of everything? Select them by `<type>/<name>`, for example one
 skill plus one rule:
 
 ```sh

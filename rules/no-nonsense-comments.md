@@ -4,7 +4,8 @@ description: Code comments are written for future readers with no context on our
 ---
 
 Prefer no comment over a low-value one. Every comment must still make sense to someone who checked
-out this branch with zero knowledge of our session.
+out this branch with zero knowledge of our session. Keep comments short: 1 or 2 lines are typically
+enough.
 
 Don't write:
 - **Process / change narration** — "see plan", "as discussed", "now also handles X", "switched from

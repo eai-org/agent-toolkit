@@ -5,7 +5,7 @@ disable-model-invocation: true
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.2"
+  version: "1.3"
 ---
 
 # Refine ticket
@@ -104,10 +104,16 @@ quoted verbatim.
 - Do **not** write an implementation plan or describe "how".
 - Do **not** modify any source files. The only file you write is the REQUIREMENTS document.
 
-When done, state — in **project-relative paths** — that the requirements file is ready, then suggest
-the next steps:
+When done, state — in **project-relative paths** — that the requirements file is ready, then hand
+off each next phase as a **single copy-pasteable launch command** — phase-prefixed session name and
+prompt combined, so one paste starts the session. Use the launch syntax of the agent tool in use
+(vendor-agnostic — `claude` below is only the example), naming the session with the phase prefix
+plus the requirements file's slug:
 
 ```
-Next: /create-manual-test-instructions <path>.REQUIREMENTS.md   # QA manual test
-Then: /create-implementation-plan <path>.REQUIREMENTS.md        # Plan phase
+claude --name create-manual-test-<slug> "/create-manual-test-instructions <path>.REQUIREMENTS.md"   # QA manual test
+claude --name create-plan-<slug> "/create-implementation-plan <path>.REQUIREMENTS.md"               # Plan phase
 ```
+
+The phase prefix (`create-plan-`, `execute-plan-`, …) keeps the pipeline phases distinguishable in
+the session list.
