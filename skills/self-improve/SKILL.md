@@ -5,7 +5,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.1"
+  version: "1.2"
 ---
 
 # Self-improve
@@ -46,8 +46,9 @@ Whenever unsure whether it generalizes, ask the user.
 1. **Capture the lesson.** State, in one line, the general rule the feedback implies — not the
    surface incident ("Mock external HTTP in unit tests," not "the agent mocked the wrong call").
 2. **Locate the target.** Find which skill/doc governs this action (search skills, `AGENTS.md`/
-   `CLAUDE.md`, convention docs). If one exists, it's the target. If none does and the lesson is
-   broad, propose the most fitting doc (or, with the user, a new one). Ask whenever unsure.
+   `CLAUDE.md`, convention docs). If one exists, it's the target. If no existing skill/doc fits and
+   the lesson implies a recurring workflow, propose creating a new skill and ask before drafting it.
+   If the lesson is broad but not skill-shaped, propose the most fitting doc. Ask whenever unsure.
 3. **Draft the edit.** Write the rule into the target as the least text that fully captures it:
    agent-agnostic ("the agent", never a vendor name), no process narration, no restating — a real
    durable instruction. Prefer tightening or extending an existing rule over appending a new one.
