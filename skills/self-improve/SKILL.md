@@ -1,11 +1,11 @@
 ---
 name: self-improve
-description: Capture user feedback into the skill or governing doc (SKILL.md, AGENTS.md/CLAUDE.md, coding-standards, etc.) that should have prevented a mistake, so future sessions don't repeat it. Use when the user rejects, reverts, or overrides the agent's output or approach on something a skill or governing doc covers (or should), and when manually invoked to improve a skill/doc.
+description: Capture durable user feedback into the governing skill/doc, or propose creating a new skill when no suitable one exists, so future sessions don't repeat the mistake. Use when the user rejects, reverts, or overrides the agent's output or approach on something a skill/doc covers or should cover, and when manually invoked to improve or create guidance.
 allowed-tools: Read, Write, Edit, Glob, Grep
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.2"
+  version: "1.3"
 ---
 
 # Self-improve
