@@ -18,6 +18,9 @@
       "items": {
         "self-improve": {
           "requires": ["skills/compact-skill-creator"]
+        },
+        "memory-doctor": {
+          "requires": ["skills/self-improve"]
         }
       }
     }
