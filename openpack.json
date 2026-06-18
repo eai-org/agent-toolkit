@@ -6,6 +6,8 @@
     {
       "type": "rules",
       "path": "rules",
+      "format": "markdown-rule",
+      "runtimes": ["claude", "copilot"],
       "items": {
         "self-improve-on-correction.md": {
           "requires": ["skills/self-improve"]
