@@ -12,12 +12,15 @@ metadata:
 
 **Suggest** durable improvements to the skill or governing doc that should have steered the agent,
 so the next session gets it right without being told again — and apply them only after the user
-approves. The skill proposes; the user stays in control of every change. Two ways in:
+approves. The skill proposes; the user stays in control of every change. Three ways in:
 
 - **Manual** — the user invokes `/self-improve` to deliberately improve a skill or doc.
 - **Self-triggered** — the agent notices it was corrected on something a skill/doc governs (or
   should). Don't silently correct and move on, but don't derail the task either: note the lesson,
   finish what the user asked for, and offer to persist it at the next natural breakpoint.
+- **Driven by another skill** — a caller hands over content that is already durable guidance plus an
+  already-chosen target (scope, form, and path — possibly a new file). It resolved both with the
+  user, so skip steps 1-2 and run only draft + apply.
 
 "Skill/doc" means any standing instruction: a `SKILL.md`, `AGENTS.md`/`CLAUDE.md`, a
 coding-standards or convention doc, a rules file — anything that guides future agents.
@@ -46,9 +49,9 @@ Whenever unsure whether it generalizes, ask the user.
 1. **Capture the lesson.** State, in one line, the general rule the feedback implies — not the
    surface incident ("Mock external HTTP in unit tests," not "the agent mocked the wrong call").
 2. **Locate the target.** Find which skill/doc governs this action (search skills, `AGENTS.md`/
-   `CLAUDE.md`, convention docs). If one exists, it's the target. If no existing skill/doc fits and
-   the lesson implies a recurring workflow, propose creating a new skill and ask before drafting it.
-   If the lesson is broad but not skill-shaped, propose the most fitting doc. Ask whenever unsure.
+   `CLAUDE.md`, convention docs). If one exists, it's the target. If none fits, propose a new target
+   and ask before drafting: a new skill for a recurring workflow, a new rule for a standing
+   constraint, or the most fitting doc otherwise. Ask whenever unsure.
 3. **Draft the edit.** Write the rule into the target as the least text that fully captures it:
    agent-agnostic ("the agent", never a vendor name), no process narration, no restating — a real
    durable instruction. Prefer tightening or extending an existing rule over appending a new one.
