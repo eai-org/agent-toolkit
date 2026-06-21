@@ -5,7 +5,7 @@ disable-model-invocation: true
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Memory doctor
@@ -21,8 +21,9 @@ user — not the memory store — decides what reaches the context window.
 
 **The skill guesses and recommends; the user decides.** Every verdict, scope, form, and target is a
 *proposal* the user confirms or flips. When unsure, ask. Nothing is moved, deleted, or written
-without explicit per-item approval. For every block the user gets the whole menu — relocate, delete,
-keep — never just the recommended verdict.
+without explicit per-item approval. For every block the user gets the whole fixed menu — relocate/merge,
+archive (delete), keep, or a custom action they type — never just the recommended verdict, never a
+pruned subset.
 
 ## Locate the memory
 
@@ -45,14 +46,14 @@ flat file with no index, treat each section as a block.
    `block | content (verbatim excerpt or summary, ≤10 lines) | verdict | justification | evidence
    (duplicate/garbage) | scope/form/path (relocate)`. Truncate long blocks, but show enough that the
    user can judge each without opening the file.
-3. **Execute, block by block in strict index order (1 → last).** Walk blocks by their table index;
-   **never group or reorder by verdict** (don't do "all duplicates first, relocates next"). For each
-   block, present its recommended verdict *and* the full option menu — relocate/merge to the
-   recommended home, delete (archive), keep as-is, plus any block-specific alternative — then apply
-   only the user's chosen action before moving to the next. The verdict is only a default; never
-   skip a block or act on one without explicit per-block confirmation. If you batch decisions into
-   one prompt, it must cover **every** block as contiguous index ranges (e.g. 1-4, then 5-8) — never
-   a verdict-grouped subset.
+3. **Execute, one question per block, in strict index order (1 → last).** Walk blocks by their table
+   index — **never group, batch, or reorder blocks**, even when adjacent ones share a verdict; ask
+   about exactly one block per prompt. For each, present its recommended verdict as the default, then
+   the **same fixed menu every time** regardless of that verdict — relocate/merge, archive (delete),
+   keep, or other (the user types a custom action). Never drop an option because it seems not to
+   apply; the user must never have to type a standard option by hand. Apply only the user's chosen
+   action before moving to the next block; never skip a block or act on one without its own explicit
+   confirmation.
 
 ## Verdicts
 
