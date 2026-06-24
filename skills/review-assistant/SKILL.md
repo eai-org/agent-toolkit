@@ -80,8 +80,12 @@ The core rule. A comment may exist only when it points to concrete evidence of o
    condition is inverted, this loses the value).
 2. **It breaks a documented project rule** — you can cite the convention (a doc, or an established
    pattern visible in the surrounding code).
+3. **It is a concrete, behavior-preserving simplification** — needless indirection or duplication
+   you can collapse with certainty, naming the exact redundancy and the smaller form. (E.g. a
+   non-exported const in the class's own file that only aliases one class field is collapsible; an
+   exported or separate-file const is fine, it may be reused elsewhere.)
 
-If you cannot name the evidence — the exact bug or the exact rule — do not comment. Hedge
+If you cannot name the evidence — the exact bug, rule, or redundancy — do not comment. Hedge
 phrases that signal a guess with no evidence ("there might be", "this could potentially",
 "consider whether") are a smell and a classic AI tell: with real evidence, state it plainly;
 without it, stay silent. (This bans raising findings you can't back — 
@@ -136,9 +140,9 @@ Local text only; write no file unless the user later asks to save it.
 
   The explanation is your note to the user and can be direct. Add **Suggested comment** only when it
   adds something beyond the explanation (nuance, or softer phrasing); if it would just restate the
-  explanation, give one or the other, never both near-identical. A suggested comment is the quick line
-  a real reviewer drops: very short, casual, friendly. Strip the rationale and any trailing hypothesis
-  about the cause; the explanation already carries the why, so keep only the ask. Often a question
+  explanation, give one or the other, never both near-identical. A suggested comment is the line a
+  real reviewer drops: short, casual, friendly, usually one sentence. Lead with the ask; add a brief
+  why only when it isn't obvious, and skip the cause-hypothesis. Often a question
   even when you are sure the code is wrong, naming the exact symbol (e.g. "where is `FOO` used?").
   Even a plain nit stays warm and in collaborative "we" voice, never a curt bare statement. Never use
   dashes (em or en); write the way people actually type. This brevity and softness is tone, not

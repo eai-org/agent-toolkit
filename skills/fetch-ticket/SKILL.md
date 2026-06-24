@@ -5,7 +5,7 @@ context: fork
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.2"
+  version: "1.3"
 ---
 
 # Ticket Fetcher
@@ -103,8 +103,10 @@ across both combined.
 
 **Always try to fetch — across every connected MCP.** Beyond tracker-hosted attachments, the ticket
 may link external assets (e.g. a Confluence/ADO resource — for design-tool links such as Figma or
-Zeplin see Design references below) reachable through their own MCP. Use whichever MCP fits the
-source to pull them down; don't pre-declare a link unfetchable. If a fitting MCP is connected but
+Zeplin see Design references below) reachable through their own MCP, including spec/doc files in a
+linked git repo (fetch their content via git or the repo MCP, save into the output dir under their
+own filename). Use whichever MCP fits the source to pull them down; don't pre-declare a link
+unfetchable. If a fitting MCP is connected but
 **not authenticated**, don't silently skip — proactively run its auth flow (surface the login URL,
 complete the handshake) without waiting to be asked, then fetch. When it's unclear whether an asset
 can or should be downloaded, ask the user.
@@ -164,10 +166,11 @@ _Figma · file `<fileKey>` · node `<nodeId>` · [source](<url>)_
 
 ## Boundaries
 
-- **Do not** analyze, plan, or read source files for context.
+- **Do not** analyze, plan, or explore the codebase for context — this does not exempt files the
+  ticket explicitly links, which you still fetch (see Attachments).
 - **Do not** modify the ticket in its tracker — fetching is **read-only** (no comments, transitions,
   edits, worklogs).
-- The only files you create: the `.TICKET.md` and its attachments.
+- The only files you create: the `.TICKET.md`, its attachments, and any linked docs you fetched.
 
 ## Next step
 

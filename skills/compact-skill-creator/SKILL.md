@@ -5,7 +5,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.3"
+  version: "1.4"
 ---
 
 # Compact skill creator
@@ -110,4 +110,5 @@ loads **only when the agent follows the pointer** — that is the lever.
    the files** (e.g. `wc -w` before vs. after — never estimated). In improve mode the same prompt
    **must** also ask whether to bump the version — **never apply a skill edit without putting the
    version-bump decision to the user.** If the version was already raised since the last commit,
-   fold the change into that pending bump rather than bump again. Apply only on approval.
+   fold the change into that pending bump rather than bump again. Apply only on approval. Label the
+   diff as not yet applied and awaiting approval, and after applying say so plainly.
