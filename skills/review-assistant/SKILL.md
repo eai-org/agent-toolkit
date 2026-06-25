@@ -5,7 +5,7 @@ disable-model-invocation: true
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "0.5"
+  version: "0.6"
 ---
 
 # Review assistant
@@ -69,8 +69,10 @@ nothing produces no output.
 - **Leftovers** — debug prints, commented-out code, stray TODOs, accidentally committed files.
 
 Before reviewing, load the project's own convention docs (CLAUDE.md/AGENTS.md and any relevant
-codestyle/contributing docs you can find). A clear violation of them is a first-class, citable
-comment — this is the skill's strength.
+codestyle/contributing docs), then run them as a checklist against every changed file, not as
+background reading. A clear violation is a first-class, citable comment and the skill's edge over a
+human, easiest to miss in new test files (test-structure conventions) and on new class members
+(visibility and naming).
 
 ## Grounded, not speculative
 
