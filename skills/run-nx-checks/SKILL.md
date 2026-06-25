@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.3"
+  version: "1.4"
 ---
 
 # Run Nx Checks
@@ -65,6 +65,13 @@ Affected runs can balloon. Before steps 3–4, check scope with the graph-only `
 
 ## Steps
 
+**Scope is mandatory — never narrow it yourself.** With no `$projectName` argument, *every* target
+runs at full scope — `nx affected` for lint/test/build, whole-changeset `format:write`. The single-project forms in the
+steps below apply **only** when the user explicitly passed `$projectName`. Never substitute `nx run
+<proj>:<target>`, `nx <target> <changedLib>`, or file-scoped `format --files` for the affected
+sweep: that skips every other affected project — exactly where a shared-lib change regresses (a
+dependent project whose tests import the changed lib). And never add `--skip-nx-cache` (see below).
+
 Always prefix each nx command with **both** remote-cache-off env vars inline. They're additive and
 the unrecognized one is a no-op, so this is safe regardless of which remote-cache backend (if any)
 the repo uses:
@@ -115,9 +122,23 @@ Same reason, `--parallel` is dropped from single-project **lint** and **test** (
 fan-out). It stays on single-project **build**, because `build` has `dependsOn: ["^build"]`, so
 building one project fans out across its whole dependency chain.
 
+## Flaky tests — retry once to classify
+
+A failed `test` target may be flaky, not a real break. On a test failure, re-run that one target
+once: `$NX_OFF npx nx test <project>`. If it then passes, or Nx prints `NX detected a flaky task`,
+it's flaky — don't try to "fix" it; record it as a flaky `project:target` for the report. If it
+fails the same way again, treat it as real under the Fix rule.
+
+## Final report (mandatory)
+
+This skill runs in a forked context, so its final message is the only channel back to the caller.
+End by listing, per target (lint / format / test / build): clean, or each failing `project:target`
+with its cause, plus any flaky `project:target`. Never report a bare "checks passed" — an unlisted
+failure reads as green and the caller can't act on it.
+
 ## Why the remote cache is off by default
 
-Local affected runs gain little from a remote read-through cache, and inside the Claude Code sandbox
+Local affected runs gain little from a remote read-through cache, and inside the sandbox
 the auth side effects of the cloud backends are actively harmful. Two families of remote-cache
 backends exist for Nx, and the skill disables both because we can't always tell from outside which
 (if any) is in use:
