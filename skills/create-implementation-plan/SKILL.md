@@ -58,12 +58,12 @@ design, not a separate phase that runs before planning starts.
 
 ## Plan file
 
-The output must be self-contained and ready for a **fresh session** that reads **only the plan file** and starts
-implementing — it should not need to read the requirements document or the ticket. This is the single most
-important constraint. Anything the execution session needs (acceptance criteria, prior-art
-citations, file paths, naming/string conventions, type signatures, override notes) must appear in
-the plan itself. Repetition from the requirements is intentional: the plan is the contract, not a
-diff against the requirements.
+The output must be self-contained and ready for a **fresh session** that reads **only the plan
+file** and starts implementing — it should not need to read the requirements document or the
+ticket. This is the single most important constraint. Anything the execution session needs
+(acceptance criteria, prior-art citations, file paths, naming/string conventions, type signatures,
+override notes) must appear in the plan itself. Repetition from the requirements is intentional:
+the plan is the contract, not a diff against the requirements.
 
 Create the file in the **same directory as the requirements document**, named by replacing
 `.REQUIREMENTS` with `.PLAN` (e.g. `FOO.REQUIREMENTS.md` → `FOO.PLAN.md`). If the input doesn't
@@ -115,10 +115,10 @@ something is a decision or a mechanical detail, put it in.
   the `*.TICKET.md` — close any gaps with the user instead. Never assume a requirement; ask.
 - Write the plan to disk only after every open question is resolved.
 
-State clearly when done that the plan file is ready, referring to it by its **project-relative path**
-(relative to the current working directory — never absolute). Then tell the user to start a **fresh
-execution session** with a clean context that reads **only the plan file**, implements it, then runs
-the project's validation (lint, tests, build).
+State clearly when done that the plan file is ready, referring to it by its **project-relative
+path** (relative to the current working directory — never absolute). Then tell the user to start a
+**fresh execution session** with a clean context that reads **only the plan file**, implements it,
+then runs the project's validation (lint, tests, build).
 
 End with a **single copy-pasteable launch command** — session name and prompt combined, so one
 paste starts the execution session. Use the launch syntax of the agent tool in use
@@ -126,4 +126,6 @@ paste starts the execution session. Use the launch syntax of the agent tool in u
 where `<slug>` is the plan filename's slug (without id prefix or extension), so the phase is
 recognizable in the session list, e.g.:
 
-> claude --name execute-plan-report-approval "Execute the plan `.claude/plans/123-report-approval/123-report-approval.PLAN.md`"
+```
+claude --name execute-plan-report-approval "Execute the plan .claude/plans/123-report-approval/123-report-approval.PLAN.md"
+```

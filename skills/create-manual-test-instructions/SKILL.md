@@ -5,7 +5,7 @@ context: fork
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.1"
+  version: "1.2"
 ---
 
 # Create manual test instructions
@@ -16,7 +16,9 @@ Read the document (and, where needed for accurate navigation, the code it cites)
 manual-test file in the **same directory**, naming it by replacing `.REQUIREMENTS` or `.TICKET` with
 `.MANUAL-TEST` (e.g. `FOO.REQUIREMENTS.md` → `FOO.MANUAL-TEST.md`); if the input follows neither
 convention, append `.MANUAL-TEST` before `.md`. If there is no file (pasted text), follow the
-project's planning convention for the location and confirm the slug and path with the user.
+project's planning convention for the location. Running forked, you can't ask mid-run: if the
+convention or the slug is ambiguous, write nothing and state in the final message what's needed;
+when you do write, flag the guessed location in the final message for the user to verify.
 
 The file must be followable by someone **unfamiliar with the ticket** — short but complete. Four
 parts:

@@ -1,11 +1,11 @@
 ---
 name: review-code-assistant
-description: Assist a human reviewing a pull request or branch locally: diff a source branch against its target (auto-detected or from a PR link) and return concise, human-voice review comments with file:line locations. Read-only, never posts. Use when asked to review a PR, review a branch, or check changes before merging. Invoke manually only.
+description: Assist a human reviewing a pull request or branch locally: diff a source branch against its target (auto-detected or from a PR link) and return concise, human-voice review comments with file:line locations. Read-only, never posts. Use when asked to review a PR, review a branch, or check changes before merging.
 disable-model-invocation: true
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Review code assistant
@@ -26,14 +26,18 @@ Accept input flexibly; a PR link is optional:
 
 (If explicitly asked, you may instead review uncommitted working-tree changes.)
 
-**Diff base:** always three-dot merge-base, `git diff target...source`, so it matches exactly what
-the platform shows as the PR with no noise from commits that landed on target after the fork. Fall
-back to two-dot only when there is no common ancestor. No checkout is needed to produce the diff.
+**Diff base:** always a three-dot merge-base diff, `git diff <target-ref>...<source-ref>`, so it
+matches exactly what the platform shows as the PR with no noise from commits that landed on target
+after the fork. Fall back to two-dot only when there is no common ancestor. No checkout is needed
+to produce the diff.
 
-**Branch freshness:** a review must run against the latest pushed version, so always update the
-branch under review from origin before diffing (`git fetch`, or `git pull` if it is checked out),
-then diff against the up-to-date ref — never a stale last-fetched snapshot. If the update fails
-(e.g. no access to a fork remote), say so and ask how to proceed rather than review stale refs.
+**Branch freshness:** always `git fetch` first — never `git pull`: the diff needs no checkout or
+working-tree update. Then diff each branch's freshest ref, stating which you used: the
+remote-tracking ref when the branch is on a remote and the local ref isn't ahead of it; the local
+ref when the branch exists only locally or carries unpushed commits (never silently review a stale
+pushed state); for a fork PR's source, absent from `origin`, the fork remote or the platform's PR
+ref (e.g. `git fetch origin pull/<N>/head` on GitHub). If a fetch fails or a ref can't be found,
+say so and ask how to proceed rather than review stale or wrong refs.
 
 **Target auto-detection** (when not supplied and not from a PR link), in order:
 1. `git symbolic-ref refs/remotes/origin/HEAD` — the remote default branch.
@@ -89,8 +93,8 @@ The core rule. A comment may exist only when it points to concrete evidence of o
 If you cannot name the evidence — the exact bug, rule, or redundancy — do not comment. Hedge
 phrases that signal a guess with no evidence ("there might be", "this could potentially",
 "consider whether") are a smell and a classic AI tell: with real evidence, state it plainly;
-without it, stay silent. (This bans raising findings you can't back — 
-not phrasing a well-grounded **Suggested comment** to the author as a polite question; see Output.)
+without it, stay silent. (This bans raising findings you can't back — not phrasing a well-grounded
+**Suggested comment** to the author as a polite question; see Output.)
 
 One exception: a genuine clarifying question to the author — rare, only when the diff is truly
 ambiguous about intent or correctness and the answer changes whether it is right. Never a routine
@@ -119,9 +123,9 @@ Local text only; write no file unless the user later asks to save it.
 - Lead with one short sentence recapping what the PR does, to show the change was understood.
 - Then the comment list, or a one-line `Looks good, no comments.`
 - Each item: a `###` heading holding its sequential finding number and the clickable `path:line`,
-  the explanation beneath it, then the optional suggested comment. Put a full-width heavy rule (a row
-  of ~40 `━`) above each finding and one more after the last, so the list is bracketed top and bottom
-  and the eye can jump between comments. For example:
+  the explanation beneath it, then the optional suggested comment. Put a full-width heavy rule (a
+  row of ~40 `━`) above each finding and one more after the last, so the list is bracketed top and
+  bottom and the eye can jump between comments. For example:
 
   ```
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -150,10 +154,10 @@ Local text only; write no file unless the user later asks to save it.
   rather than verdicts ("basically a copy of"), and soften asks with "maybe we can/should". Often a
   question even when you are sure the code is wrong, naming the exact symbol (e.g. "where is `FOO`
   used?").
-  Even a plain nit stays warm and in collaborative "we" voice, never a curt bare statement. Never use
-  dashes (em or en); write the way people actually type. This brevity and softness is tone, not
-  hedging: it never lowers the evidence bar from *Grounded, not speculative*. Stay grounded in *what*
-  to raise, human and brief in *how* you word it.
+  Even a plain nit stays warm and in collaborative "we" voice, never a curt bare statement. Never
+  use dashes (em or en); write the way people actually type. This brevity and softness is tone, not
+  hedging: it never lowers the evidence bar from *Grounded, not speculative*. Stay grounded in
+  *what* to raise, human and brief in *how* you word it.
 - **Order mirrors the diff** so the user can read the PR in one window and copy-paste straight down
   in another: files in the diff's own order, ascending line number within a file, grouped by file
   when a file has several comments. This order is absolute: never reorder by a finding's perceived
@@ -162,10 +166,10 @@ Local text only; write no file unless the user later asks to save it.
 ## Boundaries
 
 - **Read-only, one exception.** Only read-only git (`diff`, `log`, `show`, `merge-base`,
-  `branch --list`, `symbolic-ref`) and read-only platform fetches, plus `git fetch`/`pull` of the
-  branch under review (the sole allowed mutation). Never check out other branches, modify the
-  working tree, post/reply/resolve/vote on the PR, or write files (unless the user explicitly asks
-  to save the output).
-- **Fetch before reviewing.** Always `git fetch`/`pull` the branch under review from origin first so
-  the diff reflects the latest pushed commits. Nothing more: no checkout of other branches into the
-  working tree, no destructive ref ops, no prune, no clobbering uncommitted work.
+  `branch --list`, `symbolic-ref`) and read-only platform fetches, plus `git fetch` (the sole
+  allowed ref update — never `git pull`). Never check out other branches, modify the working tree,
+  post/reply/resolve/vote on the PR, or write files (unless the user explicitly asks to save the
+  output).
+- **Fetch before reviewing.** Always `git fetch` the refs under review first so the diff reflects
+  the latest commits. Nothing more: no checkout of other branches into the working tree, no
+  destructive ref ops, no prune, no clobbering uncommitted work.

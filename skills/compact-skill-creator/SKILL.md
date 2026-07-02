@@ -5,7 +5,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.7"
+  version: "1.8"
 ---
 
 # Compact skill creator
@@ -35,7 +35,11 @@ How a skill is triggered decides how its `description` is written. Classify into
   on a strict, concrete trigger: concrete verbs + the artifact ("when creating, editing, or
   reviewing …").
 - **Manual** — invoked deliberately (e.g. a `/command`). No trigger bait; the description just
-  states what it does so a human choosing from a list understands it.
+  states what it does so a human choosing from a list understands it. When the skill format can
+  block model invocation (e.g. a `disable-model-invocation` flag), set it for Manual skills nothing
+  invokes programmatically — the description then costs no standing context; when sibling skills
+  must drive this one, keep it model-invocable and mark it "invoke manually only" in the
+  description instead.
 - **Self-Evident** — auto-loadable, but intent is obvious from a natural request (e.g. "fetch a
   ticket"). Trigger words ≈ the task name, so a short description routes correctly without a
   when/when-not clause.
@@ -94,8 +98,9 @@ loads **only when the agent follows the pointer** — that is the lever.
    few). The only limit: never interview for its own sake.
 3. **Metadata.** Always include the frontmatter fields; never hardcode their values. Creating: infer
    defaults from context (sibling `SKILL.md` files, `git config user.name`, repo `LICENSE`), ask the
-   user to confirm or override, and start version at `"1.0"`. Improving: preserve existing fields,
-   and flag any missing one.
+   user to confirm or override. Version starts at `"1.0"`, or `"0.x"` when the author wants a trial
+   period before declaring the skill stable — ask which. Improving: preserve existing fields, and
+   flag any missing one.
 4. **Draft** (create) or **improve** (existing): get the skill's content right — the rules it
    encodes, plus what improving adds (clarify where it's vague, under-specified, or missing a rule;
    loop back to intake if gaps surface) — compacting it through compact-docs-writer as you write,

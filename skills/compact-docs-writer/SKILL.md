@@ -5,7 +5,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Compact docs writer
@@ -43,5 +43,6 @@ long passage into one dense block to look shorter.
      filler, never a rule, instruction, edge case, or nuance. After a merge, re-verify the result
      still carries every item from both sources.
 3. **Present & confirm.** Show the change as a diff with a word/token delta **measured from the
-   files** (e.g. `wc -w` before vs. after — never estimated). Label it not yet applied and awaiting
-   approval; apply only on approval; after applying, say so plainly.
+   files, never estimated**: write the not-yet-applied draft to a scratch file (in the session's
+   temp/scratch dir, never the working tree) and `wc -w` it against the original. Label it not yet
+   applied and awaiting approval; apply only on approval; after applying, say so plainly.

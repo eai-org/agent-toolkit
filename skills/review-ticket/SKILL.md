@@ -1,18 +1,18 @@
 ---
 name: review-ticket
-description: Triage a board ticket before work starts: fetch it, compare it against the codebase, and print a plain recap plus only the high-cost questions worth raising. The review prints to the terminal and is saved only when asked. Invoke manually only.
+description: Triage a board ticket before work starts: fetch it, compare it against the codebase, and print a plain recap plus only the high-cost questions worth raising. The review prints to the terminal and is saved only when asked.
 disable-model-invocation: true
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "0.1"
+  version: "0.2"
 ---
 
 # Review ticket
 
-A pre-pickup triage glance: read a ticket, usually before anyone has started it, and decide whether
-it can be picked up or something must be clarified first. The output is a short recap plus the questions worth asking,
-aimed at whoever owns the requirements, not at you.
+A pre-pickup triage glance: read a ticket, usually before anyone has started it, and decide
+whether it can be picked up or something must be clarified first. The output is a short recap plus
+the questions worth asking, aimed at whoever owns the requirements, not at you.
 
 ## Gather: delegate to fetch-ticket
 
@@ -51,8 +51,8 @@ thorough.
 
 Terminal text only (to save it, see Saving):
 
-1. **Verdict line** first, so the answer lands at once, e.g. `2 questions to resolve before
-   starting` or `Looks ready to pick up, no blockers.`
+1. **Verdict line** first, so the answer lands at once, e.g.
+   `2 questions to resolve before starting` or `Looks ready to pick up, no blockers.`
 2. **Recap**: a few plain sentences in simple words covering what the ticket wants, the goal, and a
    before/after where it clarifies, grounded in the real current behavior you saw in the code.
 3. **Questions**, when any cleared both gates: a numbered list, each item bracketed top and bottom

@@ -1,11 +1,10 @@
 ---
 name: fetch-ticket
 description: Fetch a ticket/issue from its tracker (Azure DevOps, Jira, GitHub, …) and save it as a self-contained markdown ticket file. Fetch only — no analysis or planning.
-context: fork
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.3"
+  version: "1.4"
 ---
 
 # Ticket Fetcher
@@ -127,9 +126,9 @@ character boundary signals base64 truncation. On failure, re-download to disk; i
 as **not downloaded** and warn — never reference a corrupt file. Then, per file:
 
 - **Downloaded** → reference the local file.
-- **Not downloaded** (no fitting MCP/attachment tool, auth that couldn't be completed, etc.) → still reference the local file and
-  the source URL, and add it to the list to warn about. Don't block — the ticket is usable either
-  way.
+- **Not downloaded** (no fitting MCP/attachment tool, auth that couldn't be completed, etc.) →
+  still reference the local file and the source URL, and add it to the list to warn about. Don't
+  block — the ticket is usable either way.
 
 Image → embed; non-image (PDF, .docx, …) → link instead:
 

@@ -11,8 +11,9 @@ specific agent. Install instructions may still reference agent-specific paths (e
 `~/.claude/skills/`), since that's the install mechanism, not how the content is framed.
 
 When writing or editing Markdown documents, wrap lines at the `max_line_length` set in
-`.editorconfig`. This applies to prose; never break code blocks, tables, URLs, or links to satisfy
-it.
+`.editorconfig`. This applies to prose; never break code (fenced blocks or inline backtick
+spans — a command must stay on one line even past the limit), tables, URLs, links, or YAML
+frontmatter values to satisfy it.
 
 When changing skills, rules, manifests, install behavior, or repository conventions, keep the
 documentation updated in the same change. Update `README.md`, `AGENTS.md`, and any affected
