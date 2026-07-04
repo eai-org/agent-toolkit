@@ -4,7 +4,7 @@ description: Refine a development ticket into a validated, self-contained REQUIR
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.7"
+  version: "1.8"
 ---
 
 # Refine ticket
@@ -135,3 +135,12 @@ claude --name create-plan-<slug> "/create-implementation-plan <path>.REQUIREMENT
 
 The phase prefix (`create-plan-`, `execute-plan-`, …) keeps the pipeline phases distinguishable in
 the session list.
+
+Then offer the plan phase's alternative — clearing the current session instead (vendor-agnostic —
+`/clear` below is only the example; use the clear command of the agent tool in use):
+
+OR /clear and run:
+
+```
+/create-implementation-plan <path>.REQUIREMENTS.md
+```

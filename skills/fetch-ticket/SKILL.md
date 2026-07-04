@@ -4,7 +4,7 @@ description: Fetch a ticket/issue from its tracker (Azure DevOps, Jira, GitHub, 
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.4"
+  version: "1.5"
 ---
 
 # Ticket Fetcher
@@ -183,4 +183,13 @@ is only the example), naming the session `refine-<slug>`:
 
 ```
 claude --name refine-<slug> "/refine-ticket <output-dir>/<id>-<slug>.TICKET.md"
+```
+
+Then offer the alternative — clearing the current session instead (vendor-agnostic — `/clear` below
+is only the example; use the clear command of the agent tool in use):
+
+OR /clear and run:
+
+```
+/refine-ticket <output-dir>/<id>-<slug>.TICKET.md
 ```
