@@ -5,7 +5,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.2"
+  version: "1.3"
 ---
 
 # Compact docs writer
@@ -32,7 +32,10 @@ it.
 
 Compaction counts words and information density, not whitespace. Blank lines between distinct chunks
 cost effectively nothing and aid the human reader, so keep them where they help; never collapse a
-long passage into one dense block to look shorter.
+long passage into one dense block to look shorter. The same economy runs both ways: a
+human-readability gain that is free or near-free in tokens — a blank line, a line break, a
+semicolon-chained enumeration rendered as a bullet list — is always applied, never skipped to look
+compact.
 
 Structure follows the same economy: **co-locate** a concept — its rule, exceptions, and caveats
 under one heading, never scattered — so a reader who jumps to one part gets the others with it.
@@ -60,7 +63,10 @@ collapses in every pass.
      reordered or merged one, which count as removals — and confirm each drops only duplication,
      filler, or a verified no-op, never a load-bearing rule, instruction, edge case, or nuance.
      After a merge, re-verify the result still carries every item from both sources.
-3. **Present & confirm.** Show the change as a diff with a word/token delta **measured from the
-   files, never estimated**: write the not-yet-applied draft to a scratch file (in the session's
-   temp/scratch dir, never the working tree) and `wc -w` it against the original. Label it not yet
-   applied and awaiting approval; apply only on approval; after applying, say so plainly.
+3. **Present & confirm.** Show the change as a unified diff inside a fenced `diff` code block —
+   every removed line prefixed `-`, every added line `+`, so they render red/green — and when a
+   long line changes by only a few words, add a word-level view (`[-removed-]{+added+}`)
+   pinpointing them. Include a word/token delta **measured from the files, never estimated**:
+   write the not-yet-applied draft to a scratch file (in the session's temp/scratch dir, never the
+   working tree) and `wc -w` it against the original. Label it not yet applied and awaiting
+   approval; apply only on approval; after applying, say so plainly.

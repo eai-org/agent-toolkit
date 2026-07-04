@@ -5,7 +5,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.11"
+  version: "1.12"
 ---
 
 # Compact skill creator
@@ -127,10 +127,15 @@ disclosed doc).
    compaction and removal-audit checks):
    - Wording agent-agnostic? Project coupling contained? Cross-references limited to declared
      dependencies or a real operational benefit?
-   - Trigger type identified, and the description written to fit it? Test it three ways: reading
-     only the description, would an agent open the skill for the intended task (yes) and skip a
-     similar but unrelated task (no), and does it match what the skill now does (no stale claim the
-     body contradicts)? Reword until all hold.
+   - Trigger type identified, and the description written to fit it? Test it four ways, reading
+     only the description:
+     - would an agent open the skill for the intended task?
+     - would it skip a similar but unrelated task?
+     - does it match what the skill now does (no stale claim the body contradicts)?
+     - does it carry the skill's leading word itself — a paraphrase feels compliant but does no
+       invocation work?
+
+     Reword until all four hold.
    - Steps end on checkable, exhaustive completion criteria?
 6. **Present & confirm** through compact-docs-writer (diff + word delta measured from the files,
    applied only on approval). In improve mode, **always put the version-bump decision to the
