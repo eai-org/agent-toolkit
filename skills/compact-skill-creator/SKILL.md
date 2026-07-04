@@ -5,7 +5,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.9"
+  version: "1.10"
 ---
 
 # Compact skill creator
@@ -24,7 +24,7 @@ restates or re-derives them. From the moment you draft (step 4) through self-rev
 present (step 6), **always** invoke compact-docs-writer and follow its workflow on the skill text —
 reading it, applying its principles by hand, or naming it after a direct edit does not count. This
 skill adds only the skill-specific layer: trigger taxonomy, agnosticism, progressive disclosure,
-metadata, and the version-bump decision.
+completion criteria, metadata, and the version-bump decision.
 
 ## Trigger taxonomy — classify first
 
@@ -46,6 +46,15 @@ How a skill is triggered decides how its `description` is written. Classify into
 
 Governing rule: **description tokens are justified only by trigger precision, never by summary.**
 Compress *within* a type — but never starve a Mandatory trigger to save a few tokens.
+
+Two sharpeners for the trigger wording:
+
+- **One trigger per distinct path** through the skill. Phrasings collapse only when they lead the
+  agent down the same path (true synonyms — "review a branch" / "check changes before merging");
+  never collapse triggers that name different inputs or modes (a PR link vs a bare branch name).
+- **Front-load the skill's leading word** (see compact-docs-writer). When the description carries
+  the word the user's prompts and docs already use, the agent links that shared language to the
+  skill and fires it more reliably.
 
 Placement corollary: the body loads only after the skill triggers, when the choice is already
 made — so keep when-to-use and routing cues in the description (read *before* the choice), never
@@ -84,6 +93,15 @@ loads **only when the agent follows the pointer** — that is the lever.
 - Test: *"Needed on every invocation, or only in a sub-case — and big enough that inlining taxes
   every invocation? If both, extract it."*
 
+## Completion criteria — steps end checkable
+
+When a skill encodes steps, end each on a **completion criterion** the agent can check — done vs
+not-done — and make it exhaustive where a partial pass could look complete ("every modified file
+accounted for", not "produce a summary"). A vague criterion is what makes an agent wrap up early;
+sharpening it is the first and cheapest fix. Only when a criterion stays irreducibly fuzzy and
+later steps still tempt rushing should those later steps move out of sight (a follow-on skill or a
+disclosed doc).
+
 ## Workflow
 
 1. **Detect mode.** A path/skill argument → improve; none → create. To create, put the skill in its
@@ -113,8 +131,11 @@ loads **only when the agent follows the pointer** — that is the lever.
      only the description, would an agent open the skill for the intended task (yes) and skip a
      similar but unrelated task (no), and does it match what the skill now does (no stale claim the
      body contradicts)? Reword until all hold.
+   - Steps end on checkable, exhaustive completion criteria?
 6. **Present & confirm** through compact-docs-writer (diff + word delta measured from the files,
-   applied only on approval). In improve mode the same prompt **must** also ask whether to bump the
-   version — **never apply a skill edit without putting the version-bump decision to the user.** If
-   the version was already raised since the last commit, fold the change into that pending bump
-   rather than bump again.
+   applied only on approval). In improve mode, **always put the version-bump decision to the
+   user** — asking after applying is fine, but the edit stays incomplete until the version is
+   settled; content approval (even given in advance) never covers it, so never let the question
+   drop. If the version was already raised since the last commit, fold the change into that
+   pending bump rather than bump again — and verify that pending state from git (version at HEAD
+   vs working tree), never from session memory: the repo may have moved concurrently.

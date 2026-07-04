@@ -5,7 +5,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.1"
+  version: "1.2"
 ---
 
 # Compact docs writer
@@ -25,9 +25,27 @@ edge case, and intent. Two directions, equally binding:
 
 Recurring reflex: *"Can this exact rule be said in fewer words?"* — if yes, do it.
 
+The **no-op test** licenses one more deletion. Ask of each sentence, in isolation: *"does it
+change the agent's behaviour versus its default?"* If not, it's a no-op — the agent already acts
+this way, so removing it loses nothing: delete the whole sentence rather than trimming words from
+it.
+
 Compaction counts words and information density, not whitespace. Blank lines between distinct chunks
 cost effectively nothing and aid the human reader, so keep them where they help; never collapse a
 long passage into one dense block to look shorter.
+
+Structure follows the same economy: **co-locate** a concept — its rule, exceptions, and caveats
+under one heading, never scattered — so a reader who jumps to one part gets the others with it.
+
+## Leading words
+
+When one concept keeps getting restated, collapse it into a single **leading word** the model
+already carries from pretraining, and reuse that word wherever the concept applies: it anchors the
+same behaviour in one token and reads sharper than any paraphrase. The collapse still obeys the
+core principle — the word must carry every constraint it replaces, and whatever it doesn't carry
+stays spelled out: "fast, low-overhead feedback" collapses into a *tight* loop, but a
+"deterministic" requirement isn't inside *tight*, so it survives as its own word. Hunt for these
+collapses in every pass.
 
 ## Workflow
 
@@ -39,9 +57,9 @@ long passage into one dense block to look shorter.
    - Every original rule, instruction, edge case, and intent still present?
    - Every surviving rule in the fewest words — tight phrasing, not just free of redundancy?
    - Removal audit against the **rendered diff, not memory**: read every removed line — and every
-     reordered or merged one, which count as removals — and confirm each drops only duplication or
-     filler, never a rule, instruction, edge case, or nuance. After a merge, re-verify the result
-     still carries every item from both sources.
+     reordered or merged one, which count as removals — and confirm each drops only duplication,
+     filler, or a verified no-op, never a load-bearing rule, instruction, edge case, or nuance.
+     After a merge, re-verify the result still carries every item from both sources.
 3. **Present & confirm.** Show the change as a diff with a word/token delta **measured from the
    files, never estimated**: write the not-yet-applied draft to a scratch file (in the session's
    temp/scratch dir, never the working tree) and `wc -w` it against the original. Label it not yet
