@@ -4,6 +4,20 @@
   "version": "0.1.0",
   "provides": [
     {
+      "type": "instructions",
+      "path": "instructions/AGENTS.md",
+      "runtimes": ["codex", "openclaw", "hermes"],
+      "items": {
+        "AGENTS.md": {
+          "compose": [
+            {
+              "include": "fragments/self-improve-activation.md"
+            }
+          ]
+        }
+      }
+    },
+    {
       "type": "rules",
       "path": "rules",
       "format": "markdown-rule",
@@ -34,6 +48,10 @@
           "requires": ["skills/fetch-ticket"]
         }
       }
+    },
+    {
+      "type": "fragments",
+      "path": "fragments"
     }
   ]
 }
