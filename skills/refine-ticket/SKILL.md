@@ -4,7 +4,7 @@ description: Refine a development ticket into a validated, self-contained REQUIR
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.8"
+  version: "1.9"
 ---
 
 # Refine ticket
@@ -56,13 +56,6 @@ Separate two kinds of uncertainty:
 - **Non-blocking** — a reasonable default exists but a human should confirm. Record under Open
   questions with your tentative answer.
 
-## Carry forward what you verified
-
-The facts you confirm while reading the code are part of the output, not scratch work. Where the
-relevant code lives, the shape of the data, the existing patterns to reuse — record them so the
-planner builds on them instead of rediscovering. Keep these as anchors for the requirements, not a
-solution design: *what is true today*, not *how to change it*.
-
 ## "Already exists" / "reuse X" is a directive
 
 When the ticket says a capability exists or names something to reuse, find what's *behind* it (the
@@ -98,21 +91,29 @@ Location:
   the ticket is bound to one) and the target path, **confirm both with the user**, then write
   `<slug>.REQUIREMENTS.md` there.
 
-Five parts (Overrides and Open questions may be empty — don't pad):
+Six parts (Verified codebase facts, Overrides, and Open questions may be empty — don't pad):
 
 1. **Context** — 1–3 sentences: the feature, what's in scope, what's out. When the work is only
    a slice of a larger feature, link the big-picture reference (parent story, final-goal/context
    note, design) so the planner sees how it fits; a self-contained task needs none.
-2. **Requirements** — deduplicated functional + technical list. Tag each item with its ticket source
+2. **Verified codebase facts** — the facts confirmed while validating requirements, recorded so
+   the planner builds on them instead of rediscovering: where the relevant code lives, data
+   shapes, existing analogues, integration points. Byproduct only — never explore beyond what
+   refinement itself needs — and only facts a fresh session would need a search to rediscover.
+   Anchor to paths and identifiers; line numbers are hints — they drift. *What is true today*,
+   never *how to change it*. When non-empty, open with one line pinning the commit (short hash,
+   noting uncommitted changes if the tree is dirty) and absolute date, warning the code may have
+   changed since and specifics need re-verifying.
+3. **Requirements** — deduplicated functional + technical list. Tag each item with its ticket source
    (e.g. `(Description)`, `(Technical Detail)`, `(AC)`). Group by area when it aids reading. Cite
    the concrete file path / identifier inline wherever a requirement touches code; cite a reused
    pattern as `path:line-range`.
-3. **Overrides** — where the ticket says one thing and the requirement says another (ticket is
+4. **Overrides** — where the ticket says one thing and the requirement says another (ticket is
    stale, wrong, or self-contradictory). Each entry: what the ticket says, what the code/AC shows,
    the resulting requirement.
-4. **Open questions** — non-blocking ambiguities, each with your tentative answer and why it's
+5. **Open questions** — non-blocking ambiguities, each with your tentative answer and why it's
    non-blocking. Blocking questions never appear here.
-5. **Acceptance criteria** — flat, verifiable checklist the implementation must satisfy.
+6. **Acceptance criteria** — flat, verifiable checklist the implementation must satisfy.
 
 Each requirement is self-contained; user-facing strings that must stay in a given language are
 quoted verbatim.
