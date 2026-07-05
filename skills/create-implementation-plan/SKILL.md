@@ -31,16 +31,14 @@ design, not a separate phase that runs before planning starts.
 1. **Read the requirements document** the user references (e.g. a `*.REQUIREMENTS.md`). If the path
    is ambiguous, ask.
 
-2. **Verify against the actual codebase.** The requirements' verified facts are your discovery
-   baseline — never re-run searches for what they already state. Confirm a cited fact by opening
-   its cited location (identifiers outlive line numbers; search only if it moved); when the
-   requirements pin the commit they were verified at, `git diff <commit>..HEAD -- <cited paths>`
-   checks drift cheaply — an empty diff clears those facts without re-reading. Note anything that
-   has shifted since the requirements were written. Spend fresh exploration only where the
-   requirements are silent — the "how" (prior art to mirror, insertion points, test mechanics). If
-   the requirements gate implementation on missing data or upstream work, verify that gate
-   independently — stale gating claims are a common failure mode and easily inflate into a plan's
-   first step when the data is in fact already addressable.
+2. **Verify against the actual codebase.** Open the files the requirements cite and confirm the
+   prior-art references still hold; note anything that has shifted since the requirements were
+   written. The requirements may also carry verified codebase facts — use any that are there to
+   save re-discovery work, aware the code may have moved meanwhile (a pinned commit makes the
+   check cheap: `git diff <commit>..HEAD -- <cited paths>`). If the requirements gate
+   implementation on missing data or upstream work, verify that gate independently — stale gating
+   claims are a common failure mode and easily inflate into a plan's first step when the data is
+   in fact already addressable.
 
 3. **Work out the approach.** This is the core of the task: design the "how" — what existing code to
    reuse, what to introduce, where each change goes, and the order of operations that avoids broken
