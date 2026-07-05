@@ -5,7 +5,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.3"
+  version: "1.4"
 ---
 
 # Compact docs writer
@@ -59,6 +59,8 @@ collapses in every pass.
 2. **Self-review** before presenting (terse yes/no):
    - Every original rule, instruction, edge case, and intent still present?
    - Every surviving rule in the fewest words — tight phrasing, not just free of redundancy?
+     Answer by drafting a shorter rival phrasing for each new or rewritten sentence, not by
+     re-reading: an unchallenged yes is a rubber stamp.
    - Removal audit against the **rendered diff, not memory**: read every removed line — and every
      reordered or merged one, which count as removals — and confirm each drops only duplication,
      filler, or a verified no-op, never a load-bearing rule, instruction, edge case, or nuance.
@@ -69,4 +71,6 @@ collapses in every pass.
    pinpointing them. Include a word/token delta **measured from the files, never estimated**:
    write the not-yet-applied draft to a scratch file (in the session's temp/scratch dir, never the
    working tree) and `wc -w` it against the original. Label it not yet applied and awaiting
-   approval; apply only on approval; after applying, say so plainly.
+   approval; apply only on approval; after applying, say so plainly. Ask for approval in the
+   presentation text or in a later turn, never via a question tool call in the same turn: text
+   emitted before a tool call may not be displayed, so the question would land without the draft.

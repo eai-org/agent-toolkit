@@ -4,7 +4,7 @@ description: Fetch a ticket/issue from its tracker (Azure DevOps, Jira, GitHub, 
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.5"
+  version: "1.6"
 ---
 
 # Ticket Fetcher
@@ -17,8 +17,11 @@ Identify the tracker from the input (URL host, or id shape) and fetch through th
 server — e.g. **Azure DevOps MCP** for ADO work items, **Atlassian MCP** for Jira issues, **GitHub
 MCP / `gh`** for GitHub issues. Use whichever equivalent tools are connected; tool name prefixes
 vary by config. Resolve once any handle the MCP needs (e.g. Atlassian `cloudId`, ADO project) and
-reuse it. If the input is ambiguous, or no matching MCP is connected, ask the user / stop — don't
-guess.
+reuse it. If the input is ambiguous, ask the user — don't guess. If no matching MCP is connected:
+a public ticket may be scraped from its URL as a fallback (you may still suggest installing the
+matching MCP when it would do the job better); a private one can't — the URL returns a login page,
+not the ticket — so stop and tell the user to install and authenticate the matching MCP server,
+then re-run.
 
 ## Your task
 
