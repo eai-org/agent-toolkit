@@ -83,8 +83,8 @@ A set of generic, project-agnostic, opinionated rules that apply to any codebase
   no "Generated with" footers on PRs.
 - **[no-nonsense-comments](./rules/no-nonsense-comments.md)** — write only code comments that
   still make sense to a future reader with zero context, prefer no comment over a low-value one.
-- **[plans-directory](./rules/plans-directory.md)** — structure save plans and similar documents under
-  the project's planning directory.
+- **[plans-directory](./rules/plans-directory.md)** — save plans and similar documents under the
+  project's planning directory, following a certain structure.
 - **[self-contained-docs](./rules/self-contained-docs.md)** — keep planning and design docs
   concise and executable by a fresh session with no prior context.
 - **[self-improve-on-correction](./rules/self-improve-on-correction.md)** — when the user corrects
