@@ -10,6 +10,9 @@ Frame rules and skills as agent-agnostic: describe what they do, not as "for Cla
 specific agent. Install instructions may still reference agent-specific paths (e.g.
 `~/.claude/skills/`), since that's the install mechanism, not how the content is framed.
 
+When adding cross-runtime Agentwheel support, target runtimes in `openpack.json` by the artifact
+type they consume instead of duplicating the same behavior in unsupported runtime locations.
+
 When writing or editing Markdown documents, wrap lines at the `max_line_length` set in
 `.editorconfig`. This applies to prose; never break code (fenced blocks or inline backtick
 spans — a command must stay on one line even past the limit), tables, URLs, links, or YAML

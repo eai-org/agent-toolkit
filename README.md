@@ -4,6 +4,9 @@ A collection of project-agnostic, generic agentic tools for common engineering t
 
 Designed to work with any kind of AI agent on any kind of software development project.
 
+This repo ships skills, rules, and cross-runtime instructions composed from
+[`fragments/`](fragments) for agents that do not consume rule files directly.
+
 ## Skills
 
 Agentic skills I use across all my software engineering projects — solo or in a team.
@@ -171,6 +174,10 @@ Swap `--adapter claude` for `codex`, `copilot`, etc. to target other agents. For
 tracking updates, named targets, profiles, or more controlled `add` → `plan` → `install` flows,
 see the [agentwheel documentation](https://github.com/NestDevLab/agentwheel).
 
+The manifest targets the artifact type each runtime actually consumes: Claude and Copilot receive
+the `rules/` artifacts, while Codex, OpenClaw, and Hermes receive composed `instructions/AGENTS.md`
+content for the same self-improvement activation behavior.
+
 Only want specific pieces instead of everything? Select them by `<type>/<name>`, for example one
 skill plus one rule:
 
@@ -218,6 +225,7 @@ flowchart TD
   refine --> plan["create-implementation-plan"]
 
   self_rule["self-improve-on-correction rule"] --> self["self-improve"]
+  self_instructions["self-improve activation instructions"] --> self
   self --> compact["compact-skill-creator"]
   self --> compact_docs["compact-docs-writer"]
   compact --> compact_docs
