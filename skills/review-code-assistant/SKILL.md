@@ -5,7 +5,7 @@ disable-model-invocation: true
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.2"
+  version: "1.3"
 ---
 
 # Review code assistant
@@ -147,17 +147,10 @@ Local text only; write no file unless the user later asks to save it.
 
   The explanation is your note to the user and can be direct. Add **Suggested comment** only when it
   adds something beyond the explanation (nuance, or softer phrasing); if it would just restate the
-  explanation, give one or the other, never both near-identical. A suggested comment is the line a
-  real reviewer drops: short, casual, friendly, usually one sentence. Lead with the ask; add a brief
-  why only when it isn't obvious, and skip the cause-hypothesis. Reach for the plainest verb
-  ("extract", not "pull ... into a shared helper"), point by similarity ("this is similar to `X`")
-  rather than verdicts ("basically a copy of"), and soften asks with "maybe we can/should". Often a
-  question even when you are sure the code is wrong, naming the exact symbol (e.g. "where is `FOO`
-  used?").
-  Even a plain nit stays warm and in collaborative "we" voice, never a curt bare statement. Never
-  use dashes (em or en); write the way people actually type. This brevity and softness is tone, not
-  hedging: it never lowers the evidence bar from *Grounded, not speculative*. Stay grounded in
-  *what* to raise, human and brief in *how* you word it.
+  explanation, give one or the other, never both near-identical. Voice every suggested comment per
+  **/use-conversational-language** (load its SKILL.md; Developer conversations, reviewer comments).
+  That brevity and softness is tone, not hedging: it never lowers the evidence bar from *Grounded,
+  not speculative* — stay grounded in *what* to raise, human and brief in *how* you word it.
 - **Order mirrors the diff** so the user can read the PR in one window and copy-paste straight down
   in another: files in the diff's own order, ascending line number within a file, grouped by file
   when a file has several comments. This order is absolute: never reorder by a finding's perceived

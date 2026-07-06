@@ -58,9 +58,15 @@ ticket reviews.
 
 - **[fetch-pr-review](./skills/fetch-pr-review/SKILL.md)** — collect the comments left by other
   reviewers on your PR and save them into a markdown doc, ready to address (or push back on), for
-  example via refine-ticket.
+  example via refine-pr-review.
+- **[refine-pr-review](./skills/refine-pr-review/SKILL.md)** — go through a fetched PR review
+  together, comment by comment — address, partial, or push back — drafting the replies and turning
+  the accepted changes into a requirements doc.
 - **[review-code-assistant](./skills/review-code-assistant/SKILL.md)** — assist you in reviewing a
   PR or branch.
+- **[use-conversational-language](./skills/use-conversational-language/SKILL.md)** — the voice for
+  text that should read as if a person typed it, used by the review skills for comments and
+  replies.
 - **[review-ticket](./skills/review-ticket/SKILL.md)** — triage a ticket before anyone picks it
   up, spotting decisions to raise with the team.
 - **[fresh-eyes-review](./skills/fresh-eyes-review/SKILL.md)** — let an agent with a fresh
@@ -212,7 +218,12 @@ Some skills and rules form a workflow or rely on each other. Hard dependencies a
 ```mermaid
 flowchart TD
   fetch_ticket["fetch-ticket"] --> refine["refine-ticket"]
-  fetch_pr["fetch-pr-review"] --> refine
+  fetch_pr["fetch-pr-review"] --> refine_pr["refine-pr-review"]
+  refine_pr --> refine
+  refine_pr --> plan
+  refine_pr --> express["use-conversational-language"]
+  review_code["review-code-assistant"] --> express
+  realistic_rule["write-realistic-texts rule"] --> express
   review_ticket["review-ticket"] --> fetch_ticket
   refine --> manual["create-manual-test-instructions"]
   refine --> plan["create-implementation-plan"]
@@ -227,6 +238,7 @@ flowchart TD
 
   plans_rule["plans-directory rule"] -. informs .-> fetch_ticket
   plans_rule -. informs .-> fetch_pr
+  plans_rule -. informs .-> refine_pr
   plans_rule -. informs .-> refine
   plans_rule -. informs .-> manual
   plans_rule -. informs .-> plan
@@ -234,6 +246,7 @@ flowchart TD
 
   docs_rule["self-contained-docs rule"] -. informs .-> fetch_ticket
   docs_rule -. informs .-> fetch_pr
+  docs_rule -. informs .-> refine_pr
   docs_rule -. informs .-> refine
   docs_rule -. informs .-> manual
   docs_rule -. informs .-> plan

@@ -14,6 +14,9 @@
         },
         "compact-governing-docs.md": {
           "requires": ["skills/compact-skill-creator", "skills/compact-docs-writer"]
+        },
+        "write-realistic-texts.md": {
+          "requires": ["skills/use-conversational-language"]
         }
       }
     },
@@ -32,6 +35,12 @@
         },
         "review-ticket": {
           "requires": ["skills/fetch-ticket"]
+        },
+        "refine-pr-review": {
+          "requires": ["skills/refine-ticket", "skills/use-conversational-language"]
+        },
+        "review-code-assistant": {
+          "requires": ["skills/use-conversational-language"]
         }
       }
     }

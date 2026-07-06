@@ -4,14 +4,14 @@ description: Fetch all reviewer comments from a pull request URL (GitHub, Azure 
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.3"
+  version: "1.4"
 ---
 
 # PR review fetcher
 
 **Fetch only** — capture the review feedback left on a pull request; never fix code, reply, or
 judge the comments. Output is a self-contained `.PR-REVIEW.md` a fresh session can pick up and act
-on (e.g. via `/refine-ticket`).
+on (e.g. via `/refine-pr-review`).
 
 ## Source & access
 
@@ -102,10 +102,10 @@ State clearly when done, using **project-relative paths**. List any thread whose
 user decision and how it was marked. Then hand off the next phase as a
 **single copy-pasteable launch command** — session name and prompt combined, so one paste starts the
 session. Use the launch syntax of the agent tool in use (vendor-agnostic — `claude` below is only
-the example), naming the session `refine-<slug>`:
+the example), naming the session `refine-pr-<slug>`:
 
 ```
-claude --name refine-<slug> "/refine-ticket <output-dir>/<slug>.PR-REVIEW.md"
+claude --name refine-pr-<slug> "/refine-pr-review <output-dir>/<slug>.PR-REVIEW.md"
 ```
 
 Then offer the alternative — clearing the current session instead (vendor-agnostic — `/clear` below
@@ -114,5 +114,5 @@ is only the example; use the clear command of the agent tool in use):
 OR /clear and run:
 
 ```
-/refine-ticket <output-dir>/<slug>.PR-REVIEW.md
+/refine-pr-review <output-dir>/<slug>.PR-REVIEW.md
 ```
