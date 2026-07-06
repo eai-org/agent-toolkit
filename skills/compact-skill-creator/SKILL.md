@@ -5,7 +5,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.12"
+  version: "1.13"
 ---
 
 # Compact skill creator
@@ -34,9 +34,11 @@ How a skill is triggered decides how its `description` is written. Classify into
   "dealing with unit tests"). A silent miss defeats its purpose, so the description **spends words**
   on a strict, concrete trigger: concrete verbs + the artifact ("when creating, editing, or
   reviewing …").
-- **Manual** — invoked deliberately (e.g. a `/command`). No trigger bait; the description just
-  states what it does so a human choosing from a list understands it. When the skill format can
-  block model invocation (e.g. a `disable-model-invocation` flag), set it for Manual skills nothing
+- **Manual** — invoked by name: a `/command`, or sibling skills/rules that reference it
+  explicitly. The by-name reference does all the routing, so trigger wording buys nothing: the
+  description is one short line of what the skill does — enough for a human choosing from a
+  list — never a body summary, never a "load when …" clause. When the skill format can block
+  model invocation (e.g. a `disable-model-invocation` flag), set it for Manual skills nothing
   invokes programmatically — the description then costs no standing context; when sibling skills
   must drive this one, keep it model-invocable and mark it "invoke manually only" in the
   description instead.
