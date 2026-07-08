@@ -8,6 +8,8 @@ Frame rules and skills as agent- and model-agnostic: describe what they do, not 
 agent (e.g. "for Claude Code") or model. Install instructions may still name agent-specific paths
 (e.g. `~/.claude/skills/`) — that's the install mechanism, not the content's framing.
 
+New skills ship at version `0.1` as a trial; bump to `1.0` only after a successful real-world run.
+
 In Markdown, wrap prose lines at the `max_line_length` in `.editorconfig`. Never break code (fenced
 blocks or inline backtick spans — a command stays on one line even past the limit), tables, URLs,
 links, or YAML frontmatter values to satisfy it.
