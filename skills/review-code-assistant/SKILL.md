@@ -5,7 +5,7 @@ disable-model-invocation: true
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.4"
+  version: "1.5"
 ---
 
 # Review code assistant
@@ -87,8 +87,9 @@ The core rule. A comment may exist only when it points to concrete evidence of o
    pattern visible in the surrounding code).
 3. **It is a concrete, behavior-preserving simplification** — needless indirection or duplication
    you can collapse with certainty, naming the exact redundancy and the smaller form. (E.g. a
-   non-exported const in the class's own file that only aliases one class field is collapsible; an
-   exported or separate-file const is fine, it may be reused elsewhere.)
+   non-exported const in the class's own file that only aliases one class field is collapsible, or
+   the same expression repeated across a template, collapsed into one named derivation; an exported
+   or separate-file const is fine, it may be reused elsewhere.)
 
 If you cannot name the evidence — the exact bug, rule, or redundancy — do not comment. Hedge
 phrases that signal a guess with no evidence ("there might be", "this could potentially",
