@@ -66,7 +66,7 @@ ticket reviews.
   PR or branch.
 - **[use-conversational-language](./skills/use-conversational-language/SKILL.md)** — the voice for
   text that should read as if a person typed it, used by the review skills for comments and
-  replies.
+  replies and by rules for user-facing texts and code comments.
 - **[review-ticket](./skills/review-ticket/SKILL.md)** — triage a ticket before anyone picks it
   up, spotting decisions to raise with the team.
 - **[check-ticket-implementation](./skills/check-ticket-implementation/SKILL.md)** — check how much
@@ -91,7 +91,8 @@ A set of generic, project-agnostic, opinionated rules that apply to any codebase
 - **[no-ai-attribution](./rules/no-ai-attribution.md)** — no AI co-author trailers on commits and
   no "Generated with" footers on PRs.
 - **[no-nonsense-comments](./rules/no-nonsense-comments.md)** — write only code comments that
-  still make sense to a future reader with zero context, prefer no comment over a low-value one.
+  still make sense to a future reader with zero context, prefer no comment over a low-value one,
+  and voice them via [use-conversational-language](./skills/use-conversational-language/SKILL.md).
 - **[plans-directory](./rules/plans-directory.md)** — save plans and similar documents under the
   project's planning directory, following a certain structure.
 - **[self-contained-docs](./rules/self-contained-docs.md)** — keep planning and design docs
@@ -227,6 +228,7 @@ flowchart TD
   refine_pr --> express["use-conversational-language"]
   review_code["review-code-assistant"] --> express
   realistic_rule["write-realistic-texts rule"] --> express
+  nonsense_rule["no-nonsense-comments rule"] --> express
   review_ticket["review-ticket"] --> fetch_ticket
   check_impl["check-ticket-implementation"] --> fetch_ticket
   refine --> manual["create-manual-test-instructions"]

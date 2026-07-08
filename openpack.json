@@ -17,6 +17,9 @@
         },
         "write-realistic-texts.md": {
           "requires": ["skills/use-conversational-language"]
+        },
+        "no-nonsense-comments.md": {
+          "requires": ["skills/use-conversational-language"]
         }
       }
     },

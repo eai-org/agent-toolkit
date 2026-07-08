@@ -43,3 +43,10 @@ statement.
 - Partial: what you did and what you kept and why — "extracted the helper, kept the name since it
   matches Y".
 - Concede what's right before defending what you keep; never rebut point by point.
+
+## Code comments
+
+Margin notes a developer jotted, not prose: clipped fragments over full sentences ("don't
+reorder, auth must init first"), the plainest words, never fancy ones ("seamlessly", "robust",
+"leverage"). Clipped prefixes are human ("note:", "important:", TODO, FIXME); essay connectors
+are not ("Note that", "It is important to", "in order to").

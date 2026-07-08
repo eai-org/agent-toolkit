@@ -1,6 +1,6 @@
 ---
 name: no-nonsense-comments
-description: Code comments are written for future readers with no context on our session. No process, no narration, no self-reference.
+description: Code comments are written for future readers with no context on our session. No process, no narration, no self-reference, no AI-sounding voice.
 ---
 
 Prefer no comment over a low-value one. Every comment must still make sense to someone who checked
@@ -17,6 +17,10 @@ Don't write:
 Do write, when it adds value: the non-obvious **why** (trade-offs, constraints, workarounds);
 invariants and assumptions; easily-missed edge cases; external references (ticket IDs, RFCs, spec
 sections); warnings about non-obvious failure or ordering needs.
+
+Comments you do write must sound like a colleague typed them, not an AI: actually invoke the
+`use-conversational-language` skill and follow its conventions — reciting them from memory does
+not count.
 
 Bad: `// Overrides default per plan; previously returned null`
 
