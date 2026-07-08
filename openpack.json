@@ -41,6 +41,9 @@
         },
         "review-code-assistant": {
           "requires": ["skills/use-conversational-language"]
+        },
+        "check-ticket-implementation": {
+          "requires": ["skills/fetch-ticket"]
         }
       }
     }

@@ -69,6 +69,9 @@ ticket reviews.
   replies.
 - **[review-ticket](./skills/review-ticket/SKILL.md)** — triage a ticket before anyone picks it
   up, spotting decisions to raise with the team.
+- **[check-ticket-implementation](./skills/check-ticket-implementation/SKILL.md)** — check how much
+  of a ticket is already implemented in the code, marking each requirement as done, partial, or not
+  done in a human-readable status report.
 - **[fresh-eyes-review](./skills/fresh-eyes-review/SKILL.md)** — let an agent with a fresh
   perspective review a changeset and report its findings back to the main session.
 
@@ -225,6 +228,7 @@ flowchart TD
   review_code["review-code-assistant"] --> express
   realistic_rule["write-realistic-texts rule"] --> express
   review_ticket["review-ticket"] --> fetch_ticket
+  check_impl["check-ticket-implementation"] --> fetch_ticket
   refine --> manual["create-manual-test-instructions"]
   refine --> plan["create-implementation-plan"]
 
@@ -243,6 +247,7 @@ flowchart TD
   plans_rule -. informs .-> manual
   plans_rule -. informs .-> plan
   plans_rule -. informs .-> review_ticket
+  plans_rule -. informs .-> check_impl
 
   docs_rule["self-contained-docs rule"] -. informs .-> fetch_ticket
   docs_rule -. informs .-> fetch_pr
