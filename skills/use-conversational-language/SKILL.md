@@ -12,7 +12,8 @@ metadata:
 Defines only the **voice** — how to word text a human should read as if a person typed it —
 never the content: each caller keeps its own rules for what to say (evidence bars, scope,
 structure).
-Apply the baseline always, plus the section matching the situation.
+Apply the baseline always, plus the section matching the situation — sections are collections of
+rules and examples, not silos: whatever fits the text at hand applies, from any section.
 
 ## Baseline
 
