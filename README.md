@@ -121,13 +121,19 @@ cd agent-toolkit && git pull && ./install.sh
 
 ### Install via symlinks
 
-[`install.sh`](install.sh) symlinks every rule and skill from this repo into your user's config.
+[`install.sh`](install.sh) symlinks every rule and skill from this repo in two layers:
 
-This means the skills and rules will automatically be available in all your projects without
-copying files around.
+1. `~/.agents/{rules,skills}` — the canonical, agent-neutral location — gets one link per rule
+   file and skill directory, pointing into the repo;
+2. your agent's own directories — `~/.claude/{rules,skills}` by default — get links pointing at
+   the `~/.agents` entries.
 
-By default rules go to `~/.claude/rules` and skills to `~/.claude/skills`, but you can easily
-override this.
+The skills and rules become available in all your projects without copying files around, and
+every agent wired to `~/.agents` shares the same set.
+
+Re-running converges: correct links are left alone, links from the old direct layout are
+re-pointed, and broken links owned by this repo are pruned — so `git pull && ./install.sh` always
+brings an existing install up to date.
 
 First clone the repo (or your own fork):
 
@@ -146,24 +152,42 @@ This will link all rules and all skills. To customize, use the options below:
 ```sh
 ./install.sh --rules-only            # link rules only
 ./install.sh --skills-only           # link skills only
-./install.sh --skills-dir DIR        # custom skills destination (e.g. a project's .claude/skills)
-./install.sh --rules-dir DIR         # custom rules destination
-./install.sh --force                 # overwrite existing files/symlinks
+./install.sh --agents-dir DIR        # custom agent-neutral location (default: ~/.agents)
+./install.sh --skills-dir DIR        # agent skills dir to wire (e.g. a project's .claude/skills)
+./install.sh --rules-dir DIR         # agent rules dir to wire
+./install.sh --force                 # overwrite real files/dirs and foreign symlinks
 ./install.sh --help
 ```
 
 Each rule and skill is linked individually.
 
-You can also skip the script and symlink just the ones you want by hand:
+You can also skip the script and symlink just the ones you want by hand, through the same two
+layers:
 
 ```sh
-ln -s "$(pwd)/rules/no-nonsense-comments.md" ~/.claude/rules/
-ln -s "$(pwd)/skills/run-nx-checks"          ~/.claude/skills/
+mkdir -p ~/.agents/rules ~/.agents/skills ~/.claude/rules ~/.claude/skills
+ln -s "$(pwd)/rules/no-nonsense-comments.md"  ~/.agents/rules/
+ln -s "$(pwd)/skills/run-nx-checks"           ~/.agents/skills/
+ln -s ~/.agents/rules/no-nonsense-comments.md ~/.claude/rules/
+ln -s ~/.agents/skills/run-nx-checks          ~/.claude/skills/
 ```
 
 Start a new session and run `/context` to confirm everything is loaded. Rules and skills apply at
-the user level (all projects); to scope them to one project, symlink into that repo's
-`.claude/rules/` or `.claude/skills/` instead.
+the user level (all projects); to scope them to one project, wire that project's directories
+instead, e.g. `./install.sh --skills-dir <project>/.claude/skills --skills-only`.
+
+### Other agents
+
+Other agents like OpenCode discover Claude-style skills in `~/.agents/skills` natively, so the
+default install already covers them. For one that doesn't, point its skills directory at
+`~/.agents/skills` — or run the script again with the agent's own directories:
+
+```sh
+./install.sh --skills-dir <agent-skills-dir> --rules-dir <agent-rules-dir>
+```
+
+Auto-loaded rule directories are mostly a Claude Code feature; agents without one take a single
+global `AGENTS.md` instead, so only the skills layer applies to them.
 
 ### Install with agentwheel
 
