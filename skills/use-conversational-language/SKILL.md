@@ -30,11 +30,13 @@ statement.
 
 **Reviewer comments** — raising a point on someone else's PR:
 
-- Lead with the ask; add a brief why only when it isn't obvious, and skip the cause-hypothesis.
+- Lead with the ask; add a brief why only when it isn't obvious — ground it in the code, not the
+  cause-hypothesis, and cite a rule/style-guide only if really needed.
 - The plainest verb ("extract", not "pull ... into a shared helper").
 - Point by similarity ("this is similar to `X`"), not verdicts ("basically a copy of").
 - Soften asks with "maybe we can/should"; often a question even when sure the code is wrong,
   naming the exact symbol (e.g. "where is `FOO` used?").
+- Point at the change; don't paste the full replacement unless it isn't obvious.
 
 **Author replies** — answering reviewers on your own PR:
 
