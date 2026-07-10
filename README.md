@@ -105,12 +105,12 @@ A set of generic, project-agnostic, opinionated rules that apply to any codebase
 
 ## How to install
 
-### Quick Install / Update
+### Quick Install / Update (recommended)
 
 Install in one command:
 
 ```sh
-git clone https://github.com/FrancescoBorzi/agent-toolkit.git && cd agent-toolkit && ./install.sh
+git clone https://github.com/eai-org/agent-toolkit.git && cd agent-toolkit && ./install.sh
 ```
 
 Update in one command:
@@ -132,7 +132,7 @@ override this.
 First clone the repo (or your own fork):
 
 ```sh
-git clone https://github.com/FrancescoBorzi/agent-toolkit.git && cd agent-toolkit
+git clone https://github.com/eai-org/agent-toolkit.git && cd agent-toolkit
 ```
 
 Then you can run:
@@ -174,7 +174,7 @@ OpenPack package (requires agentwheel ≥ 0.9.0). Run it from where you want it 
 user level, or a project root):
 
 ```sh
-npx agentwheel install github:FrancescoBorzi/agent-toolkit --adapter claude
+npx agentwheel install github:eai-org/agent-toolkit --adapter claude
 ```
 
 Swap `--adapter claude` for `codex`, `copilot`, etc. to target other agents. For dry runs,
@@ -185,7 +185,7 @@ Only want specific pieces instead of everything? Select them by `<type>/<name>`,
 skill plus one rule:
 
 ```sh
-npx agentwheel install github:FrancescoBorzi/agent-toolkit --adapter claude \
+npx agentwheel install github:eai-org/agent-toolkit --adapter claude \
   --select skills/run-nx-checks,rules/no-nonsense-comments.md
 ```
 
@@ -199,7 +199,7 @@ The manifest also marks hard internal dependencies. For example, selecting
 You can also use the [skills.sh](https://skills.sh/) installer to install the skills from this repo:
 
 ```sh
-npx skills add FrancescoBorzi/agent-toolkit
+npx skills add eai-org/agent-toolkit
 ```
 
 ### Install skills via Claude Code plugin marketplace
@@ -207,7 +207,7 @@ npx skills add FrancescoBorzi/agent-toolkit
 Add the marketplace, then install the toolkit:
 
 ```
-/plugin marketplace add FrancescoBorzi/agent-toolkit
+/plugin marketplace add eai-org/agent-toolkit
 /plugin install agent-toolkit
 ```
 
