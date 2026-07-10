@@ -105,12 +105,12 @@ A set of generic, project-agnostic, opinionated rules that apply to any codebase
 
 ## How to install
 
-### Quick Install / Update
+### Quick Install / Update (recommended)
 
 Install in one command:
 
 ```sh
-git clone https://github.com/FrancescoBorzi/agent-toolkit.git && cd agent-toolkit && ./install.sh
+git clone https://github.com/eai-org/agent-toolkit.git && cd agent-toolkit && ./install.sh
 ```
 
 Update in one command:
