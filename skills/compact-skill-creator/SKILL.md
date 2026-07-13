@@ -5,7 +5,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.13"
+  version: "1.14"
 ---
 
 # Compact skill creator
@@ -138,6 +138,7 @@ disclosed doc).
        invocation work?
 
      Reword until all four hold.
+   - No new or grown inline chunk meets the split test (progressive disclosure)?
    - Steps end on checkable, exhaustive completion criteria?
 6. **Present & confirm** through compact-docs-writer (diff + word delta measured from the files,
    applied only on approval). In improve mode, **always put the version-bump decision to the

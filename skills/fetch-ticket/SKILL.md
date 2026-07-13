@@ -1,10 +1,10 @@
 ---
 name: fetch-ticket
-description: Fetch a ticket/issue from its tracker (Azure DevOps, Jira, GitHub, …) and save it as a self-contained markdown ticket file. Fetch only — no analysis or planning.
+description: Fetch one or more tickets/issues from their tracker (Azure DevOps, Jira, GitHub, …) and save each as a self-contained markdown ticket file. Fetch only — no analysis or planning.
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.6"
+  version: "1.7"
 ---
 
 # Ticket Fetcher
@@ -41,6 +41,12 @@ then re-run.
 5. **Write the ticket file** at `<output-dir>/<id>-<slug>.TICKET.md`.
 6. **Download attachments** into the output directory; warn on any that fail (see Attachments).
 7. **Print the result** — project-relative paths and the next-step line (see Next step).
+
+## Multiple tickets
+
+The input may list several tickets — before picking slugs and directories, read
+[multiple-tickets.md](multiple-tickets.md): it governs grouping into shared directories, the
+`## Ticket set` section, and per-ticket launch commands.
 
 ## Ticket file structure
 

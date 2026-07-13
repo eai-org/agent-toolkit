@@ -8,5 +8,6 @@ convention docs) or any doc it references (directly or indirectly), run the matc
 skill up front, not as a later cleanup, so each rule stays as compact as possible: a `SKILL.md`
 through `/compact-skill-creator`; any other doc through `/compact-docs-writer`.
 
-Editing again later in the session requires a fresh invocation — an earlier one still in context
-doesn't count.
+One invocation covers the whole authoring cycle it opens — draft, feedback revisions, apply —
+however many turns it spans. A separate edit later in the session needs a fresh invocation; one
+left in context from an earlier cycle doesn't count.

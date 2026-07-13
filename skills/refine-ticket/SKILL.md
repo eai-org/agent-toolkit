@@ -4,7 +4,7 @@ description: Refine a development ticket into a validated, self-contained REQUIR
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.9"
+  version: "1.10"
 ---
 
 # Refine ticket
@@ -74,6 +74,16 @@ part of the spec. Visual decisions made without seeing it lock in wrong defaults
   formatting, empty and error states, label wording, spacing, alignment, iconography. The default
   for "is this in the design?" is match the design, not do the minimum.
 - Any visual choice you'd otherwise make blind is an Open question, never silently defaulted.
+
+## Read relevant related tickets — context, not scope
+
+When the ticket references others that matter to it (BE/FE counterparts, dependencies, follow-ups),
+read them too — they complete the picture and sharpen how this ticket's requirements are meant. A
+`## Ticket set` section in the ticket file lists locally fetched siblings: read every linked
+`.TICKET.md` before grilling; for tracker-only references, judge relevance before fetching. What a
+sibling supplies — execution order, contracts it owns, superseded-spec notes — is context only,
+never requirements: scope stays this ticket's, and anything a sibling suggests changing is a
+question for the user, never a silent scope change.
 
 ## Output: the REQUIREMENTS file
 
