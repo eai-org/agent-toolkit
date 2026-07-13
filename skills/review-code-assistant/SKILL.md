@@ -5,7 +5,7 @@ disable-model-invocation: true
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.5"
+  version: "1.6"
 ---
 
 # Review code assistant
@@ -148,7 +148,9 @@ Local text only; write no file unless the user later asks to save it.
 
   The explanation is your note to the user and can be direct. Add **Suggested comment** only when it
   adds something beyond the explanation (nuance, or softer phrasing); if it would just restate the
-  explanation, give one or the other, never both near-identical. Before writing any
+  explanation, give one or the other, never both near-identical. When the fix is itself a snippet —
+  most often an explanatory code comment — the suggested comment can be that snippet, ready to
+  paste, rather than prose asking the author to write it. Before writing any
   **Suggested comment**, actually invoke **/use-conversational-language** and follow it —
   reciting its rules from memory does not count.
   That brevity and softness is tone, not hedging: it never lowers the evidence bar from *Grounded,

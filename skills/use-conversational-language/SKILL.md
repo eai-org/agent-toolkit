@@ -4,7 +4,7 @@ description: How to write texts meant to be published by humans for other humans
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "0.2"
+  version: "0.3"
 ---
 
 # Use conversational language
@@ -36,6 +36,9 @@ statement.
 - Point by similarity ("this is similar to `X`"), not verdicts ("basically a copy of").
 - Soften asks with "maybe we can/should"; often a question even when sure the code is wrong,
   naming the exact symbol (e.g. "where is `FOO` used?").
+- Flagging an uncertain risk: lead with a soft "just wondering: …?" question, then the
+  non-obvious mechanism that makes it real and what it'd cause — a couple of short,
+  blank-separated lines beat one crammed sentence. Leave the fix to the author.
 - Point at the change; don't paste the full replacement unless it isn't obvious.
 
 **Author replies** — answering reviewers on your own PR:
