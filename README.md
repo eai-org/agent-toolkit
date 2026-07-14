@@ -6,15 +6,14 @@ Designed to work with any kind of AI agent on any kind of software development p
 
 ## Skills
 
-Agentic skills I use across all my software engineering projects — solo or in a team.
+Agentic skills used across all kinds of software engineering projects — solo or in a team.
 
 Not bound to any specific language or framework.
 
 ### Skill & doc authoring
 
-The tools I use to create and continuously improve the skills and docs my agents rely on —
-following [my approach to agentic skills](https://medium.com/engineering-in-the-age-of-ai/my-approach-to-agentic-skills-e08dc6c0d1cd),
-I improve the behavior of my agents literally every day.
+Tools to create and continuously improve the skills and docs your agents rely on, following
+[this approach to agentic skills](https://medium.com/engineering-in-the-age-of-ai/my-approach-to-agentic-skills-e08dc6c0d1cd).
 
 - **[compact-docs-writer](./skills/compact-docs-writer/SKILL.md)** — write docs with maximum token
   economy.
@@ -36,7 +35,7 @@ Maintenance to run from time to time, keeping your setup tidy and your context s
 
 ### Task workflow
 
-My daily routine for any programming task, following the
+A daily routine for any programming task, following the
 [RPA workflow](https://medium.com/engineering-in-the-age-of-ai/the-refine-plan-act-pattern-for-agentic-ai-coding-59ee013e4427):
 fetch a ticket, refine it, plan it, then let a fresh session execute it.
 
