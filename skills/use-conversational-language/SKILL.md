@@ -4,7 +4,7 @@ description: How to write texts meant to be published by humans for other humans
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "0.3"
+  version: "0.4"
 ---
 
 # Use conversational language
@@ -19,8 +19,10 @@ rules and examples, not silos: whatever fits the text at hand applies, from any 
 
 Concise, plain language that reads like natural conversation. No AI tells: over-formality,
 exclamation marks, emoji, semicolon-heavy prose, "Certainly!"-style openers, bullet lists where a
-sentence would do. Never use dashes (em or en); write the way people actually type. Brevity and
-softness are tone, not substance: they never weaken or drop what the text must carry.
+sentence would do. Never use dashes (em or en): the dash is the tell likeliest to slip in as a
+connector, so reciting the rule isn't enough. Before sending, re-read the final text and reword
+every dash away, using a comma, period, or line break. Write the way people actually type. Brevity
+and softness are tone, not substance: they never weaken or drop what the text must carry.
 
 ## Developer conversations
 
