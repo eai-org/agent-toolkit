@@ -15,3 +15,6 @@ type suffix naming its kind:
 .claude/plans/1234-some-task/1234-some-task.PLAN.md
 .claude/plans/1234-some-task/1234-some-task.REQUIREMENTS.md
 ```
+
+Related tickets that hang off one parent/epic may instead share that parent's directory, each
+document keeping its own `<id>-<slug>` base.

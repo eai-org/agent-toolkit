@@ -4,7 +4,7 @@ description: Fetch one or more tickets/issues from their tracker (Azure DevOps, 
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.7"
+  version: "1.8"
 ---
 
 # Ticket Fetcher
@@ -33,11 +33,21 @@ then re-run.
    a fixed set of fields. Convert whatever rich-text form you get (HTML, ADF, …) to clean Markdown.
 3. **Pick a slug.** Short kebab-case slug, 3–5 words, from the title/summary — greppable, don't
    overthink it.
-4. **Decide the output directory.** A project-relative `<id>-<slug>/` subdirectory inside the
-   project's **planning directory** (e.g. `.claude/plans/`) — follow the project's/user's convention
-   for where plans live; if none is defined, ask the user. Never guess. If it already exists,
-   suggest `<id>-<slug>-v2`, `-v3`, etc. — **never overwrite** an existing plan directory; history
-   per re-fetch is kept on purpose.
+4. **Decide the output directory.** First resolve the project's **planning directory** (e.g.
+   `.claude/plans/`) — follow the project's/user's convention for where plans live. Inside it,
+   first match wins:
+   1. **Re-fetch** — the ticket already has a plan directory or flat `.TICKET.md`: suggest the
+      next `<id>-<slug>-v2`, `-v3`, … name beside it (directory or filename alike) — **never
+      overwrite**; history per re-fetch is kept on purpose.
+   2. **Existing family** — an ancestor (parent/epic, nearest first) has a plan directory
+      (`<ancestor-id>-*`, hyphen included; confirm via its `.TICKET.md` that it's really that
+      ancestor's; latest `-vN` when several), or a group directory's `## Ticket set` lists this
+      ticket or a sibling: write flat into it (`<dir>/<id>-<slug>.TICKET.md`) and update the
+      `## Ticket set` sections per [multiple-tickets.md](multiple-tickets.md).
+   3. **Otherwise** — a new `<id>-<slug>/` subdirectory.
+
+   In doubt at any point (no convention defined, unsure a directory is really the family's, …):
+   ask the user. **Never guess** — better one extra question than a potential mistake.
 5. **Write the ticket file** at `<output-dir>/<id>-<slug>.TICKET.md`.
 6. **Download attachments** into the output directory; warn on any that fail (see Attachments).
 7. **Print the result** — project-relative paths and the next-step line (see Next step).
@@ -107,7 +117,8 @@ If a fetch fails, list the link with `(unable to fetch)` rather than failing the
 
 Identify every attachment **and** every inline image referenced in the description/fields, numbered
 `attachment-<N>.<ext>` in order of first appearance, keeping the original extension. `<N>` runs
-across both combined.
+across both combined. In a directory shared with other tickets, prefix each ticket's files with its
+id (`<id>-attachment-<N>.<ext>`, linked-doc saves included) so siblings never overwrite each other.
 
 **Always try to fetch — across every connected MCP.** Beyond tracker-hosted attachments, the ticket
 may link external assets (e.g. a Confluence/ADO resource — for design-tool links such as Figma or

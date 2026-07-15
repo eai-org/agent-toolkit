@@ -8,6 +8,9 @@ their own `<id>-<slug>/` directories; say which. A related group shares one dire
 shared name; each file keeps its own `<id>-<slug>.TICKET.md` name on the shared slug base plus a
 differentiator (`…-widget`, `…-approvals`).
 
+A later solo fetch can join an existing group the same way (SKILL.md step 4 routes it there): give
+the newcomer its `## Ticket set` section and refresh every sibling's — membership, roles, order.
+
 Directly after the header, every file in the group gets a `## Ticket set` section, so a
 refine/plan session loading one ticket sees the whole picture:
 

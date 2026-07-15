@@ -24,9 +24,10 @@ this session's context: it returns the ticket-file path plus any blocker it hit 
 tracker, auth, no planning-dir convention) for you to settle with the user — it never guesses.
 Without subagent support, invoke fetch-ticket inline.
 
-The **ticket text is what gets annotated** — a `.REQUIREMENTS.md` in the same dir may be read as
-context for intent, never annotated in its place. Inspect downloaded attachments and design frames
-when they bear on a requirement being judged.
+The **ticket text is what gets annotated** — its `.REQUIREMENTS.md` (same dir and `<id>-<slug>`
+base — a shared dir may hold siblings') may be read as context for intent, never annotated in its
+place. Inspect downloaded attachments and design frames when they bear on a requirement being
+judged.
 
 **Evidence base**: the current working tree, uncommitted changes included — unless the invocation
 names something else (a branch, PR, commit range); then judge against that.
