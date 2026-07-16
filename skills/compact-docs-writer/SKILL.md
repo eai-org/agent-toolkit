@@ -5,7 +5,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.4"
+  version: "1.5"
 ---
 
 # Compact docs writer
@@ -65,6 +65,8 @@ collapses in every pass.
      reordered or merged one, which count as removals — and confirm each drops only duplication,
      filler, or a verified no-op, never a load-bearing rule, instruction, edge case, or nuance.
      After a merge, re-verify the result still carries every item from both sources.
+   - Addition audit against the same rendered diff: every added sentence must pass the no-op
+     test — cut any that fail.
 3. **Present & confirm.** Show the change as a unified diff inside a fenced `diff` code block —
    every removed line prefixed `-`, every added line `+`, so they render red/green — and when a
    long line changes by only a few words, add a word-level view (`[-removed-]{+added+}`)

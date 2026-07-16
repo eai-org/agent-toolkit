@@ -4,7 +4,7 @@ description: Turn a refined requirements document into a structured implementati
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.5"
+  version: "1.6"
 ---
 
 # Create Implementation Plan
