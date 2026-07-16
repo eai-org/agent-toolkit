@@ -1,17 +1,21 @@
 ---
 name: refine-ticket
-description: Refine a development ticket into a validated, self-contained REQUIREMENTS document — the "what", verified against the codebase. Invoke manually only.
+description: Refine a development ticket — or brainstorm a raw idea — into a validated, self-contained REQUIREMENTS document — the "what", verified against the codebase. Invoke manually only.
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.10"
+  version: "1.11"
 ---
 
 # Refine ticket
 
-The **Refine** phase of Refine → Plan → Act: turn a raw ticket into a validated requirements
-document a fresh session can plan from. Analysis only — it defines **what** must be true when the
-work is done, never **how** to build it, and never touches code.
+The **Refine** phase of Refine → Plan → Act: turn a raw ticket — or an idea to brainstorm — into a
+validated requirements document a fresh session can plan from. Analysis only — it defines **what**
+must be true when the work is done, never **how** to build it, and never touches code.
+
+An idea is a ticket that doesn't exist yet: treat the user's words as the ticket text, and grill
+to shape the idea itself — goal, in vs out of scope — before closing the branches that block
+implementation.
 
 ## What, not how — but verified against the code
 

@@ -42,8 +42,8 @@ fetch a ticket, refine it, plan it, then let a fresh session execute it.
 - **[fetch-ticket](./skills/fetch-ticket/SKILL.md)** — download a ticket from any tracker
   (e.g. GitHub, Jira, Azure DevOps) and save it as a self-contained markdown file.
 - **[refine-ticket](./skills/refine-ticket/SKILL.md)** — define the "what" of a task: validate the
-  ticket against the codebase, settle open decisions together, and save a
-  self-contained requirements doc a fresh session can pick up.
+  ticket — or a raw idea you want to brainstorm — against the codebase, settle open decisions
+  together, and save a self-contained requirements doc a fresh session can pick up.
 - **[create-implementation-plan](./skills/create-implementation-plan/SKILL.md)** — define the
   "how" of a task: turn the requirements into an implementation plan, settling the technical
   decisions together, then save it for a fresh session to execute.
