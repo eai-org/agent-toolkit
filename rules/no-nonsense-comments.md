@@ -19,6 +19,8 @@ Don't write:
 Do write, when it adds value: the non-obvious **why** (trade-offs, constraints, workarounds);
 invariants and assumptions; easily-missed edge cases; external references explaining the code as
 it is (ticket IDs, RFCs, spec sections); warnings about non-obvious failure or ordering needs.
+"Non-obvious" means beyond a competent dev's common knowledge — standard-practice rationale
+doesn't qualify.
 
 Comments you do write must sound like a colleague typed them, not an AI: actually invoke the
 `use-conversational-language` skill and follow its conventions — reciting them from memory does
