@@ -94,6 +94,8 @@ A set of generic, project-agnostic, opinionated rules that apply to any codebase
   and voice them via [use-conversational-language](./skills/use-conversational-language/SKILL.md).
 - **[plans-directory](./rules/plans-directory.md)** — save plans and similar documents under the
   project's planning directory, following a certain structure.
+- **[read-other-repos-governing-docs](./rules/read-other-repos-governing-docs.md)** — before
+  editing another repo's files, read and follow that repo's governing docs — they don't auto-load.
 - **[self-contained-docs](./rules/self-contained-docs.md)** — keep planning and design docs
   concise and executable by a fresh session with no prior context.
 - **[self-improve-on-correction](./rules/self-improve-on-correction.md)** — when the user corrects
