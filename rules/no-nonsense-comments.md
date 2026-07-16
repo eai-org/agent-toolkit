@@ -13,10 +13,12 @@ Don't write:
 - **Self-reference** — "I added", "Claude generated", "AI-suggested".
 - **Restating the code** — `// increment counter` above `counter++`.
 - **Dead context** — references to removed code or earlier iterations.
+- **Future-work pointers** — follow-up tickets/PBIs, "will be handled in X", roadmap notes: the
+  tracker owns those, not the source code.
 
 Do write, when it adds value: the non-obvious **why** (trade-offs, constraints, workarounds);
-invariants and assumptions; easily-missed edge cases; external references (ticket IDs, RFCs, spec
-sections); warnings about non-obvious failure or ordering needs.
+invariants and assumptions; easily-missed edge cases; external references explaining the code as
+it is (ticket IDs, RFCs, spec sections); warnings about non-obvious failure or ordering needs.
 
 Comments you do write must sound like a colleague typed them, not an AI: actually invoke the
 `use-conversational-language` skill and follow its conventions — reciting them from memory does
