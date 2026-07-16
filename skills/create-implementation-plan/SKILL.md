@@ -48,6 +48,12 @@ design, not a separate phase that runs before planning starts.
    settle them): whether to refactor existing code to reuse it or build anew; which API or interface
    to call; which unit tests to add; code style, file names, and folder structure.
 
+   **Docs generally outrank prior art.** A mirrored analogue doesn't override a documented rule,
+   and a rule's rationale doesn't license exceptions to it — existing code may predate the rule.
+   When docs and prior art conflict and you're unsure how to resolve it, ask the user; a deviation
+   the user approves is recorded in the plan's Overrides section, so the execution session knows
+   it's deliberate.
+
    **Grill the user along the way.** Whenever the approach hits a fork you can't settle from the
    code, stop and resolve it with the user before continuing — don't guess, and don't defer the
    decision into the plan. Interview relentlessly until you reach shared understanding, walking each
