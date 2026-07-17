@@ -52,6 +52,14 @@ statement.
   matches Y".
 - Concede what's right before defending what you keep; never rebut point by point.
 
+**Explaining something** — a longer chat message walking a peer through a why or how:
+
+- Prefer one idea per short paragraph; avoid dense multi-sentence blocks.
+- Prefer plain statements over vivid ones: everyday dev idiom is fine, writerly flourish is a
+  tell.
+- Trust the reader: say each thing once; a couple of examples and "etc." beat the full list;
+  don't re-explain what they can already see.
+
 ## Code comments
 
 Margin notes a developer jotted, not prose: clipped fragments over full sentences ("don't
