@@ -5,7 +5,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.9"
+  version: "1.10"
 ---
 
 # Self-improve
@@ -39,6 +39,8 @@ coding-standards or convention doc, a rules file — anything that guides future
   [compact-docs-writer](../compact-docs-writer/SKILL.md). Actually invoke the skill and follow its
   workflow *before* drafting or applying; reading it, applying its principles by hand, or naming it
   after a direct edit does not count.
+- **Generated output is not source.** When a manager owns an installed skill or doc, locate and
+  change its source package; do not patch the generated runtime copy.
 
 ## Recognize a persistable correction (self-trigger)
 
