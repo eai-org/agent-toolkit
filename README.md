@@ -66,8 +66,12 @@ ticket reviews.
 - **[use-conversational-language](./skills/use-conversational-language/SKILL.md)** — the voice for
   text that should read as if a person typed it, used by the review skills for comments and
   replies and by rules for user-facing texts and code comments.
-- **[review-ticket](./skills/review-ticket/SKILL.md)** — triage a ticket before anyone picks it
-  up, spotting decisions to raise with the team.
+- **[review-ticket](./skills/review-ticket/SKILL.md)** — triage a ticket or ticket set before
+  anyone picks it up, saving a review with a feature walkthrough and the decisions to raise with
+  the team.
+- **[verify-understanding](./skills/verify-understanding/SKILL.md)** — explain the feature back
+  in your own words before building it: a teach-back conversation over a saved ticket review that
+  probes and corrects until you are ready to implement.
 - **[check-ticket-implementation](./skills/check-ticket-implementation/SKILL.md)** — check how much
   of a ticket is already implemented in the code, marking each requirement as done, partial, or not
   done in a human-readable status report.
@@ -255,6 +259,7 @@ flowchart TD
   realistic_rule["write-realistic-texts rule"] --> express
   nonsense_rule["no-nonsense-comments rule"] --> express
   review_ticket["review-ticket"] --> fetch_ticket
+  review_ticket --> verify_understanding["verify-understanding"]
   check_impl["check-ticket-implementation"] --> fetch_ticket
   refine --> manual["create-manual-test-instructions"]
   refine --> plan["create-implementation-plan"]
