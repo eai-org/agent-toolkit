@@ -5,7 +5,7 @@ disable-model-invocation: true
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "0.3"
+  version: "0.4"
 ---
 
 # Review ticket
@@ -85,6 +85,9 @@ thorough.
      **Today** / **After** pair. Must fit one terminal screen (~25 lines).
    - **Ticket mapping** (set mode) — how each input ticket maps into the journey, one block per
      ticket, led by its linked ticket id and short title.
+
+   Introduce each core domain term in plain, memorable words at first use — a contrast or
+   direction hook beats a bare definition.
 
    Technical depth caps at "this screen calls endpoints X and Y to get its data": generally no
    need to go deep into architecture decisions. Single ticket: same layers, proportionally shorter.
