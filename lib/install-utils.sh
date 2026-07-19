@@ -55,7 +55,7 @@ link_one() {
       return
     fi
     if [ "$FORCE" -eq 1 ]; then
-      rm -rf "$dest"
+      rm -rf -- "$dest"
     else
       echo "  skip   ${name} (already exists; use --force to overwrite)"
       return
