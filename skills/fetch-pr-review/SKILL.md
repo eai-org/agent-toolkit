@@ -4,7 +4,7 @@ description: Fetch all reviewer comments from a pull request URL (GitHub, Azure 
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.5"
+  version: "1.6"
 ---
 
 # PR review fetcher
@@ -39,7 +39,8 @@ an answer.
      feedback.
 3. **Determine each thread's status** (see Status flags).
 4. **Decide the output directory** — the planning directory of the task the PR belongs to,
-   following the project's/user's convention for where plans live. Guess the task's existing home
+   following the project's/user's convention for where plans live (default: `.agents/plans/`).
+   Guess the task's existing home
    from PR context (linked ticket id, branch name, PR title) — its `<id>-<slug>/` subdirectory, or
    the shared parent/group directory holding its `<id>-<slug>.TICKET.md` when the ticket lives
    flat there — and **confirm the guess with the user**; when not sure, always ask. If no matching

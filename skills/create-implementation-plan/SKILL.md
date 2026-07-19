@@ -4,7 +4,7 @@ description: Turn a refined requirements document into a structured implementati
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.6"
+  version: "1.7"
 ---
 
 # Create Implementation Plan
@@ -136,7 +136,7 @@ where `<slug>` is the plan filename's slug (without id prefix or extension), so 
 recognizable in the session list, e.g.:
 
 ```
-claude --name execute-plan-report-approval "Execute the plan .claude/plans/123-report-approval/123-report-approval.PLAN.md"
+claude --name execute-plan-report-approval "Execute the plan .agents/plans/123-report-approval/123-report-approval.PLAN.md"
 ```
 
 Then offer the alternative — clearing the current session instead (vendor-agnostic — `/clear` below
@@ -145,5 +145,5 @@ is only the example; use the clear command of the agent tool in use):
 OR /clear and run:
 
 ```
-Execute the plan .claude/plans/123-report-approval/123-report-approval.PLAN.md
+Execute the plan .agents/plans/123-report-approval/123-report-approval.PLAN.md
 ```
