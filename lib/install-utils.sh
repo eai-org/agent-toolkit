@@ -49,8 +49,8 @@ link_one() {
 
   if [ -e "$dest" ] || [ -L "$dest" ]; then
     if [ -L "$dest" ] && is_ours "$dest"; then
-      rm "$dest"
-      ln -s "$src" "$dest"
+      rm -- "$dest"
+      ln -s -- "$src" "$dest"
       echo "  relink ${name}"
       return
     fi
