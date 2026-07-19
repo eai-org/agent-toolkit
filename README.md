@@ -83,9 +83,108 @@ ticket reviews.
 - **[run-nx-checks](./skills/run-nx-checks/SKILL.md)** — run format, lint, test, and build on the
   affected projects of an Nx workspace and fix unambiguous failures.
 
+### How to install the skills
+
+#### Quick install / update (recommended)
+
+Install all skills in one command:
+
+```sh
+git clone https://github.com/eai-org/agent-toolkit.git && cd agent-toolkit && ./install.sh
+```
+
+Update in one command:
+
+```sh
+cd agent-toolkit && git pull && ./install.sh
+```
+
+#### Install via symlinks
+
+[`install.sh`](install.sh) symlinks every skill from this repo in two layers:
+
+1. `~/.agents/skills` — the canonical, agent-neutral location — gets one link per skill
+   directory, pointing into the repo;
+2. your agent's own directory — `~/.claude/skills` by default — gets links pointing at the
+   `~/.agents` entries.
+
+The skills become available in all your projects without copying files around, and every agent
+wired to `~/.agents` shares the same set.
+
+Re-running converges: correct links are left alone, links from the old direct layout are
+re-pointed, and broken links owned by this repo are pruned — so `git pull && ./install.sh` always
+brings an existing install up to date.
+
+First clone the repo (or your own fork):
+
+```sh
+git clone https://github.com/eai-org/agent-toolkit.git && cd agent-toolkit
+```
+
+Then you can run:
+
+```sh
+./install.sh
+```
+
+This will link all skills. To customize, use the options below:
+
+```sh
+./install.sh --agents-dir DIR        # custom agent-neutral location (default: ~/.agents)
+./install.sh --skills-dir DIR        # agent skills dir to wire (e.g. a project's .claude/skills)
+./install.sh --force                 # overwrite real files/dirs and foreign symlinks
+./install.sh --help
+```
+
+Each skill is linked individually.
+
+You can also skip the script and symlink just the ones you want by hand, through the same two
+layers:
+
+```sh
+mkdir -p ~/.agents/skills ~/.claude/skills
+ln -s "$(pwd)/skills/run-nx-checks" ~/.agents/skills/
+ln -s ~/.agents/skills/run-nx-checks ~/.claude/skills/
+```
+
+Start a new session and run `/context` to confirm everything is loaded. Skills apply at the user
+level (all projects); to scope them to one project, wire that project's directory instead, e.g.
+`./install.sh --skills-dir <project>/.claude/skills`.
+
+#### Other agents
+
+Other agents like OpenCode discover Claude-style skills in `~/.agents/skills` natively, so the
+default install already covers them. For one that doesn't, point its skills directory at
+`~/.agents/skills` — or run the script again with the agent's own directory:
+
+```sh
+./install.sh --skills-dir <agent-skills-dir>
+```
+
+#### Install via skills.sh
+
+You can also use the [skills.sh](https://skills.sh/) installer to install the skills from this repo:
+
+```sh
+npx skills add eai-org/agent-toolkit
+```
+
+#### Install via Claude Code plugin marketplace
+
+Add the marketplace, then install the toolkit:
+
+```
+/plugin marketplace add eai-org/agent-toolkit
+/plugin install agent-toolkit
+```
+
+All skills install together, namespaced as `/agent-toolkit:<skill>` (for example
+`/agent-toolkit:memory-doctor`).
+
 ## Rules
 
-A set of generic, project-agnostic, opinionated rules that apply to any codebase.
+A set of generic, project-agnostic, opinionated rules that apply to any codebase. They are opt-in,
+installed separately from the skills — see [How to install the rules](#how-to-install-the-rules).
 
 - **[compact-governing-docs](./rules/compact-governing-docs.md)** — run the matching compaction
   skill before writing or editing a governing doc, so it stays compact.
@@ -105,96 +204,36 @@ A set of generic, project-agnostic, opinionated rules that apply to any codebase
 - **[self-improve-on-correction](./rules/self-improve-on-correction.md)** — when the user corrects
   something a skill or doc governs, offer to persist the lesson via
   [self-improve](./skills/self-improve/SKILL.md).
-- **[write-realistic-texts](./rules/write-realistic-texts.md)** — make user-facing text sound 
+- **[write-realistic-texts](./rules/write-realistic-texts.md)** — make user-facing text sound
   natural, no AI-generated nonsense.
 
-## How to install
+### How to install the rules
 
-### Quick Install / Update (recommended)
-
-Install in one command:
+The rules are always-on behavior policies — they change how the agent works on every task
+(e.g. `git-read-only-by-default`), so they are never installed implicitly. To opt in:
 
 ```sh
-git clone https://github.com/eai-org/agent-toolkit.git && cd agent-toolkit && ./install.sh
+./install-opinionated-rules.sh
 ```
 
-Update in one command:
+It mirrors the skills install: the same two symlink layers (`~/.agents/rules` →
+`~/.claude/rules`), converging re-runs, and `--agents-dir`, `--rules-dir`, and `--force` options.
+Rule links left by older `./install.sh` runs stay intact but are updated only by this script — run
+it after `git pull` to keep them in sync.
+
+You can also link individual rules by hand, through the same two layers:
 
 ```sh
-cd agent-toolkit && git pull && ./install.sh
-```
-
-### Install via symlinks
-
-[`install.sh`](install.sh) symlinks every rule and skill from this repo in two layers:
-
-1. `~/.agents/{rules,skills}` — the canonical, agent-neutral location — gets one link per rule
-   file and skill directory, pointing into the repo;
-2. your agent's own directories — `~/.claude/{rules,skills}` by default — get links pointing at
-   the `~/.agents` entries.
-
-The skills and rules become available in all your projects without copying files around, and
-every agent wired to `~/.agents` shares the same set.
-
-Re-running converges: correct links are left alone, links from the old direct layout are
-re-pointed, and broken links owned by this repo are pruned — so `git pull && ./install.sh` always
-brings an existing install up to date.
-
-First clone the repo (or your own fork):
-
-```sh
-git clone https://github.com/eai-org/agent-toolkit.git && cd agent-toolkit
-```
-
-Then you can run:
-
-```sh
-./install.sh
-```
-
-This will link all rules and all skills. To customize, use the options below:
-
-```sh
-./install.sh --rules-only            # link rules only
-./install.sh --skills-only           # link skills only
-./install.sh --agents-dir DIR        # custom agent-neutral location (default: ~/.agents)
-./install.sh --skills-dir DIR        # agent skills dir to wire (e.g. a project's .claude/skills)
-./install.sh --rules-dir DIR         # agent rules dir to wire
-./install.sh --force                 # overwrite real files/dirs and foreign symlinks
-./install.sh --help
-```
-
-Each rule and skill is linked individually.
-
-You can also skip the script and symlink just the ones you want by hand, through the same two
-layers:
-
-```sh
-mkdir -p ~/.agents/rules ~/.agents/skills ~/.claude/rules ~/.claude/skills
+mkdir -p ~/.agents/rules ~/.claude/rules
 ln -s "$(pwd)/rules/no-nonsense-comments.md"  ~/.agents/rules/
-ln -s "$(pwd)/skills/run-nx-checks"           ~/.agents/skills/
 ln -s ~/.agents/rules/no-nonsense-comments.md ~/.claude/rules/
-ln -s ~/.agents/skills/run-nx-checks          ~/.claude/skills/
-```
-
-Start a new session and run `/context` to confirm everything is loaded. Rules and skills apply at
-the user level (all projects); to scope them to one project, wire that project's directories
-instead, e.g. `./install.sh --skills-dir <project>/.claude/skills --skills-only`.
-
-### Other agents
-
-Other agents like OpenCode discover Claude-style skills in `~/.agents/skills` natively, so the
-default install already covers them. For one that doesn't, point its skills directory at
-`~/.agents/skills` — or run the script again with the agent's own directories:
-
-```sh
-./install.sh --skills-dir <agent-skills-dir> --rules-dir <agent-rules-dir>
 ```
 
 Auto-loaded rule directories are mostly a Claude Code feature; agents without one take a single
-global `AGENTS.md` instead, so only the skills layer applies to them.
+global `AGENTS.md` instead, so only the skills apply to them. For an agent that does have one, wire
+the rules with `./install-opinionated-rules.sh --rules-dir <agent-rules-dir>`.
 
-### Install with agentwheel
+## Install with agentwheel
 
 [agentwheel](https://github.com/NestDevLab/agentwheel) installs this repo's rules **and** skills
 into your agent and keeps them in sync across Claude, Codex, Copilot, and other runtimes, from
@@ -222,26 +261,6 @@ npx agentwheel install github:eai-org/agent-toolkit --adapter claude \
 
 The manifest also marks hard internal dependencies. For example, selecting
 `skills/compact-skill-creator` also installs `skills/compact-docs-writer`.
-
-### Install skills via skills.sh
-
-You can also use the [skills.sh](https://skills.sh/) installer to install the skills from this repo:
-
-```sh
-npx skills add eai-org/agent-toolkit
-```
-
-### Install skills via Claude Code plugin marketplace
-
-Add the marketplace, then install the toolkit:
-
-```
-/plugin marketplace add eai-org/agent-toolkit
-/plugin install agent-toolkit
-```
-
-All skills install together, namespaced as `/agent-toolkit:<skill>` (for example
-`/agent-toolkit:memory-doctor`).
 
 ## Artifact relationships
 

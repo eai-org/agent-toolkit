@@ -4,7 +4,7 @@ description: Refine a development ticket — or brainstorm a raw idea — into a
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.11"
+  version: "1.12"
 ---
 
 # Refine ticket
@@ -99,11 +99,10 @@ Location:
 - If the ticket input is a **local file**, write the REQUIREMENTS file in the **same directory**,
   replacing `.TICKET` with `.REQUIREMENTS` (e.g. `FOO.TICKET.md` → `FOO.REQUIREMENTS.md`); if the
   input doesn't follow that convention, append `.REQUIREMENTS` before `.md`.
-- If there is **no local ticket file** (a tracker URL/ID, pasted text), follow the project's
-  planning convention for where planning documents live (per the project's or user's rules — don't
-  assume a fixed path, ask when not sure). Propose a kebab-case `<slug>` (prefix the tracker id when
-  the ticket is bound to one) and the target path, **confirm both with the user**, then write
-  `<slug>.REQUIREMENTS.md` there.
+- If there is **no local ticket file** (a tracker URL/ID, pasted text), follow the project's/user's
+  convention for where planning documents live (default: `.agents/plans/`). Propose a kebab-case
+  `<slug>` (prefix the tracker id when the ticket is bound to one) and the target path, **confirm
+  both with the user**, then write `<slug>/<slug>.REQUIREMENTS.md` there.
 
 Six parts (Verified codebase facts, Overrides, and Open questions may be empty — don't pad):
 

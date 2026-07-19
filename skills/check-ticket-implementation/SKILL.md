@@ -5,7 +5,7 @@ disable-model-invocation: true
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "0.1"
+  version: "0.2"
 ---
 
 # Check ticket implementation
@@ -62,7 +62,8 @@ say why, e.g. a manual deploy step).
 
 Write `<task-dir>/<id>-<slug>.TICKET-STATUS.md`, overwriting any previous run — it is a snapshot of
 now, and the header says when and against what. (No task dir and nothing to fetch? Follow the
-project's planning-dir convention; ask if none is evident.)
+project's/user's planning-dir convention, defaulting to `.agents/plans/`; ask only if genuinely
+ambiguous.)
 
 Format for human eyes — verdicts up front, blocks fenced by `━` rules:
 

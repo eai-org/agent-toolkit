@@ -4,7 +4,7 @@ description: Fetch one or more tickets/issues from their tracker (Azure DevOps, 
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.8"
+  version: "1.9"
 ---
 
 # Ticket Fetcher
@@ -34,7 +34,7 @@ then re-run.
 3. **Pick a slug.** Short kebab-case slug, 3–5 words, from the title/summary — greppable, don't
    overthink it.
 4. **Decide the output directory.** First resolve the project's **planning directory** (e.g.
-   `.claude/plans/`) — follow the project's/user's convention for where plans live. Inside it,
+   `.agents/plans/`) — follow the project's/user's convention for where plans live. Inside it,
    first match wins:
    1. **Re-fetch** — the ticket already has a plan directory or flat `.TICKET.md`: suggest the
       next `<id>-<slug>-v2`, `-v3`, … name beside it (directory or filename alike) — **never
