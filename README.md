@@ -204,7 +204,7 @@ installed separately from the skills — see [How to install the rules](#how-to-
 - **[self-improve-on-correction](./rules/self-improve-on-correction.md)** — when the user corrects
   something a skill or doc governs, offer to persist the lesson via
   [self-improve](./skills/self-improve/SKILL.md).
-- **[write-realistic-texts](./rules/write-realistic-texts.md)** — make user-facing text sound 
+- **[write-realistic-texts](./rules/write-realistic-texts.md)** — make user-facing text sound
   natural, no AI-generated nonsense.
 
 ### How to install the rules
