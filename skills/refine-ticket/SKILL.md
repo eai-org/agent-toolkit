@@ -102,7 +102,7 @@ Location:
 - If there is **no local ticket file** (a tracker URL/ID, pasted text), follow the project's/user's
   convention for where planning documents live (default: `.agents/plans/`). Propose a kebab-case
   `<slug>` (prefix the tracker id when the ticket is bound to one) and the target path, **confirm
-  both with the user**, then write `<slug>.REQUIREMENTS.md` there.
+  both with the user**, then write `<slug>/<slug>.REQUIREMENTS.md` there.
 
 Six parts (Verified codebase facts, Overrides, and Open questions may be empty — don't pad):
 
