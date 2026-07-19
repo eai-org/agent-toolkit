@@ -62,6 +62,6 @@ link_one() {
     fi
   fi
 
-  ln -s "$src" "$dest"
+  ln -s -- "$src" "$dest"
   echo "  link   ${name}"
 }
