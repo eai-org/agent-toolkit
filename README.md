@@ -1,14 +1,12 @@
 # agent-toolkit
 
-A collection of project-agnostic, generic agentic tools for common engineering tasks.
-
-Designed to work with any kind of AI agent on any kind of software development project.
+A collection of generic agentic tools for common engineering tasks, designed to work with any AI
+agent on any kind of software project.
 
 ## Skills
 
-Agentic skills used across all kinds of software engineering projects — solo or in a team.
-
-Not bound to any specific language or framework.
+Agentic skills for everyday software engineering — solo or in a team, not bound to any specific
+language or framework.
 
 ### Skill & doc authoring
 
@@ -52,15 +50,14 @@ fetch a ticket, refine it, plan it, then let a fresh session execute it.
 
 ### Review assistants
 
-Powerful review helpers that are able to quickly check the codebase when assisting with code or
-ticket reviews.
+Review helpers that check the codebase while assisting with code or ticket reviews.
 
 - **[fetch-pr-review](./skills/fetch-pr-review/SKILL.md)** — collect the comments left by other
   reviewers on your PR and save them into a markdown doc, ready to address (or push back on), for
   example via refine-pr-review.
 - **[refine-pr-review](./skills/refine-pr-review/SKILL.md)** — go through a fetched PR review
-  together, comment by comment — address, partial, or push back — drafting the replies and turning
-  the accepted changes into a requirements doc.
+  together, comment by comment — address, partial, or push back — drafting the replies and
+  turning the accepted changes into a requirements doc.
 - **[review-code-assistant](./skills/review-code-assistant/SKILL.md)** — assist you in reviewing a
   PR or branch.
 - **[use-conversational-language](./skills/use-conversational-language/SKILL.md)** — the voice for
@@ -72,9 +69,9 @@ ticket reviews.
 - **[verify-understanding](./skills/verify-understanding/SKILL.md)** — explain the feature back
   in your own words before building it: a teach-back conversation over a saved ticket review that
   probes and corrects until you are ready to implement.
-- **[check-ticket-implementation](./skills/check-ticket-implementation/SKILL.md)** — check how much
-  of a ticket is already implemented in the code, marking each requirement as done, partial, or not
-  done in a human-readable status report.
+- **[check-ticket-implementation](./skills/check-ticket-implementation/SKILL.md)** — check how
+  much of a ticket is already implemented in the code, marking each requirement as done, partial,
+  or not done in a human-readable status report.
 - **[fresh-eyes-review](./skills/fresh-eyes-review/SKILL.md)** — let an agent with a fresh
   perspective review a changeset and report its findings back to the main session.
 
@@ -84,8 +81,6 @@ ticket reviews.
   affected projects of an Nx workspace and fix unambiguous failures.
 
 ### How to install the skills
-
-#### Quick install / update (recommended)
 
 Install all skills in one command:
 
@@ -99,92 +94,14 @@ Update in one command:
 cd agent-toolkit && git pull && ./install.sh
 ```
 
-#### Install via symlinks
-
-[`install.sh`](install.sh) symlinks every skill from this repo in two layers:
-
-1. `~/.agents/skills` — the canonical, agent-neutral location — gets one link per skill
-   directory, pointing into the repo;
-2. your agent's own directory — `~/.claude/skills` by default — gets links pointing at the
-   `~/.agents` entries.
-
-The skills become available in all your projects without copying files around, and every agent
-wired to `~/.agents` shares the same set.
-
-Re-running converges: correct links are left alone, links from the old direct layout are
-re-pointed, and broken links owned by this repo are pruned — so `git pull && ./install.sh` always
-brings an existing install up to date.
-
-First clone the repo (or your own fork):
-
-```sh
-git clone https://github.com/eai-org/agent-toolkit.git && cd agent-toolkit
-```
-
-Then you can run:
-
-```sh
-./install.sh
-```
-
-This will link all skills. To customize, use the options below:
-
-```sh
-./install.sh --agents-dir DIR        # custom agent-neutral location (default: ~/.agents)
-./install.sh --skills-dir DIR        # agent skills dir to wire (e.g. a project's .claude/skills)
-./install.sh --force                 # overwrite real files/dirs and foreign symlinks
-./install.sh --help
-```
-
-Each skill is linked individually.
-
-You can also skip the script and symlink just the ones you want by hand, through the same two
-layers:
-
-```sh
-mkdir -p ~/.agents/skills ~/.claude/skills
-ln -s "$(pwd)/skills/run-nx-checks" ~/.agents/skills/
-ln -s ~/.agents/skills/run-nx-checks ~/.claude/skills/
-```
-
-Start a new session and run `/context` to confirm everything is loaded. Skills apply at the user
-level (all projects); to scope them to one project, wire that project's directory instead, e.g.
-`./install.sh --skills-dir <project>/.claude/skills`.
-
-#### Other agents
-
-Other agents like OpenCode discover Claude-style skills in `~/.agents/skills` natively, so the
-default install already covers them. For one that doesn't, point its skills directory at
-`~/.agents/skills` — or run the script again with the agent's own directory:
-
-```sh
-./install.sh --skills-dir <agent-skills-dir>
-```
-
-#### Install via skills.sh
-
-You can also use the [skills.sh](https://skills.sh/) installer to install the skills from this repo:
-
-```sh
-npx skills add eai-org/agent-toolkit
-```
-
-#### Install via Claude Code plugin marketplace
-
-Add the marketplace, then install the toolkit:
-
-```
-/plugin marketplace add eai-org/agent-toolkit
-/plugin install agent-toolkit
-```
-
-All skills install together, namespaced as `/agent-toolkit:<skill>` (for example
-`/agent-toolkit:memory-doctor`).
+How the symlink install works and the other install methods — hand-picking skills, other agents,
+[skills.sh](https://skills.sh/), the Claude Code plugin marketplace — are covered in
+[docs/install-skills.md](./docs/install-skills.md).
 
 ## Rules
 
 A set of generic, project-agnostic, opinionated rules that apply to any codebase. They are opt-in,
-installed separately from the skills — see [How to install the rules](#how-to-install-the-rules).
+installed separately from the skills.
 
 - **[compact-governing-docs](./rules/compact-governing-docs.md)** — run the matching compaction
   skill before writing or editing a governing doc, so it stays compact.
@@ -216,56 +133,29 @@ The rules are always-on behavior policies — they change how the agent works on
 ./install-opinionated-rules.sh
 ```
 
-It mirrors the skills install: the same two symlink layers (`~/.agents/rules` →
-`~/.claude/rules`), converging re-runs, and `--agents-dir`, `--rules-dir`, and `--force` options.
-Rule links left by older `./install.sh` runs stay intact but are updated only by this script — run
-it after `git pull` to keep them in sync.
-
-You can also link individual rules by hand, through the same two layers:
-
-```sh
-mkdir -p ~/.agents/rules ~/.claude/rules
-ln -s "$(pwd)/rules/no-nonsense-comments.md"  ~/.agents/rules/
-ln -s ~/.agents/rules/no-nonsense-comments.md ~/.claude/rules/
-```
-
 Auto-loaded rule directories are mostly a Claude Code feature; agents without one take a single
-global `AGENTS.md` instead, so only the skills apply to them. For an agent that does have one, wire
-the rules with `./install-opinionated-rules.sh --rules-dir <agent-rules-dir>`.
+global `AGENTS.md` instead, so only the skills apply to them.
+
+How rules work, the script's options, and linking individual rules by hand are covered in
+[docs/install-rules.md](./docs/install-rules.md).
 
 ## Install with agentwheel
 
 [agentwheel](https://github.com/NestDevLab/agentwheel) installs this repo's rules **and** skills
 into your agent and keeps them in sync across Claude, Codex, Copilot, and other runtimes, from
-one source. This repo ships an [`openpack.json`](openpack.json) manifest, so it's a first-class
-OpenPack package (requires agentwheel ≥ 0.9.0). Run it from where you want it installed (`~` for
-user level, or a project root):
+one source. Run it from where you want it installed (`~` for user level, or a project root):
 
 ```sh
 npx agentwheel install github:eai-org/agent-toolkit --adapter claude
 ```
 
-Swap `--adapter claude` for `codex`, `copilot`, etc. to target other agents. For dry runs,
-tracking updates, named targets, profiles, or more controlled `add` → `plan` → `install` flows,
-see the [agentwheel documentation](https://github.com/NestDevLab/agentwheel).
-
-Only want specific pieces instead of everything? Select them by `<type>/<name>`, for example one
-skill plus one rule:
-
-```sh
-npx agentwheel install github:eai-org/agent-toolkit --adapter claude \
-  --select skills/run-nx-checks,rules/no-nonsense-comments.md
-```
-
-`--select` is repeatable or comma-separated.
-
-The manifest also marks hard internal dependencies. For example, selecting
-`skills/compact-skill-creator` also installs `skills/compact-docs-writer`.
+Other adapters, selecting individual pieces, and the OpenPack manifest are covered in
+[docs/install-with-agentwheel.md](./docs/install-with-agentwheel.md).
 
 ## Artifact relationships
 
 Some skills and rules form a workflow or rely on each other. Hard dependencies are encoded in
-[`openpack.json`](openpack.json); suggested next steps remain documented in the skill text.
+[`openpack.json`](openpack.json); suggested next steps live in the skill text.
 
 ```mermaid
 flowchart TD
