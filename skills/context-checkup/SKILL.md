@@ -2,10 +2,11 @@
 name: context-checkup
 description: Audit what auto-loads into an agent session's context window and suggest lean, reversible fixes to cut startup tokens.
 disable-model-invocation: true
+type: flow
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.1"
+  version: "1.2"
 ---
 
 # Context checkup

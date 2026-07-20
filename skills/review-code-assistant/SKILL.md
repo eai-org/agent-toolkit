@@ -1,11 +1,12 @@
 ---
 name: review-code-assistant
-description: Assist a human reviewing a pull request or branch locally: diff a source branch against its target (auto-detected or from a PR link) and return concise, human-voice review comments with file:line locations. Read-only, never posts.
+description: Assist a human reviewing a pull request or branch locally — diff a source branch against its target (auto-detected or from a PR link) and return concise, human-voice review comments with file and line locations. Read-only, never posts.
 disable-model-invocation: true
+type: flow
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.6"
+  version: "1.7"
 ---
 
 # Review code assistant

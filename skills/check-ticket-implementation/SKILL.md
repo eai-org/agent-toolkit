@@ -1,11 +1,12 @@
 ---
 name: check-ticket-implementation
-description: Check how much of a ticket is already implemented: split it into requirement blocks, judge each against the code, and save a human-readable TICKET-STATUS report in the planning dir.
+description: Check how much of a ticket is already implemented — split it into requirement blocks, judge each against the code, and save a human-readable TICKET-STATUS report in the planning dir.
 disable-model-invocation: true
+type: flow
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "0.2"
+  version: "0.3"
 ---
 
 # Check ticket implementation

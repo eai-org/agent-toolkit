@@ -1,11 +1,12 @@
 ---
 name: verify-understanding
-description: Verify the engineer is ready to implement a feature: a teach-back conversation over a .TICKET-REVIEW.md — they explain the feature in their own words, the agent probes and corrects.
+description: Verify the engineer is ready to implement a feature — a teach-back conversation over a .TICKET-REVIEW.md where they explain the feature in their own words and the agent probes and corrects.
 disable-model-invocation: true
+type: flow
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "0.1"
+  version: "0.2"
 ---
 
 # Verify understanding

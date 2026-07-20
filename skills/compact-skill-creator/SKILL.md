@@ -5,7 +5,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.14"
+  version: "1.15"
 ---
 
 # Compact skill creator
@@ -48,6 +48,9 @@ How a skill is triggered decides how its `description` is written. Classify into
 
 Governing rule: **description tokens are justified only by trigger precision, never by summary.**
 Compress *within* a type — but never starve a Mandatory trigger to save a few tokens.
+
+In every type, never use `:` in the description — `: ` in the unquoted value breaks some agents'
+YAML parsers; avoid the character rather than quote it.
 
 Two sharpeners for the trigger wording:
 
