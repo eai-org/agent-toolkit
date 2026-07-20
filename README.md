@@ -1,14 +1,12 @@
 # agent-toolkit
 
-A collection of project-agnostic, generic agentic tools for common engineering tasks.
-
-Designed to work with any kind of AI agent on any kind of software development project.
+A collection of generic agentic tools for common engineering tasks, designed to work with any AI
+agent on any kind of software project.
 
 ## Skills
 
-Agentic skills used across all kinds of software engineering projects — solo or in a team.
-
-Not bound to any specific language or framework.
+Agentic skills for everyday software engineering — solo or in a team, not bound to any specific
+language or framework.
 
 ### Skill & doc authoring
 
@@ -52,15 +50,14 @@ fetch a ticket, refine it, plan it, then let a fresh session execute it.
 
 ### Review assistants
 
-Powerful review helpers that are able to quickly check the codebase when assisting with code or
-ticket reviews.
+Review helpers that check the codebase while assisting with code or ticket reviews.
 
 - **[fetch-pr-review](./skills/fetch-pr-review/SKILL.md)** — collect the comments left by other
   reviewers on your PR and save them into a markdown doc, ready to address (or push back on), for
   example via refine-pr-review.
 - **[refine-pr-review](./skills/refine-pr-review/SKILL.md)** — go through a fetched PR review
-  together, comment by comment — address, partial, or push back — drafting the replies and turning
-  the accepted changes into a requirements doc.
+  together, comment by comment — address, partial, or push back — drafting the replies and
+  turning the accepted changes into a requirements doc.
 - **[review-code-assistant](./skills/review-code-assistant/SKILL.md)** — assist you in reviewing a
   PR or branch.
 - **[use-conversational-language](./skills/use-conversational-language/SKILL.md)** — the voice for
@@ -72,9 +69,9 @@ ticket reviews.
 - **[verify-understanding](./skills/verify-understanding/SKILL.md)** — explain the feature back
   in your own words before building it: a teach-back conversation over a saved ticket review that
   probes and corrects until you are ready to implement.
-- **[check-ticket-implementation](./skills/check-ticket-implementation/SKILL.md)** — check how much
-  of a ticket is already implemented in the code, marking each requirement as done, partial, or not
-  done in a human-readable status report.
+- **[check-ticket-implementation](./skills/check-ticket-implementation/SKILL.md)** — check how
+  much of a ticket is already implemented in the code, marking each requirement as done, partial,
+  or not done in a human-readable status report.
 - **[fresh-eyes-review](./skills/fresh-eyes-review/SKILL.md)** — let an agent with a fresh
   perspective review a changeset and report its findings back to the main session.
 
@@ -158,7 +155,7 @@ Other adapters, selecting individual pieces, and the OpenPack manifest are cover
 ## Artifact relationships
 
 Some skills and rules form a workflow or rely on each other. Hard dependencies are encoded in
-[`openpack.json`](openpack.json); suggested next steps remain documented in the skill text.
+[`openpack.json`](openpack.json); suggested next steps live in the skill text.
 
 ```mermaid
 flowchart TD
