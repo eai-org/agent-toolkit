@@ -289,7 +289,7 @@ flowchart TD
   docs_rule -. informs .-> plan
 ```
 
-## How is this agent-toolkit different from superpowers?
+## How agent-toolkit differs from superpowers
 
 This repo offers somewhat similar functionality to
 [superpowers](https://github.com/obra/superpowers), a popular engineering skills framework whose
