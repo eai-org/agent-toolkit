@@ -14,6 +14,8 @@ In Markdown, wrap prose lines at the `max_line_length` in `.editorconfig`. Never
 blocks or inline backtick spans — a command stays on one line even past the limit), tables, URLs,
 links, or YAML frontmatter values to satisfy it.
 
-When changing skills, rules, manifests, install behavior, or repository conventions, update the docs
-in the same change — `README.md`, `AGENTS.md`, and any affected artifact documentation — so a fresh
-agent session understands the current behavior without prior conversation context.
+When changing skills, rules, manifests, install behavior, or repository conventions, update the
+docs in the same change — `README.md`, `AGENTS.md`, `docs/`, and any affected artifact
+documentation — so a fresh agent session understands the current behavior without prior
+conversation context. Keep `README.md` lean: catalogs and quick-install commands only; detailed
+guides belong in `docs/`.
