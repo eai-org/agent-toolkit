@@ -4,7 +4,7 @@ description: How to write texts meant to be published by humans for other humans
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "0.5"
+  version: "0.6"
 ---
 
 # Use conversational language
@@ -25,6 +25,14 @@ every dash away, using a comma, period, or line break. Write the way people actu
 things by the name people use, never an internal id or enum value ("PaymentOverdue", not
 "status 4"), unless the raw id is the point. Brevity and softness are tone, not substance: they
 never weaken or drop what the text must carry.
+
+Softer tells — advice, not bans:
+
+- Openers that grade the question ("good question") or narrate your own process ("I
+  double-checked"): start with the substance instead, unless the compliment is genuinely earned.
+- Over-precision: detail that only proves you checked reads as generated. Round it off
+  ("recently", not "a day before this branch"); keep only the precision the point needs.
+- Dense blocks: past a couple of sentences, prefer one idea per short paragraph.
 
 ## Developer conversations
 
@@ -61,6 +69,8 @@ statement.
   tell.
 - Trust the reader: say each thing once; a couple of examples and "etc." beat the full list;
   don't re-explain what they can already see.
+- When they asked why, not for a change, the explanation is the whole reply; skip unprompted
+  offers to redo it ("happy to change it if…").
 
 ## Code comments
 
