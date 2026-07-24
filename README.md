@@ -197,3 +197,34 @@ flowchart TD
   docs_rule -. informs .-> manual
   docs_rule -. informs .-> plan
 ```
+
+## How agent-toolkit differs from superpowers
+
+This repo offers somewhat similar functionality to
+[superpowers](https://github.com/obra/superpowers), a popular engineering skills framework whose
+skills activate automatically before any task.
+
+This agent-toolkit makes the opposite choices:
+
+- **Minimalistic** — a focused collection: you can take the skills you need and ignore the rest,
+  rather than adopting a whole methodology.
+- **Human in the loop** — the philosophy behind most skills here: the agent recommends, the
+  human decides.
+- **Primarily user-invoked** — you deliberately launch each skill, keeping the agent's context
+  leaner and its behavior predictable.
+- **Rule-driven automation** — where the toolkit does automate, it's typically an always-loaded
+  rule that explicitly instructs the agent to invoke a specific skill, rather than leaving it to
+  notice a description on its own.
+- **Human-driven workflow** — the [Task workflow](#task-workflow) loop of Refine → Plan → Act
+  keeps you driving and validating between phases, versus superpowers, where the agent drives
+  the whole methodology and pulls you in at its checkpoints.
+
+The benefits of the agent-toolkit approach are a lean context and predictable behavior: you always
+know what the agent has loaded and why.
+
+On the other hand, it asks more of you: you need to know the toolkit and remember to launch the
+right skill, which increases your cognitive load, where auto-activating skills in superpowers-like
+frameworks spare you that effort at the cost of a fuller context.
+
+Matt Pocock explains the differences between these two approaches in detail in
+[this video](https://www.youtube.com/watch?v=UNzCG3lw6O0&t=196s).
