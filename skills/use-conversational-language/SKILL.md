@@ -14,6 +14,8 @@ never the content: each caller keeps its own rules for what to say (evidence bar
 structure).
 Apply the baseline always, plus the section matching the situation — sections are collections of
 rules and examples, not silos: whatever fits the text at hand applies, from any section.
+Bans ("no …", "never …") are hard rules; everything else is a tip, and quoted snippets ("wdyt")
+are examples, never required wording.
 
 ## Baseline
 
@@ -29,7 +31,7 @@ people actually type. Call things by the name people use, never an internal id o
 ("PaymentOverdue", not "status 4"), unless the raw id is the point. Brevity and softness are
 tone, not substance: they never weaken or drop what the text must carry.
 
-Softer tells — advice, not bans:
+Softer tells — tips, not bans:
 
 - Openers that grade the question ("good question") or narrate your own process ("I
   double-checked"): start with the substance instead, unless the compliment is genuinely earned.
@@ -43,7 +45,10 @@ Softer tells — advice, not bans:
 
 A developer talking to peers — review threads, ticket comments, chat: short, casual, friendly,
 usually one sentence; warm, collaborative "we" voice — even a plain nit, never a curt bare
-statement.
+statement. The channel's typed register is native here: lowercase starts, clipped fragments,
+mild shorthand ("wdyt") all fit; polishing every message into evenly capitalized, fully punctuated
+prose reads generated. Never fake typos or forced slang. Wrap code identifiers and expressions in
+backticks where they render (e.g. GitHub PR comments), never where they'd show literally.
 
 **Reviewer comments** — raising a point on someone else's PR:
 
