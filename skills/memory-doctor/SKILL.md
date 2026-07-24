@@ -6,7 +6,7 @@ type: flow
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "1.5"
+  version: "1.6"
 ---
 
 # Memory doctor
@@ -48,7 +48,8 @@ flat file with no index, treat each section as a block.
    the `content` cell one line, the `why + target` cell folding justification, duplicate/garbage
    evidence, and relocate scope/form/path. Full detail for a block waits for its question (step 3).
    The table numbers each block (1…N); refer to a block by that number, in order, and never re-list
-   block numbers out of sequence in surrounding prose.
+   block numbers out of sequence in surrounding prose. The table ends the turn; step 3 begins the
+   next — a same-turn question buries the table behind the prompt.
 3. **Decide, one question per block, in strict index order (1 → last).** Walk blocks by their table
    index — **never group, batch, or reorder blocks**, even when adjacent ones share a verdict; ask
    about exactly one block per prompt. For each, lead with the detail the table only summarized — a
