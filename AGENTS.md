@@ -14,6 +14,9 @@ In Markdown, wrap prose lines at the `max_line_length` in `.editorconfig`. Never
 blocks or inline backtick spans — a command stays on one line even past the limit), tables, URLs,
 links, or YAML frontmatter values to satisfy it.
 
+Skill test harnesses live in `test/<skill-name>/` — repo-internal, never installed; their `runs/`
+output dirs are gitignored.
+
 When changing skills, rules, manifests, install behavior, or repository conventions, update the
 docs in the same change — `README.md`, `AGENTS.md`, `docs/`, and any affected artifact
 documentation — so a fresh agent session understands the current behavior without prior

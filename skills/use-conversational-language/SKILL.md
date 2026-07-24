@@ -4,7 +4,7 @@ description: How to write texts meant to be published by humans for other humans
 license: MIT
 metadata:
   author: Francesco Borzì
-  version: "0.6"
+  version: "0.7"
 ---
 
 # Use conversational language
@@ -14,36 +14,46 @@ never the content: each caller keeps its own rules for what to say (evidence bar
 structure).
 Apply the baseline always, plus the section matching the situation — sections are collections of
 rules and examples, not silos: whatever fits the text at hand applies, from any section.
+Bans ("no …", "never …") are hard rules; everything else is a tip, and quoted snippets ("wdyt")
+are examples, never required wording.
 
 ## Baseline
 
 Concise, plain language that reads like natural conversation. No AI tells: over-formality,
 exclamation marks, emoji, semicolon-heavy prose, "Certainly!"-style openers, bullet lists where a
-sentence would do. Never use dashes (em or en): the dash is the tell likeliest to slip in as a
-connector, so reciting the rule isn't enough. Before sending, re-read the final text and reword
-every dash away, using a comma, period, or line break. Write the way people actually type. Call
-things by the name people use, never an internal id or enum value ("PaymentOverdue", not
-"status 4"), unless the raw id is the point. Brevity and softness are tone, not substance: they
-never weaken or drop what the text must carry.
+sentence would do. Stop at the last point: no closer that only rounds the text off — wrap-up,
+reassurance, closing counterfactual ("hope that helps", "that should be enough to reproduce it",
+"if we skipped X, Y would break"). Never use dashes (em or en). The dash slips in as a connector,
+the closer as a sign-off, and reciting the rules isn't enough: before sending, re-read the final
+text, reword every dash away (comma, period, or line break), and delete an ending that only
+rounds off. Write the way
+people actually type. Call things by the name people use, never an internal id or enum value
+("PaymentOverdue", not "status 4"), unless the raw id is the point. Brevity and softness are
+tone, not substance: they never weaken or drop what the text must carry.
 
-Softer tells — advice, not bans:
+Softer tells — tips, not bans:
 
 - Openers that grade the question ("good question") or narrate your own process ("I
   double-checked"): start with the substance instead, unless the compliment is genuinely earned.
 - Over-precision: detail that only proves you checked reads as generated. Round it off
   ("recently", not "a day before this branch"); keep only the precision the point needs.
 - Dense blocks: past a couple of sentences, prefer one idea per short paragraph.
+- Uniform polish: every sentence complete and evenly weighted reads generated; an occasional
+  fragment or uneven emphasis is how people type.
 
 ## Developer conversations
 
 A developer talking to peers — review threads, ticket comments, chat: short, casual, friendly,
 usually one sentence; warm, collaborative "we" voice — even a plain nit, never a curt bare
-statement.
+statement. The channel's typed register is native here: lowercase starts, clipped fragments,
+mild shorthand ("wdyt") all fit; polishing every message into evenly capitalized, fully punctuated
+prose reads generated. Never fake typos or forced slang. Wrap code identifiers and expressions in
+backticks where they render (e.g. GitHub PR comments), never where they'd show literally.
 
 **Reviewer comments** — raising a point on someone else's PR:
 
 - Lead with the ask; add a brief why only when it isn't obvious — ground it in the code, not the
-  cause-hypothesis, and cite a rule/style-guide only if really needed.
+  cause-hypothesis, and cite a rule/style-guide only when the ask can't stand without it.
 - The plainest verb ("extract", not "pull ... into a shared helper").
 - Point by similarity ("this is similar to `X`"), not verdicts ("basically a copy of").
 - Soften asks with "maybe we can/should"; often a question even when sure the code is wrong,
