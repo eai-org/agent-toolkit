@@ -10,3 +10,6 @@
 .claude/plans/**
 .claude/__pycache__
 CLAUDE.local.md
+
+# Skill test harnesses
+test/**/runs/**
