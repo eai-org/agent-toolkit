@@ -67,6 +67,10 @@ Review helpers that check the codebase while assisting with code or ticket revie
 - **[refine-pr-review](./skills/refine-pr-review/SKILL.md)** — go through a fetched PR review
   together, comment by comment — address, partial, or push back — drafting the replies and
   turning the accepted changes into a requirements doc.
+- **[extract-pr-review-rules](./skills/extract-pr-review-rules/SKILL.md)** — mine the conventions
+  your reviewers actually enforce out of every PR review comment in a repo, saved as a per-reviewer
+  rules doc the review skills read as a checklist; later runs resume from a checkpoint and read
+  only the new comments.
 - **[review-code-assistant](./skills/review-code-assistant/SKILL.md)** — assist you in reviewing a
   PR or branch.
 - **[maintainer-review](./skills/maintainer-review/SKILL.md)** — review someone else's PR as the
