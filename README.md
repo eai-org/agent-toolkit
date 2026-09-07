@@ -149,7 +149,8 @@ installed separately from the skills.
   something a skill or doc governs, offer to persist the lesson via
   [self-improve](./skills/self-improve/SKILL.md).
 - **[write-realistic-texts](./rules/write-realistic-texts.md)** — make text other people will
-  read sound natural, no AI-generated nonsense.
+  read sound natural, and get the user's go-ahead on the wording before publishing the texts it
+  names.
 
 One more rule for non-English speakers ships as a copy-paste snippet rather than a file, since it 
 needs the language filled in — [use-my-mothertongue](./docs/use-my-mothertongue-rule.md) makes  
