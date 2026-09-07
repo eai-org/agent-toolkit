@@ -1,7 +1,8 @@
 # Helpers shared by ./install.sh and ./install-opinionated-rules.sh.
 #
-# Sourced, not run. Callers set REPO_DIR, AGENTS_DIR, and FORCE before using
-# the functions below.
+# Sourced, not run. Callers set REPO_DIR (physical), REPO_DIR_LOGICAL (the
+# unresolved pwd, defaults to REPO_DIR), AGENTS_DIR and FORCE before using the
+# functions below.
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
   echo "This file provides helpers sourced by the installers; run ./install.sh or ./install-opinionated-rules.sh instead." >&2
@@ -599,7 +600,7 @@ finish_auto_update() {
       settings_merge "$file" remove "$cmd" || rc=$?
       case "$rc" in
         0) echo "Auto-update: off (opted out); removed our hook from ${file}. --auto-update turns it back on." ;;
-        3) echo "Auto-update: off (opted out), but ${file} is not valid JSON. Delete the hooks.SessionStart handler whose command contains ${AUTO_UPDATE_MARK} by hand." ;;
+        3) echo "Auto-update: off (opted out), but we cannot work with the JSON in ${file}. Delete the hooks.SessionStart handler whose command contains ${AUTO_UPDATE_MARK} by hand." ;;
         4) echo "Auto-update: off (opted out), but no working python3, node or jq to edit ${file}. Delete the hooks.SessionStart handler whose command contains ${AUTO_UPDATE_MARK} by hand." ;;
         *) echo "Auto-update: off (opted out); no hook of ours in ${file}. --auto-update turns it back on." ;;
       esac
@@ -650,7 +651,7 @@ finish_auto_update() {
          echo "Auto-update: on. Registered a daily SessionStart hook in ${file}. --no-auto-update turns it off."
        fi ;;
     2) echo "Auto-update: on. Already registered in ${file}." ;;
-    3) echo "Auto-update: nothing registered, ${file} is not valid JSON."
+    3) echo "Auto-update: nothing registered, we cannot work with the JSON in ${file}."
        auto_update_snippet "$file" "$cmd" ;;
     *) echo "Auto-update: nothing registered, no working python3, node or jq to edit ${file}."
        auto_update_snippet "$file" "$cmd" ;;

@@ -15,7 +15,9 @@ thing it said.
 - Fast-forward only. A clone that is dirty, detached, without an upstream, off the default branch,
   or diverged is left alone, with one line saying so and naming the fix.
 - At most one run a day, and silent whatever the outcome: the only thing it prints is a problem
-  you have to fix, once per problem. Git and installer output goes to the log.
+  you have to fix, once per problem. A failed fetch retries in an hour instead, so a laptop that
+  was offline this morning still updates later in the day. Git and installer output goes to the
+  log.
 - Never `--force`, so an entry the installers do not own is never replaced.
 - It does replay the installers, so an update can add skills and rules, or drop ones the repo
   removed. Rules are always-on, so that changes how your agent behaves.

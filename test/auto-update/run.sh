@@ -98,6 +98,15 @@ assert_file_missing() {
   if [ -e "$1" ]; then fail "expected $1 to be gone"; fi
 }
 
+# A hook that dies on line 1 satisfies any assertion about what is absent. The
+# stamp is the cheapest proof a run got past the throttle.
+assert_ran() {
+  local due
+  due="$(cat "${STATE}/stamp" 2>/dev/null)"
+  case "$due" in ''|*[!0-9]*) fail "no stamp: the hook never ran"; return 0 ;; esac
+  [ "$due" -gt "$(date +%s)" ] || fail "the hook left a stale stamp: $due"
+}
+
 # --- helpers ---------------------------------------------------------------
 
 json_message() {
@@ -274,6 +283,7 @@ case_up_to_date() {
   head_before="$(git -C "$CLONE" rev-parse HEAD)"
   out="$(run_hook)"
   assert_stdout_is '{}' "$out"
+  assert_ran
   assert_eq "HEAD" "$head_before" "$(git -C "$CLONE" rev-parse HEAD)"
 }
 
@@ -308,6 +318,7 @@ case_fresh_install_no_replay() {
   local out
   out="$(run_hook)"
   assert_stdout_is '{}' "$out"
+  assert_ran
   assert_not_contains "log" "$(log_text)" "Agents dir ->"
 }
 
@@ -572,6 +583,7 @@ case_ssh_guard() {
   git -C "$CLONE" config core.sshCommand "${CASE_ROOT}/bin/plink"
   make_due
   run_hook >/dev/null
+  assert_contains "plink argv" "$(cat "$log" 2>/dev/null)" "git-upload-pack"
   assert_not_contains "plink argv" "$(cat "$log" 2>/dev/null)" "-o BatchMode=yes"
   git -C "$CLONE" config --unset core.sshCommand
 
@@ -590,6 +602,7 @@ case_throttled() {
   install_skills
   make_due
   run_hook >/dev/null
+  assert_ran
   printf 'sentinel\n' >"${STATE}/log"
   printf '%s\n' "$(( $(date +%s) + 99999 ))" >"${STATE}/stamp"
   local out
@@ -608,6 +621,7 @@ case_lock_held() {
   local out
   out="$(run_hook)"
   assert_stdout_is '{}' "$out"
+  assert_ran
   assert_eq "log untouched" "sentinel" "$(log_text)"
   [ -d "${STATE}/lock" ] || fail "someone else's lock was removed"
 }
@@ -783,6 +797,10 @@ case_opt_out_and_back_in() {
   install_skills --auto-update
   assert_eq "back" "1" "$(hook_count)"
   assert_file_missing "${STATE}/opt-out"
+
+  make_due
+  run_hook >/dev/null
+  assert_ran
 }
 
 case_claude_not_detected() {
@@ -897,12 +915,78 @@ JSON
   assert_contains "ours appended" "$(settings_get hooks.SessionStart.1)" "lib/auto-update.sh"
 }
 
+# Foreign handlers wrapped around ours, a drifted copy of ours in a second
+# group, and a group that came in empty. Only python3 ever meets any of it.
+write_hard_settings() {
+  mkdir -p "${HOME}/.claude"
+  cat >"$(settings_file)" <<'JSON'
+{
+  "model": "opus",
+  "hooks": {
+    "Stop": [{ "matcher": "", "hooks": [{ "type": "command", "command": "echo stop" }] }],
+    "SessionStart": [
+      { "matcher": "startup", "hooks": [
+        { "type": "command", "command": "echo before" },
+        { "type": "command", "command": "bash '/gone/lib/auto-update.sh' --json", "timeout": 3 },
+        { "type": "command", "command": "echo after" }
+      ] },
+      { "matcher": "resume", "hooks": [] },
+      { "matcher": "clear", "hooks": [
+        { "type": "command", "command": "bash '/gone/lib/auto-update.sh' --json", "timeout": 10 }
+      ] }
+    ]
+  }
+}
+JSON
+}
+
+# python3, node and jq are three implementations of one algorithm, so run the
+# same file through each and compare what comes out.
+case_settings_engines_agree() {
+  detect_claude
+  local registered removed
+
+  write_hard_settings
+  install_skills
+  registered="$(cat "$(settings_file)")"
+  assert_eq "one handler" "1" "$(hook_count)"
+  assert_contains "foreign before kept" "$registered" "echo before"
+  assert_contains "foreign after kept" "$registered" "echo after"
+  assert_contains "Stop kept" "$registered" "echo stop"
+  assert_eq "empty group kept, ours-only group dropped" "2" "$(group_count)"
+  install_skills --no-auto-update
+  removed="$(cat "$(settings_file)")"
+  assert_eq "python3 removed ours" "0" "$(hook_count)"
+
+  if [ -n "$REAL_NODE" ]; then
+    ln -sf "$REAL_NODE" "${CASE_ROOT}/bin/node"
+    broken_shim python3
+    write_hard_settings
+    install_skills --auto-update
+    assert_eq "node register" "$registered" "$(cat "$(settings_file)")"
+    install_skills --no-auto-update
+    assert_eq "node remove" "$removed" "$(cat "$(settings_file)")"
+    broken_shim node
+    "$REAL_NODE" -v >/dev/null 2>&1 || fail "the node shim clobbered $REAL_NODE"
+  else
+    echo "    (no node available, skipping the node leg)"
+    broken_shim python3
+    broken_shim node
+  fi
+
+  write_hard_settings
+  install_skills --auto-update
+  assert_eq "jq register" "$registered" "$(cat "$(settings_file)")"
+  install_skills --no-auto-update
+  assert_eq "jq remove" "$removed" "$(cat "$(settings_file)")"
+}
+
 case_settings_unparsable() {
   detect_claude
   mkdir -p "${HOME}/.claude"
   printf '{ nope' >"$(settings_file)"
   install_skills
-  assert_contains "installer output" "$OUT" "not valid JSON"
+  assert_contains "installer output" "$OUT" "cannot work with the JSON in"
   assert_contains "installer output" "$OUT" "hooks.SessionStart"
   assert_eq "file untouched" '{ nope' "$(cat "$(settings_file)")"
 }
@@ -922,6 +1006,30 @@ case_interpreter_fallthrough() {
   fi
   install_skills
   assert_eq "jq did the merge" "1" "$(hook_count)"
+}
+
+# Every other remove test runs under python3. node and jq have to drop the
+# handler and the emptied group too.
+case_remove_interpreter_fallthrough() {
+  detect_claude
+  broken_shim python3
+  if [ -n "$REAL_NODE" ]; then
+    ln -sf "$REAL_NODE" "${CASE_ROOT}/bin/node"
+    install_skills
+    assert_eq "node registered" "1" "$(hook_count)"
+    install_skills --no-auto-update
+    assert_eq "node removed" "0" "$(hook_count)"
+    assert_eq "node dropped the group" "0" "$(group_count)"
+    broken_shim node
+    "$REAL_NODE" -v >/dev/null 2>&1 || fail "the node shim clobbered $REAL_NODE"
+  else
+    echo "    (no node available, skipping the node leg)"
+  fi
+  install_skills --auto-update
+  assert_eq "jq registered" "1" "$(hook_count)"
+  install_skills --no-auto-update
+  assert_eq "jq removed" "0" "$(hook_count)"
+  assert_eq "jq dropped the group" "0" "$(group_count)"
 }
 
 case_no_interpreter() {
@@ -1038,8 +1146,10 @@ detached_at_install
 apostrophe_in_clone_path
 settings_created
 settings_keeps_foreign_hooks
+settings_engines_agree
 settings_unparsable
 interpreter_fallthrough
+remove_interpreter_fallthrough
 no_interpreter
 settings_written_only_on_change
 settings_symlinked
