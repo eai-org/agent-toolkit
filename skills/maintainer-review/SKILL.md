@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "0.2"
+  version: "0.3"
 ---
 
 # Maintainer review
@@ -36,14 +36,20 @@ Done when the head SHA, the base, the diff, the check results and all comment st
 
 Extract every issue and PR reference, commit sha, external link and domain identifier (a ticket key
 or product entity id) from the title, the description and **every** comment, then open each,
-including its own comments. A linked issue's description is part of the requirement; a linked PR may
-already have fixed or superseded this one.
+including its own comments and the references it carries in turn, as far as the trail stays on this
+PR's subject. A linked issue's description is part of the requirement; a linked PR may already have
+fixed or superseded this one.
 
 **Never take a claim as fact**, the author's no more than a reviewer's. "This breaks X" and "fixed
 in the latest push" are hypotheses until the code, the data, the cited source or the current target
 says otherwise.
 
-Done when every reference has been opened or recorded as unreachable.
+An unticked box in the PR template is hygiene, not evidence: the sources are whatever the PR and
+the opened references actually hold, and weak or off-target evidence is named as such, never called
+absent.
+
+Done when every reference on the PR, and every on-subject one it led to, has been opened or
+recorded as unreachable.
 
 ## 3. Walk every comment
 
