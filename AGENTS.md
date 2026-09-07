@@ -5,8 +5,9 @@ be self-contained and generic — reusable in any project — so avoid project-s
 assumptions. Rules are opt-in: a skill must work correctly with no rules installed, so never fix
 or extend a skill by adding a rule it depends on.
 
-Skill test harnesses live in `test/<skill-name>/` — repo-internal, never installed; their `runs/`
-output dirs are gitignored. Planning documents go in `.agents/plans/` (gitignored).
+Test harnesses, for a skill or an install script, live in `test/<name>/` — repo-internal, never
+installed; their `runs/` output dirs are gitignored. Planning documents go in `.agents/plans/`
+(gitignored).
 
 ## Docs
 

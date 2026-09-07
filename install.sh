@@ -26,17 +26,26 @@
 #   --agents-dir DIR   Agent-neutral directory   (default: ~/.agents)
 #   --skills-dir DIR   Agent's skills directory  (default: ~/.claude/skills)
 #   --force            Overwrite real files/dirs and foreign symlinks
+#   --no-auto-update   Do not register the daily self-update hook (persists)
+#   --auto-update      Register it again after --no-auto-update
 #   -h, --help         Show this help
+#
+# When Claude Code is detected, this also registers a hook that fast-forwards
+# this clone once a day and re-runs the installers: docs/auto-update.md.
 
 set -euo pipefail
 
-REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+REPO_DIR_LOGICAL="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 . "${REPO_DIR}/lib/install-utils.sh"
 
 AGENTS_DIR="${HOME}/.agents"
 SKILLS_DIR="${HOME}/.claude/skills"
 FORCE=0
+AUTO_UPDATE=""
+SCRIPT_NAME="$(basename "${BASH_SOURCE[0]}")"
+TARGET_FLAG=--skills-dir
 
 usage() {
   cat <<'EOF'
@@ -66,7 +75,12 @@ Options:
   --agents-dir DIR   Agent-neutral directory   (default: ~/.agents)
   --skills-dir DIR   Agent's skills directory  (default: ~/.claude/skills)
   --force            Overwrite real files/dirs and foreign symlinks
+  --no-auto-update   Do not register the daily self-update hook (persists)
+  --auto-update      Register it again after --no-auto-update
   -h, --help         Show this help
+
+When Claude Code is detected, this also registers a hook that fast-forwards
+this clone once a day and re-runs the installers: docs/auto-update.md.
 EOF
   exit "${1:-0}"
 }
@@ -81,6 +95,8 @@ while [ $# -gt 0 ]; do
       echo "install.sh installs skills only; for the rules run ./install-opinionated-rules.sh instead." >&2
       exit 1 ;;
     --force) FORCE=1; shift ;;
+    --no-auto-update) AUTO_UPDATE=off; shift ;;
+    --auto-update) AUTO_UPDATE=on; shift ;;
     -h|--help) usage 0 ;;
     *) echo "Unknown option: $1" >&2; usage 1 ;;
   esac
@@ -108,7 +124,8 @@ end_phase
 # name) are skipped too, so no dangling chain links are created.
 echo "Skills -> ${SKILLS_DIR}"
 mkdir -p "$SKILLS_DIR"
-if [ "$(cd "$SKILLS_DIR" && pwd -P)" = "${AGENTS_DIR}/skills" ]; then
+TARGET_DIR="$(cd "$SKILLS_DIR" && pwd -P)"
+if [ "$TARGET_DIR" = "${AGENTS_DIR}/skills" ]; then
   echo "  ok     (this is the agents dir itself; already populated)"
 else
   prune_dir "$SKILLS_DIR"
@@ -137,5 +154,6 @@ if [ -d "${AGENTS_DIR}/rules" ]; then
 fi
 
 report_install_health
+finish_auto_update
 
 echo "Done."

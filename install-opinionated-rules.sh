@@ -27,17 +27,26 @@
 #   --agents-dir DIR   Agent-neutral directory   (default: ~/.agents)
 #   --rules-dir DIR    Agent's rules directory   (default: ~/.claude/rules)
 #   --force            Overwrite real files/dirs and foreign symlinks
+#   --no-auto-update   Do not register the daily self-update hook (persists)
+#   --auto-update      Register it again after --no-auto-update
 #   -h, --help         Show this help
+#
+# When Claude Code is detected, this also registers a hook that fast-forwards
+# this clone once a day and re-runs the installers: docs/auto-update.md.
 
 set -euo pipefail
 
-REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+REPO_DIR_LOGICAL="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 . "${REPO_DIR}/lib/install-utils.sh"
 
 AGENTS_DIR="${HOME}/.agents"
 RULES_DIR="${HOME}/.claude/rules"
 FORCE=0
+AUTO_UPDATE=""
+SCRIPT_NAME="$(basename "${BASH_SOURCE[0]}")"
+TARGET_FLAG=--rules-dir
 
 usage() {
   cat <<'EOF'
@@ -68,7 +77,12 @@ Options:
   --agents-dir DIR   Agent-neutral directory   (default: ~/.agents)
   --rules-dir DIR    Agent's rules directory   (default: ~/.claude/rules)
   --force            Overwrite real files/dirs and foreign symlinks
+  --no-auto-update   Do not register the daily self-update hook (persists)
+  --auto-update      Register it again after --no-auto-update
   -h, --help         Show this help
+
+When Claude Code is detected, this also registers a hook that fast-forwards
+this clone once a day and re-runs the installers: docs/auto-update.md.
 EOF
   exit "${1:-0}"
 }
@@ -78,6 +92,8 @@ while [ $# -gt 0 ]; do
     --agents-dir) AGENTS_DIR="$2"; shift 2 ;;
     --rules-dir)  RULES_DIR="$2"; shift 2 ;;
     --force) FORCE=1; shift ;;
+    --no-auto-update) AUTO_UPDATE=off; shift ;;
+    --auto-update) AUTO_UPDATE=on; shift ;;
     -h|--help) usage 0 ;;
     *) echo "Unknown option: $1" >&2; usage 1 ;;
   esac
@@ -105,7 +121,8 @@ end_phase
 # name) are skipped too, so no dangling chain links are created.
 echo "Rules -> ${RULES_DIR}"
 mkdir -p "$RULES_DIR"
-if [ "$(cd "$RULES_DIR" && pwd -P)" = "${AGENTS_DIR}/rules" ]; then
+TARGET_DIR="$(cd "$RULES_DIR" && pwd -P)"
+if [ "$TARGET_DIR" = "${AGENTS_DIR}/rules" ]; then
   echo "  ok     (this is the agents dir itself; already populated)"
 else
   prune_dir "$RULES_DIR"
@@ -124,5 +141,6 @@ else
 fi
 
 report_install_health
+finish_auto_update
 
 echo "Done."
