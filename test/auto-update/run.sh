@@ -803,6 +803,20 @@ case_opt_out_and_back_in() {
   assert_ran
 }
 
+# Every other registering case goes through install.sh, and the rules installer
+# has its own target check.
+case_rules_installer_registers() {
+  detect_claude
+  install_rules
+  assert_contains "installer output" "$OUT" "Auto-update: on"
+  assert_eq "one handler" "1" "$(hook_count)"
+  assert_contains "hook command" "$(settings_get hooks.SessionStart.0)" "${CLONE}/lib/auto-update.sh"
+  local target
+  target="$(cd "${HOME}/.claude/rules" && pwd -P)"
+  assert_eq "recorded flag" "--rules-dir" \
+    "$(record_field install-opinionated-rules.sh "$target" 3)"
+}
+
 case_claude_not_detected() {
   install_skills
   assert_contains "installer output" "$OUT" "no Claude Code found"
@@ -961,11 +975,15 @@ case_settings_engines_agree() {
   if [ -n "$REAL_NODE" ]; then
     ln -sf "$REAL_NODE" "${CASE_ROOT}/bin/node"
     broken_shim python3
+    # jq has to go too, or a dead node just falls through to it and every
+    # assertion below still passes.
+    broken_shim jq
     write_hard_settings
     install_skills --auto-update
     assert_eq "node register" "$registered" "$(cat "$(settings_file)")"
     install_skills --no-auto-update
     assert_eq "node remove" "$removed" "$(cat "$(settings_file)")"
+    rm -f "${CASE_ROOT}/bin/jq"
     broken_shim node
     "$REAL_NODE" -v >/dev/null 2>&1 || fail "the node shim clobbered $REAL_NODE"
   else
@@ -996,9 +1014,10 @@ case_interpreter_fallthrough() {
   broken_shim python3
   if [ -n "$REAL_NODE" ]; then
     ln -sf "$REAL_NODE" "${CASE_ROOT}/bin/node"
+    broken_shim jq
     install_skills
     assert_eq "node did the merge" "1" "$(hook_count)"
-    rm -f "$(settings_file)"
+    rm -f "$(settings_file)" "${CASE_ROOT}/bin/jq"
     broken_shim node
     "$REAL_NODE" -v >/dev/null 2>&1 || fail "the node shim clobbered $REAL_NODE"
   else
@@ -1015,11 +1034,13 @@ case_remove_interpreter_fallthrough() {
   broken_shim python3
   if [ -n "$REAL_NODE" ]; then
     ln -sf "$REAL_NODE" "${CASE_ROOT}/bin/node"
+    broken_shim jq
     install_skills
     assert_eq "node registered" "1" "$(hook_count)"
     install_skills --no-auto-update
     assert_eq "node removed" "0" "$(hook_count)"
     assert_eq "node dropped the group" "0" "$(group_count)"
+    rm -f "${CASE_ROOT}/bin/jq"
     broken_shim node
     "$REAL_NODE" -v >/dev/null 2>&1 || fail "the node shim clobbered $REAL_NODE"
   else
@@ -1137,6 +1158,7 @@ feedback_is_json_escaped
 moved_clone
 drifted_hook_entry
 opt_out_and_back_in
+rules_installer_registers
 claude_not_detected
 git_unusable
 symlinked_clone_path
