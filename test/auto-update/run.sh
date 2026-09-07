@@ -241,10 +241,23 @@ record_field() {
   record_line "$1" "$2" | awk -F '\t' -v n="$3" '{ print $n }'
 }
 
+# Every shim goes through here. A plain > follows a symlink, and the node leg of
+# case_interpreter_fallthrough puts a link to the developer's own node in bin/ --
+# writing the stub straight to that path truncates their real binary.
+write_shim() {
+  local path="${CASE_ROOT}/bin/$1"
+  case "$CASE_ROOT" in
+    "${RUNS}"/?*) ;;
+    *) die "refusing to write a shim outside the run dir: $path" ;;
+  esac
+  rm -f "$path"
+  printf '%s\n' "$2" >"$path"
+  chmod +x "$path"
+}
+
 # A shim that always fails, for staging a missing or broken tool.
 broken_shim() {
-  printf '#!/bin/sh\nexit 127\n' >"${CASE_ROOT}/bin/$1"
-  chmod +x "${CASE_ROOT}/bin/$1"
+  write_shim "$1" $'#!/bin/sh\nexit 127'
 }
 
 # --- cases -----------------------------------------------------------------
@@ -522,8 +535,7 @@ case_offline_for_a_week() {
 case_fetch_hang() {
   detect_claude
   install_skills
-  printf '#!/bin/sh\nsleep 30\n' >"${CASE_ROOT}/bin/ssh"
-  chmod +x "${CASE_ROOT}/bin/ssh"
+  write_shim ssh $'#!/bin/sh\nsleep 30'
   git -C "$CLONE" remote set-url origin ssh://localhost/nope.git
   make_due
   local started ended out
@@ -541,9 +553,8 @@ case_ssh_guard() {
   detect_claude
   install_skills
   local log="${CASE_ROOT}/ssh-argv"
-  printf '#!/bin/sh\necho "$@" >> %s\nenv | grep GIT_SSH_COMMAND >> %s.env\nexit 255\n' \
-    "$log" "$log" >"${CASE_ROOT}/bin/ssh"
-  chmod +x "${CASE_ROOT}/bin/ssh"
+  write_shim ssh "$(printf '#!/bin/sh\necho "$@" >> %s\nenv | grep GIT_SSH_COMMAND >> %s.env\nexit 255' \
+    "$log" "$log")"
   cp "${CASE_ROOT}/bin/ssh" "${CASE_ROOT}/bin/plink"
   git -C "$CLONE" remote set-url origin ssh://localhost/nope.git
 
@@ -888,6 +899,7 @@ case_interpreter_fallthrough() {
     assert_eq "node did the merge" "1" "$(hook_count)"
     rm -f "$(settings_file)"
     broken_shim node
+    "$REAL_NODE" -v >/dev/null 2>&1 || fail "the node shim clobbered $REAL_NODE"
   else
     echo "    (no node available, skipping the node leg)"
   fi
