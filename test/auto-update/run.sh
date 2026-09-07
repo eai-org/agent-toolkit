@@ -156,6 +156,10 @@ mtime() {
   stat -f %m "$1" 2>/dev/null || stat -c %Y "$1" 2>/dev/null
 }
 
+mode() {
+  stat -f %Lp "$1" 2>/dev/null || stat -c %a "$1" 2>/dev/null
+}
+
 new_case() {
   CASE="$1"
   CASE_FAILS=0
@@ -728,6 +732,10 @@ case_moved_clone() {
   assert_eq "one handler" "1" "$(hook_count)"
   assert_contains "hook command" "$(settings_get hooks.SessionStart.0.hooks.0.command)" \
     "${CASE_ROOT}/clone2/lib/auto-update.sh"
+  # links still target the old path and count as foreign, so only --force re-points them
+  assert_link_target "${HOME}/.agents/skills/handover" "${CASE_ROOT}/clone/skills/handover"
+  install_skills --force
+  assert_link_target "${HOME}/.agents/skills/handover" "${CLONE}/skills/handover"
 }
 
 case_drifted_hook_entry() {
@@ -836,6 +844,15 @@ case_no_upstream_at_install() {
   assert_eq "nothing registered" "0" "$(hook_count)"
 }
 
+case_detached_at_install() {
+  detect_claude
+  git -C "$CLONE" checkout -q --detach HEAD
+  install_skills
+  assert_contains "installer output" "$OUT" "detached HEAD"
+  assert_not_contains "installer output" "$OUT" "--set-upstream-to"
+  assert_eq "nothing registered" "0" "$(hook_count)"
+}
+
 case_apostrophe_in_clone_path() {
   detect_claude
   mkdir -p "${CASE_ROOT}/it's"
@@ -929,6 +946,41 @@ case_settings_written_only_on_change() {
   assert_eq "settings mtime" "$before" "$(mtime "$(settings_file)")"
 }
 
+case_settings_symlinked() {
+  detect_claude
+  mkdir -p "${HOME}/dotfiles" "${HOME}/.claude"
+  printf '{ "model": "opus" }\n' >"${HOME}/dotfiles/settings.json"
+  chmod 600 "${HOME}/dotfiles/settings.json"
+  ln -s ../dotfiles/settings.json "$(settings_file)"
+  install_skills
+  [ -L "$(settings_file)" ] || fail "settings.json is no longer a symlink"
+  assert_eq "one handler" "1" "$(hook_count)"
+  assert_contains "written through the link" "$(cat "${HOME}/dotfiles/settings.json")" \
+    "lib/auto-update.sh"
+  assert_eq "mode kept" "600" "$(mode "${HOME}/dotfiles/settings.json")"
+}
+
+case_term_releases_the_lock() {
+  detect_claude
+  install_skills
+  write_shim ssh $'#!/bin/sh\nsleep 30'
+  git -C "$CLONE" remote set-url origin ssh://localhost/nope.git
+  make_due
+  local pid started ended
+  started="$(date +%s)"
+  bash "${CLONE}/lib/auto-update.sh" --json >/dev/null &
+  pid=$!
+  sleep 2
+  kill -TERM "$pid" 2>/dev/null
+  wait "$pid" 2>/dev/null
+  ended="$(date +%s)"
+  [ -d "${STATE}/lock" ] && fail "the lock should be released on TERM"
+  if [ "$((ended - started))" -gt 5 ]; then
+    fail "TERM should end the run, it took $((ended - started))s"
+  fi
+  return 0
+}
+
 case_plain_output_mode() {
   detect_claude
   install_skills
@@ -968,6 +1020,7 @@ ssh_guard
 throttled
 lock_held
 stale_lock
+term_releases_the_lock
 state_in_worktree
 state_in_submodule
 copies_recorded
@@ -981,6 +1034,7 @@ git_unusable
 symlinked_clone_path
 non_claude_skills_dir
 no_upstream_at_install
+detached_at_install
 apostrophe_in_clone_path
 settings_created
 settings_keeps_foreign_hooks
@@ -988,6 +1042,7 @@ settings_unparsable
 interpreter_fallthrough
 no_interpreter
 settings_written_only_on_change
+settings_symlinked
 plain_output_mode
 "
 

@@ -219,7 +219,9 @@ main() {
     rm -rf "$LOCK"
     mkdir "$LOCK" 2>/dev/null || finish_silent
   fi
-  trap 'rm -rf "$LOCK"' EXIT TERM INT HUP
+  trap 'rm -rf "$LOCK"' EXIT
+  # exit here, or bash resumes the run once the handler returns
+  trap 'exit 0' TERM INT HUP
   printf '%s\n' "$now" >"${LOCK}/ts" 2>/dev/null
 
   : >"$LOG" 2>/dev/null

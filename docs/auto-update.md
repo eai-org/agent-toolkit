@@ -28,10 +28,11 @@ it changes is the content of skills and rules you already opted into, exactly wh
 
 ## Moving or deleting the clone
 
-Run both installers with `--no-auto-update` before deleting the clone. If it is already gone,
-delete the `hooks.SessionStart` handler whose command contains `/lib/auto-update.sh` from
+Run the installer you use with `--no-auto-update` before deleting the clone. If it is already
+gone, delete the `hooks.SessionStart` handler whose command contains `/lib/auto-update.sh` from
 `~/.claude/settings.json` by hand, or Claude Code reports a failing hook at every startup. A clone
-that moved is fixed by re-running the installers from the new place.
+that moved is fixed by re-running the installers from the new place with `--force`, since without
+it they skip the links still pointing at the old path as entries they do not own.
 
 ## Notes
 

@@ -235,6 +235,20 @@ record_invocation() {
   mv -f "$tmp" "$file"
 }
 
+# Follow a symlink chain by hand: older macOS has no readlink -f.
+follow_links() {
+  local path="$1" target i=0
+  while [ -L "$path" ] && [ "$i" -lt 40 ]; do
+    target="$(readlink "$path")" || break
+    case "$target" in
+      /*) path="$target" ;;
+      *) path="$(dirname "$path")/${target}" ;;
+    esac
+    i=$((i + 1))
+  done
+  printf '%s' "$path"
+}
+
 # Converge our SessionStart handler in a settings file, leaving everything else
 # alone. Whichever of python3, node or jq works first does the edit; the file
 # is rewritten (atomically, since agents watch it) only when the parsed
@@ -243,8 +257,16 @@ record_invocation() {
 # Returns: 0 written, 2 already as we want it, 3 file we cannot parse,
 # 4 no usable interpreter.
 settings_merge() {
-  local file="$1" mode="$2" cmd="$3"
-  local tmp="${file}.tmp.$$" rc=4
+  local file mode="$2" cmd="$3"
+  local tmp rc=4
+
+  # settings.json is often a symlink into a dotfiles repo: edit the target, and
+  # seed the temp file from it so the file's mode survives the rename.
+  file="$(follow_links "$1")"
+  tmp="${file}.tmp.$$"
+  if [ -f "$file" ]; then
+    cp -p "$file" "$tmp" 2>/dev/null || return 4
+  fi
 
   # Probe each interpreter before trusting its exit code: the Windows Store
   # python3 stub exits non-zero without running anything.
@@ -598,6 +620,10 @@ finish_auto_update() {
     return 0
   fi
 
+  if ! git -C "$REPO_DIR" symbolic-ref -q HEAD >/dev/null 2>&1; then
+    echo "Auto-update: nothing registered, ${REPO_DIR} is on a detached HEAD, so there is no branch to update. Check one out with git -C '${REPO_DIR}' checkout main, then re-run this script."
+    return 0
+  fi
   if ! git -C "$REPO_DIR" rev-parse --abbrev-ref '@{u}' >/dev/null 2>&1; then
     echo "Auto-update: nothing registered, the branch checked out in ${REPO_DIR} has no upstream to update from. Set one with git -C '${REPO_DIR}' branch --set-upstream-to origin/main, then re-run this script."
     return 0
