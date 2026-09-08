@@ -16,12 +16,16 @@ REPO_ROOT="$(cd "${HARNESS_DIR}/../.." && pwd -P)"
 RUNS="${HARNESS_DIR}/runs/$(date +%Y%m%d-%H%M%S)"
 TEMPLATE="${RUNS}/_remote.git"
 
-# /usr/bin holds real git and python3 on macOS, and jq from macOS 15 on, so
-# "no git" and "no interpreter" are staged with failing shims in the case's own
-# bin dir; the installers test what works, not what exists. node and jq usually
-# live elsewhere, so the cases that need them link the real binary in and skip
-# their leg when there is none.
+# Real git, python3, node and jq are resolved before PATH is narrowed to
+# BASE_PATH: git lives in BASE_PATH itself, and python3/node/jq are captured
+# as absolute paths from the caller's PATH. Cases stage "no git" and "no
+# interpreter" as failing shims in the case's own bin dir, because the
+# installers test what works rather than what exists; the harness's own JSON
+# reads go through the resolved $PYTHON so those shims cannot reach them.
+# node and jq are not reliably on BASE_PATH, so a case that needs one links
+# the real binary in and skips its leg when there is none.
 BASE_PATH="/usr/bin:/bin:/usr/sbin:/sbin"
+PYTHON="$(command -v python3 2>/dev/null || true)"
 REAL_NODE="$(command -v node 2>/dev/null || true)"
 REAL_JQ="$(command -v jq 2>/dev/null || true)"
 
@@ -43,6 +47,27 @@ die() {
 
 is_repo_root() {
   [ "$(git -C "$1" rev-parse --show-toplevel 2>/dev/null)" = "$1" ]
+}
+
+# A CLT-less macOS python3 stub pops a blocking "install developer tools"
+# dialog instead of failing fast; bound the probe so the harness can't hang on
+# it before the first case even runs.
+python_usable() {
+  [ -n "$PYTHON" ] || return 1
+  local pid i=0
+  "$PYTHON" -c 'import json' >/dev/null 2>&1 &
+  pid=$!
+  while kill -0 "$pid" 2>/dev/null; do
+    if [ "$i" -ge 3 ]; then
+      pkill -P "$pid" 2>/dev/null
+      kill "$pid" 2>/dev/null
+      wait "$pid" 2>/dev/null
+      return 1
+    fi
+    sleep 1
+    i=$((i + 1))
+  done
+  wait "$pid"
 }
 
 CASE=""
@@ -113,7 +138,7 @@ assert_ran() {
 # --- helpers ---------------------------------------------------------------
 
 json_message() {
-  printf '%s' "$1" | /usr/bin/python3 -c \
+  printf '%s' "$1" | "$PYTHON" -c \
     'import json,sys; print(json.load(sys.stdin).get("systemMessage",""))' 2>/dev/null
 }
 
@@ -126,7 +151,7 @@ hook_count() {
   local file
   file="$(settings_file)"
   [ -f "$file" ] || { echo 0; return 0; }
-  /usr/bin/python3 - "$file" <<'PY' 2>/dev/null
+  "$PYTHON" - "$file" <<'PY' 2>/dev/null
 import json, sys
 try:
     data = json.load(open(sys.argv[1]))
@@ -141,7 +166,7 @@ PY
 
 # Read one value out of the settings file, e.g. hooks.SessionStart.0.matcher.
 settings_get() {
-  /usr/bin/python3 - "$(settings_file)" "$1" <<'PY' 2>/dev/null
+  "$PYTHON" - "$(settings_file)" "$1" <<'PY' 2>/dev/null
 import json, sys
 node = json.load(open(sys.argv[1]))
 for part in sys.argv[2].split("."):
@@ -151,17 +176,28 @@ PY
 }
 
 group_count() {
-  /usr/bin/python3 - "$(settings_file)" <<'PYX' 2>/dev/null
+  "$PYTHON" - "$(settings_file)" <<'PYX' 2>/dev/null
 import json, sys
 print(len(json.load(open(sys.argv[1])).get("hooks", {}).get("SessionStart", [])))
 PYX
 }
 
 top_level_keys() {
-  /usr/bin/python3 - "$(settings_file)" <<'PYX' 2>/dev/null
+  "$PYTHON" - "$(settings_file)" <<'PYX' 2>/dev/null
 import json, sys
 print(json.dumps(sorted(json.load(open(sys.argv[1])).keys())))
 PYX
+}
+
+# The pasteable handler out of the last installer run, as its command string.
+snippet_command() {
+  printf '%s\n' "$OUT" | "$PYTHON" -c '
+import json, sys
+lines = sys.stdin.read().splitlines()
+start = next(i for i, l in enumerate(lines) if l.strip() == "{")
+end = next(i for i in range(start, len(lines)) if lines[i].strip() == "}")
+print(json.loads("\n".join(lines[start:end + 1]))["hooks"][0]["command"])
+'
 }
 
 mtime() {
@@ -569,6 +605,26 @@ case_offline_for_a_week() {
   assert_file_missing "${STATE}/offline-since"
 }
 
+case_offline_url_redacted() {
+  detect_claude
+  install_skills
+  git -C "$CLONE" remote set-url origin https://alice:s3cr3t@no-such-host.invalid/x.git
+  make_due
+  run_hook >/dev/null
+  printf '%s\n' "$(( $(date +%s) - 8 * 86400 ))" >"${STATE}/offline-since"
+  make_due
+  local out msg reason
+  out="$(run_hook)"
+  msg="$(json_message "$out")"
+  reason="$(cat "${STATE}/reason" 2>/dev/null)"
+  assert_contains "message" "$msg" "for a week"
+  assert_contains "message" "$msg" "https://no-such-host.invalid/x.git"
+  assert_not_contains "message" "$msg" "s3cr3t"
+  assert_not_contains "message" "$msg" "alice"
+  assert_not_contains "reason" "$reason" "s3cr3t"
+  assert_not_contains "reason" "$reason" "alice"
+}
+
 case_fetch_hang() {
   detect_claude
   install_skills
@@ -692,6 +748,25 @@ case_lock_not_ours() {
   return 0
 }
 
+case_lock_takeover_loser() {
+  detect_claude
+  install_skills
+  make_due
+  mkdir -p "${STATE}/lock"
+  printf '%s\n' "$(( $(date +%s) - 120 ))" >"${STATE}/lock/ts"
+  printf 'someone-else\n' >"${STATE}/lock/owner"
+  chmod 400 "${STATE}/lock/owner"
+  printf 'sentinel\n' >"${STATE}/log"
+  local out
+  out="$(run_hook)"
+  chmod 600 "${STATE}/lock/owner"
+  assert_stdout_is '{}' "$out"
+  assert_eq "log untouched" "sentinel" "$(log_text)"
+  assert_eq "lock owner" "someone-else" "$(cat "${STATE}/lock/owner" 2>/dev/null)"
+  [ -d "${STATE}/lock" ] || fail "a lock we did not win was removed"
+  return 0
+}
+
 case_state_in_worktree() {
   detect_claude
   install_skills
@@ -806,7 +881,7 @@ case_moved_clone() {
 case_drifted_hook_entry() {
   detect_claude
   install_skills
-  /usr/bin/python3 - "$(settings_file)" <<'PY'
+  "$PYTHON" - "$(settings_file)" <<'PY'
 import json, sys
 path = sys.argv[1]
 data = json.load(open(path))
@@ -852,6 +927,30 @@ case_opt_out_and_back_in() {
   make_due
   run_hook >/dev/null
   assert_ran
+}
+
+case_marker_write_fails() {
+  detect_claude
+  install_skills
+  assert_eq "registered" "1" "$(hook_count)"
+
+  chmod 500 "$STATE"
+  install_skills --no-auto-update
+  chmod 700 "$STATE"
+  assert_eq "installer exit status" "0" "$INSTALL_RC"
+  assert_contains "installer output" "$OUT" "could not record the opt-out"
+  assert_eq "handler removed" "0" "$(hook_count)"
+  assert_file_missing "${STATE}/opt-out"
+
+  : >"${STATE}/opt-out"
+  chmod 500 "$STATE"
+  install_skills --auto-update
+  chmod 700 "$STATE"
+  assert_eq "installer exit status" "0" "$INSTALL_RC"
+  assert_contains "installer output" "$OUT" "could not clear the opt-out"
+  assert_eq "handler registered" "1" "$(hook_count)"
+  [ -e "${STATE}/opt-out" ] || fail "the marker we could not remove is gone"
+  rm -f "${STATE}/opt-out"
 }
 
 # Every other registering case goes through install.sh, and the rules installer
@@ -946,6 +1045,25 @@ case_apostrophe_in_clone_path() {
   assert_contains "installer output" "$OUT" "apostrophe"
   assert_contains "installer output" "$OUT" "hooks.SessionStart"
   assert_eq "nothing registered" "0" "$(hook_count)"
+}
+
+case_snippet_json_escaped() {
+  detect_claude
+  mkdir -p "${CASE_ROOT}/q\"uote"
+  git clone -q "${CASE_ROOT}/remote.git" "${CASE_ROOT}/q\"uote/clone"
+  CLONE="${CASE_ROOT}/q\"uote/clone"
+  STATE="${CLONE}/.git/agent-toolkit"
+  install_skills
+  assert_eq "registered" "1" "$(hook_count)"
+  assert_eq "registered command" "bash '${CLONE}/lib/auto-update.sh' --json" \
+    "$(settings_get hooks.SessionStart.0.hooks.0.command)"
+
+  broken_shim python3
+  broken_shim node
+  broken_shim jq
+  install_skills
+  assert_contains "installer output" "$OUT" "no working python3, node or jq"
+  assert_eq "snippet command" "bash '${CLONE}/lib/auto-update.sh' --json" "$(snippet_command)"
 }
 
 case_apostrophe_in_replay_advice() {
@@ -1121,6 +1239,21 @@ SH
   assert_contains "installer output" "$OUT" "by hand"
   chmod 700 "${HOME}/.claude"
   assert_eq "handler still there" "1" "$(hook_count)"
+
+  # The previous leg's --no-auto-update left the opt-out marker set (${STATE}
+  # sits outside the dir we just chmod-restricted, so that write succeeded);
+  # clear it, or this plain install takes the opted-out branch instead of
+  # exercising the write failure.
+  rm -f "${STATE}/opt-out"
+  rm -f "$(settings_file)"
+  chmod 500 "${HOME}/.claude"
+  install_skills
+  chmod 700 "${HOME}/.claude"
+  assert_contains "installer output" "$OUT" "could not write to"
+  assert_contains "installer output" "$OUT" "hooks.SessionStart"
+  assert_not_contains "installer output" "$OUT" "no working python3"
+  assert_not_contains "installer output" "$OUT" "Registered a daily"
+  assert_file_missing "$(settings_file)"
 }
 
 # Both shapes, through whichever engine is live: a key that is present and null
@@ -1271,6 +1404,31 @@ case_term_releases_the_lock() {
   return 0
 }
 
+case_term_ends_the_fetch() {
+  detect_claude
+  install_skills
+  write_shim ssh "$(printf '#!/bin/sh\necho $$ > %s\nexec sleep 30' "${CASE_ROOT}/ssh.pid")"
+  git -C "$CLONE" remote set-url origin ssh://localhost/nope.git
+  make_due
+  local pid child rc
+  bash "${CLONE}/lib/auto-update.sh" --json >/dev/null &
+  pid=$!
+  sleep 2
+  child="$(cat "${CASE_ROOT}/ssh.pid" 2>/dev/null)"
+  kill -TERM "$pid" 2>/dev/null
+  wait "$pid"
+  rc=$?
+  assert_eq "exit status after TERM" "0" "$rc"
+  [ -d "${STATE}/lock" ] && fail "the lock should be released on TERM"
+  if [ -z "$child" ]; then
+    fail "the ssh shim never recorded a pid"
+  elif kill -0 "$child" 2>/dev/null; then
+    fail "the stalled transport survived the TERM"
+    kill -9 "$child" 2>/dev/null
+  fi
+  return 0
+}
+
 case_plain_output_mode() {
   detect_claude
   install_skills
@@ -1306,13 +1464,16 @@ detached
 no_upstream
 offline
 offline_for_a_week
+offline_url_redacted
 fetch_hang
 ssh_guard
 throttled
 lock_held
 stale_lock
 lock_not_ours
+lock_takeover_loser
 term_releases_the_lock
+term_ends_the_fetch
 state_in_worktree
 state_in_submodule
 copies_recorded
@@ -1321,6 +1482,7 @@ feedback_is_json_escaped
 moved_clone
 drifted_hook_entry
 opt_out_and_back_in
+marker_write_fails
 rules_installer_registers
 claude_not_detected
 git_unusable
@@ -1329,6 +1491,7 @@ non_claude_skills_dir
 no_upstream_at_install
 detached_at_install
 apostrophe_in_clone_path
+snippet_json_escaped
 apostrophe_in_replay_advice
 settings_created
 settings_keeps_foreign_hooks
@@ -1368,6 +1531,8 @@ for name in $WANTED; do
     *) die "unknown case: ${name}" ;;
   esac
 done
+
+python_usable || die "no usable python3 found; the harness reads settings.json and hook output with it"
 
 mkdir -p "$RUNS"
 export HOME="${RUNS}/_home"

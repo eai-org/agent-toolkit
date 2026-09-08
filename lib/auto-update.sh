@@ -30,6 +30,7 @@ REASON=""
 JSON=0
 KEY=""
 MESSAGE=""
+CHILD=""
 
 DAY=86400
 HOUR=3600
@@ -94,9 +95,10 @@ report_and_exit() {
 watchdog() {
   local secs="$1"
   shift
-  local pid i=0
+  local pid i=0 rc
   "$@" >>"$LOG" 2>"$ERRF" &
   pid=$!
+  CHILD="$pid"
   while kill -0 "$pid" 2>/dev/null; do
     if [ "$i" -ge "$secs" ]; then
       # git leaves its transport (ssh, a credential helper) as a direct
@@ -104,12 +106,16 @@ watchdog() {
       pkill -P "$pid" 2>/dev/null
       kill "$pid" 2>/dev/null
       wait "$pid" 2>/dev/null
+      CHILD=""
       return 124
     fi
     sleep 1
     i=$((i + 1))
   done
   wait "$pid"
+  rc=$?
+  CHILD=""
+  return "$rc"
 }
 
 # Nothing here may block on a prompt: no terminal is attached and the agent
@@ -136,6 +142,12 @@ guard_prompts() {
   return 0
 }
 
+# git remote get-url returns userinfo verbatim; git >= 2.50 already redacts it
+# from its own transport errors, but this is belt and braces for older git.
+redact_userinfo() {
+  sed -E 's#([A-Za-z][A-Za-z0-9+.-]*://)[^/@[:space:]]*@#\1#g'
+}
+
 # git's first stderr line is generic ("merge failed"); the file names follow on
 # the next ones, and they are what tells two conflicts apart.
 stderr_detail() {
@@ -143,7 +155,7 @@ stderr_detail() {
     { sub(/^error: /, ""); sub(/^fatal: /, "");
       gsub(/[ \t]+/, " "); gsub(/^ +| +$/, "");
       if (length($0)) out = (out == "" ? $0 : out "; " $0) }
-    END { print out }'
+    END { print out }' | redact_userinfo
 }
 
 # A recorded target the user has deleted stays deleted: the installer would
@@ -187,6 +199,16 @@ release_lock() {
   rm -rf "$LOCK"
 }
 
+# End the in-flight fetch's whole tree on a signal, or it and its ssh or
+# credential-helper children keep running after this shell exits.
+kill_child() {
+  [ -n "$CHILD" ] || return 0
+  pkill -P "$CHILD" 2>/dev/null
+  kill "$CHILD" 2>/dev/null
+  wait "$CHILD" 2>/dev/null
+  CHILD=""
+}
+
 main() {
   case "${1:-}" in
     --json) JSON=1 ;;
@@ -220,29 +242,28 @@ main() {
   # session.
   printf '%s\n' "$((now + DAY))" >"$STAMP" 2>/dev/null
 
-  local held dead
+  local held takeover=0
   if ! mkdir "$LOCK" 2>/dev/null; then
     held=0
     [ -f "${LOCK}/ts" ] && held="$(cat "${LOCK}/ts" 2>/dev/null)"
     case "$held" in ''|*[!0-9]*) held=0 ;; esac
     [ "$((now - held))" -lt "$LOCK_STALE_AFTER" ] && finish_silent
-    # Whoever held it was killed mid-run, most likely by a hook timeout. Rename
-    # it aside rather than delete it: only one racer can rename a given
-    # directory, so a loser's rm -rf can never take out the winner's new lock.
-    dead="${LOCK}.dead.$$"
-    rm -rf "$dead" 2>/dev/null
-    mv "$LOCK" "$dead" 2>/dev/null
-    rm -rf "$dead"
-    mkdir "$LOCK" 2>/dev/null || finish_silent
+    takeover=1
   fi
   # Stamp it before anything else: a lock with no ts reads as stale, and a run
   # starting right now would take it over.
   printf '%s\n' "$now" >"${LOCK}/ts" 2>/dev/null
   TOKEN="$$:${now}"
   printf '%s\n' "$TOKEN" >"${LOCK}/owner" 2>/dev/null
+  # Whoever's token survives owns the lock; the other abandons the run. Two
+  # runs that judge the same lock stale both write their own token into it,
+  # so nothing is renamed, deleted or replaced, and there is no marker a
+  # killed run could leave behind to wedge a later takeover.
+  [ "$takeover" -eq 1 ] && sleep 1
+  [ "$(cat "${LOCK}/owner" 2>/dev/null)" = "$TOKEN" ] || finish_silent
   trap release_lock EXIT
   # exit here, or bash resumes the run once the handler returns
-  trap 'exit 0' TERM INT HUP
+  trap 'kill_child; exit 0' TERM INT HUP
 
   : >"$LOG" 2>/dev/null
   : >"$ERRF" 2>/dev/null
@@ -270,6 +291,7 @@ main() {
     [ "$((now - since))" -lt "$OFFLINE_STUCK_AFTER" ] && finish_silent
 
     url="$(git -C "$CLONE" remote get-url "$remote" 2>/dev/null)" || url="$remote"
+    url="$(printf '%s\n' "$url" | redact_userinfo)"
     last="$(stderr_detail)"
     [ -n "$last" ] && last=" ${last}."
     add_outcome "stuck:offline:${url}" \

@@ -287,6 +287,8 @@ settings_merge() {
   tmp="${file}.tmp.$$"
   if [ -f "$file" ]; then
     cp -p "$file" "$tmp" 2>/dev/null || return 5
+  else
+    : >"$tmp" 2>/dev/null || return 5
   fi
 
   # Probe each interpreter before trusting its exit code: the Windows Store
@@ -562,13 +564,25 @@ settings_read_or_empty() {
   fi
 }
 
+# Local: the two files are never sourced into the same shell, so reusing the
+# name lib/auto-update.sh also uses is safe.
+json_escape() {
+  local s="$1"
+  s="${s//\\/\\\\}"
+  s="${s//\"/\\\"}"
+  s="${s//$'\t'/\\t}"
+  s="${s//$'\r'/\\r}"
+  s="${s//$'\n'/\\n}"
+  printf '%s' "$s" | tr -d '\000-\010\013\014\016-\037'
+}
+
 # What to paste when we cannot edit the settings file ourselves.
 auto_update_snippet() {
   local file="$1" cmd="$2"
   echo "  Add this to hooks.SessionStart in ${file}:"
   echo "    {"
   echo "      \"matcher\": \"startup\","
-  echo "      \"hooks\": [{ \"type\": \"command\", \"command\": \"${cmd}\", \"timeout\": 10 }]"
+  echo "      \"hooks\": [{ \"type\": \"command\", \"command\": \"$(json_escape "$cmd")\", \"timeout\": 10 }]"
   echo "    }"
   echo "  Details: docs/auto-update.md"
 }
@@ -605,16 +619,28 @@ finish_auto_update() {
   }
   record_invocation "$state" || true
 
+  local marker="${state}/opt-out"
+  opt_out=0
   case "${AUTO_UPDATE:-}" in
-    off) : >"${state}/opt-out" ;;
-    on)  rm -f "${state}/opt-out" ;;
+    off)
+      opt_out=1
+      if ! : >"$marker" 2>/dev/null; then
+        echo "Auto-update: we could not record the opt-out in ${state}, so a later install will turn it back on."
+      fi
+      ;;
+    on)
+      if ! rm -f "$marker" 2>/dev/null; then
+        echo "Auto-update: we could not clear the opt-out in ${state}, so a later install will switch it back off."
+      fi
+      ;;
+    *)
+      [ -e "$marker" ] && opt_out=1
+      ;;
   esac
 
   cfg="${CLAUDE_CONFIG_DIR:-${HOME}/.claude}"
   file="${cfg}/settings.json"
   cmd="bash '${REPO_DIR}/lib/auto-update.sh' --json"
-  opt_out=0
-  [ -e "${state}/opt-out" ] && opt_out=1
 
   if [ "$opt_out" -eq 1 ]; then
     if [ -f "$file" ] && is_claude_target "$cfg"; then
