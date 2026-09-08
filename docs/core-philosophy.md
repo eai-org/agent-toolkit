@@ -92,7 +92,8 @@ In the toolkit:
 - `/self-improve` locates the governing skill, rule or doc behind a mistake and proposes a compact
   edit that would have prevented it.
 - The `self-improve-on-correction` rule closes the loop by offering this automatically whenever
-  the user corrects the agent.
+  the user corrects the agent; `/refine-pr-review` does the same for the durable lessons in
+  accepted reviewer feedback.
 - Lessons get promoted out of private memory into homes the team controls: project docs, skills,
   rules. Individual corrections become collective improvements.
 - Result: the toolkit and its host projects genuinely improve every day of use.
