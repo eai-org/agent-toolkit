@@ -3,7 +3,7 @@ name: refine-pr-review
 description: Triage a fetched PR review with the user, comment by comment, drafting each reply and producing a REQUIREMENTS file for the accepted code changes. Takes the PR-REVIEW file produced by fetch-pr-review. Invoke manually only.
 license: MIT
 metadata:
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Refine PR review
@@ -80,6 +80,16 @@ pushed back. One table row per comment, resolved and bot rows included for compl
   long for a cell goes below the table, referenced by its row number.
 - **Notes** — the reasoning in a few words, for future review rounds.
 
+## Lessons
+
+During Phase 1, note accepted comments (address, the accepted part of partial, bot: included)
+whose lesson generalizes — would a fresh agent on another task here plausibly repeat the mistake?
+A one-off slip fails; a convention or recurring pattern passes. After Phase 2, present them as one
+batch for the user to strike or add to, each phrased as the general rule, not the incident ("Mock
+external HTTP in unit tests", not "the null check on line 42"). Write the survivors as a
+`## Lessons` section at the end of the ANSWERS file, one line each with its source row numbers;
+none → no section.
+
 ## Boundaries
 
 - **Never touch the PR**: no posting, replying, resolving, or voting — file in, files out.
@@ -102,6 +112,13 @@ Substantial change set (cross-file rework, design decisions) — plan first:
 
 ```
 claude --name create-plan-<slug> "/create-implementation-plan <path>.PR-REVIEW.REQUIREMENTS.md"
+```
+
+Lessons written and `/self-improve` installed — persist them; document-only, so it runs alongside
+the execute session:
+
+```
+claude --name self-improve-<slug> "/self-improve Persist the lessons listed under Lessons in <path>.PR-REVIEW.ANSWERS.md"
 ```
 
 Then offer the alternative — clearing the current session (vendor-agnostic — `/clear` is only the

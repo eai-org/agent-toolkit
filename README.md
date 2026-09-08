@@ -72,8 +72,9 @@ Review helpers that check the codebase while assisting with code or ticket revie
   reviewers on your PR and save them into a markdown doc, ready to address (or push back on), for
   example via refine-pr-review.
 - **[refine-pr-review](./skills/refine-pr-review/SKILL.md)** — go through a fetched PR review
-  together, comment by comment — address, partial, or push back — drafting the replies and
-  turning the accepted changes into a requirements doc.
+  together, comment by comment — address, partial, or push back — drafting the replies, turning
+  the accepted changes into a requirements doc, and recording the durable lessons, which
+  self-improve persists when installed.
 - **[review-code-assistant](./skills/review-code-assistant/SKILL.md)** — assist you in reviewing a
   PR or branch.
 - **[maintainer-review](./skills/maintainer-review/SKILL.md)** — review someone else's PR as the
@@ -222,6 +223,7 @@ flowchart TD
   self --> compact_docs["compact-docs-writer"]
   compact --> compact_docs
   memory_doctor["memory-doctor"] --> self
+  refine_pr --> self
   compact_gov["compact-governing-docs rule"] --> compact
   compact_gov --> compact_docs
 
