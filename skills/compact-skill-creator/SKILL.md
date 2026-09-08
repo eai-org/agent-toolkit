@@ -4,7 +4,7 @@ description: Author or refine a skill for maximum token economy without losing i
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
-  version: "1.16"
+  version: "1.17"
 ---
 
 # Compact skill creator
@@ -85,7 +85,8 @@ in the body, where they steer nothing.
   dependencies, not the whole toolkit, so a link to a sibling that isn't a dependency can dangle.
   Reference another skill only when it's a declared dependency or the link earns its keep
   operationally (e.g. an actionable next-step handoff); never add orientation prose that merely
-  situates the skill among its siblings.
+  situates the skill among its siblings. An optional sibling gates its hand-off; gate the artifact
+  feeding it too only when, without the sibling, it isn't worth its run-time cost.
 
 ## Progressive disclosure — when to split
 
