@@ -256,7 +256,7 @@ follow_links() {
 # structure really changed.
 #
 # Returns: 0 written, 2 already as we want it, 3 file we cannot parse,
-# 4 no usable interpreter.
+# 4 no usable interpreter, 5 we could not write the file.
 settings_merge() {
   local file mode="$2" cmd="$3"
   local tmp rc=4
@@ -266,7 +266,7 @@ settings_merge() {
   file="$(follow_links "$1")"
   tmp="${file}.tmp.$$"
   if [ -f "$file" ]; then
-    cp -p "$file" "$tmp" 2>/dev/null || return 4
+    cp -p "$file" "$tmp" 2>/dev/null || return 5
   fi
 
   # Probe each interpreter before trusting its exit code: the Windows Store
@@ -286,7 +286,7 @@ settings_merge() {
 
   if [ "$rc" -eq 0 ]; then
     if [ -s "$tmp" ]; then
-      mv -f "$tmp" "$file"
+      mv -f "$tmp" "$file" || rc=5
     else
       rc=4
     fi
@@ -316,21 +316,23 @@ except Exception:
 if not isinstance(data, dict):
     sys.exit(3)
 
-hooks = data.get("hooks")
-if hooks is None:
+if "hooks" not in data:
     if mode == "remove":
         sys.exit(2)
     hooks = {}
-elif not isinstance(hooks, dict):
-    sys.exit(3)
+else:
+    hooks = data["hooks"]
+    if not isinstance(hooks, dict):
+        sys.exit(3)
 
-groups = hooks.get("SessionStart")
-if groups is None:
+if "SessionStart" not in hooks:
     if mode == "remove":
         sys.exit(2)
     groups = []
-elif not isinstance(groups, list):
-    sys.exit(3)
+else:
+    groups = hooks["SessionStart"]
+    if not isinstance(groups, list):
+        sys.exit(3)
 for group in groups:
     if not isinstance(group, dict) or not isinstance(group.get("hooks"), list):
         sys.exit(3)
@@ -602,6 +604,7 @@ finish_auto_update() {
         0) echo "Auto-update: off (opted out); removed our hook from ${file}. --auto-update turns it back on." ;;
         3) echo "Auto-update: off (opted out), but we cannot work with the JSON in ${file}. Delete the hooks.SessionStart handler whose command contains ${AUTO_UPDATE_MARK} by hand." ;;
         4) echo "Auto-update: off (opted out), but no working python3, node or jq to edit ${file}. Delete the hooks.SessionStart handler whose command contains ${AUTO_UPDATE_MARK} by hand." ;;
+        5) echo "Auto-update: off (opted out), but we could not write to ${file}. Delete the hooks.SessionStart handler whose command contains ${AUTO_UPDATE_MARK} by hand." ;;
         *) echo "Auto-update: off (opted out); no hook of ours in ${file}. --auto-update turns it back on." ;;
       esac
     else
@@ -652,6 +655,8 @@ finish_auto_update() {
        fi ;;
     2) echo "Auto-update: on. Already registered in ${file}." ;;
     3) echo "Auto-update: nothing registered, we cannot work with the JSON in ${file}."
+       auto_update_snippet "$file" "$cmd" ;;
+    5) echo "Auto-update: nothing registered, we could not write to ${file}."
        auto_update_snippet "$file" "$cmd" ;;
     *) echo "Auto-update: nothing registered, no working python3, node or jq to edit ${file}."
        auto_update_snippet "$file" "$cmd" ;;

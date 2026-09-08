@@ -52,7 +52,9 @@ it they skip the links still pointing at the old path as entries they do not own
 ## Other agents
 
 The installers only know Claude Code. The recipes below were verified against each agent's docs on
-2026-09-06; `<clone>` is this clone's absolute path.
+2026-09-06; `<clone>` is this clone's absolute path. The ones that log to a file resolve it through
+`git rev-parse`, since in a linked worktree or a submodule `.git` is a file and nothing can be
+written beneath it.
 
 ### Gemini CLI
 
@@ -71,7 +73,7 @@ user — so `--json` serves it unchanged.
 `~/.copilot/hooks/agent-toolkit.json` (`$COPILOT_HOME/hooks/` when set):
 
 ```json
-{ "version": 1, "hooks": { "sessionStart": [{ "type": "command", "bash": "bash '<clone>/lib/auto-update.sh' >> '<clone>/.git/agent-toolkit/messages.log'", "timeoutSec": 10 }] } }
+{ "version": 1, "hooks": { "sessionStart": [{ "type": "command", "bash": "bash '<clone>/lib/auto-update.sh' >> \"$(git -C '<clone>' rev-parse --absolute-git-dir)/agent-toolkit/messages.log\"", "timeoutSec": 10 }] } }
 ```
 
 Stdout is parsed as hook JSON, non-JSON is discarded, and nothing reaches you on exit 0 — hence
@@ -84,7 +86,7 @@ for the hook is undocumented.
 `~/.cursor/hooks.json`, for the desktop app (CLI support is undocumented):
 
 ```json
-{ "version": 1, "hooks": { "sessionStart": [{ "command": "bash '<clone>/lib/auto-update.sh' >> '<clone>/.git/agent-toolkit/messages.log'", "timeout": 10 }] } }
+{ "version": 1, "hooks": { "sessionStart": [{ "command": "bash '<clone>/lib/auto-update.sh' >> \"$(git -C '<clone>' rev-parse --absolute-git-dir)/agent-toolkit/messages.log\"", "timeout": 10 }] } }
 ```
 
 It runs from `~/.cursor/`, fire-and-forget, and handles JSON stdout (plain text is undocumented),
@@ -104,7 +106,7 @@ no documented output handling — use the fallback below.
 A cron entry:
 
 ```sh
-@daily bash '<clone>/lib/auto-update.sh' >> '<clone>/.git/agent-toolkit/messages.log' 2>/dev/null
+@daily bash '<clone>/lib/auto-update.sh' >> "$(git -C '<clone>' rev-parse --absolute-git-dir)/agent-toolkit/messages.log" 2>/dev/null
 ```
 
 or a launchd agent with `StartInterval` 86400 running the same command.

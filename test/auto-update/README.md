@@ -13,6 +13,11 @@ Each case builds its own remote, clone and `HOME` under `runs/<timestamp>/<case>
 there to inspect; `runs/` is gitignored. The clone under test is a snapshot of the working tree, so
 there is no need to commit before running.
 
+The cases that compare the three settings.json engines link the real `node` and `jq` into the
+case's own `bin`. Neither is guaranteed to be on the harness path, so a leg whose binary is missing
+is skipped with a printed `(no jq available, skipping the jq leg)` line — the same run asserts less
+on a machine without them.
+
 It needs write access to the `.git` directories it creates under `runs/` — a sandbox that blocks
 those will fail at the first case.
 

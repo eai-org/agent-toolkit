@@ -16,11 +16,14 @@ REPO_ROOT="$(cd "${HARNESS_DIR}/../.." && pwd -P)"
 RUNS="${HARNESS_DIR}/runs/$(date +%Y%m%d-%H%M%S)"
 TEMPLATE="${RUNS}/_remote.git"
 
-# /usr/bin holds real git, python3 and jq on macOS, so "no git" and "no
-# interpreter" are staged with failing shims in the case's own bin dir; the
-# installers test what works, not what exists.
+# /usr/bin holds real git and python3 on macOS, and jq from macOS 15 on, so
+# "no git" and "no interpreter" are staged with failing shims in the case's own
+# bin dir; the installers test what works, not what exists. node and jq usually
+# live elsewhere, so the cases that need them link the real binary in and skip
+# their leg when there is none.
 BASE_PATH="/usr/bin:/bin:/usr/sbin:/sbin"
 REAL_NODE="$(command -v node 2>/dev/null || true)"
+REAL_JQ="$(command -v jq 2>/dev/null || true)"
 
 # Belt and braces: without a ceiling, a git command in a directory that failed
 # to become a repo walks up and hits the developer's own checkout.
@@ -418,6 +421,25 @@ case_untracked_conflict() {
   assert_message_contains "$out" "could not update"
 }
 
+# A failed fast-forward means nothing moved, so the recorded installers must not
+# run: every message they produce claims the clone was updated.
+case_conflict_skips_replay() {
+  detect_claude
+  install_skills
+  push_skill zz-harness-skill
+  git -C "$CLONE" pull -q --ff-only
+  push_file conflict.txt "from upstream"
+  printf 'mine\n' >"${CLONE}/conflict.txt"
+  make_due
+  local out
+  out="$(run_hook)"
+  assert_message_contains "$out" "could not update"
+  assert_message_contains "$out" "conflict.txt"
+  assert_not_contains "message" "$(json_message "$out")" "agent-toolkit updated"
+  assert_file_missing "${HOME}/.claude/skills/zz-harness-skill"
+  assert_not_contains "log" "$(log_text)" "Skills ->"
+}
+
 case_replay_failure() {
   detect_claude
   install_skills
@@ -638,6 +660,35 @@ case_stale_lock() {
   assert_stdout_is '{}' "$out"
   assert_not_contains "log" "$(log_text)" "sentinel"
   [ -d "${STATE}/lock" ] && fail "the lock should be released at exit"
+  return 0
+}
+
+# The trap must recognise its own lock: a successor that took over after we were
+# declared stale owns the directory, and removing it would let a third run in.
+case_lock_not_ours() {
+  detect_claude
+  install_skills
+  write_shim ssh $'#!/bin/sh\nsleep 30'
+  git -C "$CLONE" remote set-url origin ssh://localhost/nope.git
+  make_due
+  local pid mine
+  bash "${CLONE}/lib/auto-update.sh" --json >/dev/null &
+  pid=$!
+  sleep 2
+  mine="$(cat "${STATE}/lock/owner" 2>/dev/null)"
+  [ -n "$mine" ] || fail "the run recorded no owner token"
+  printf 'someone-else\n' >"${STATE}/lock/owner"
+  kill -TERM "$pid" 2>/dev/null
+  wait "$pid" 2>/dev/null
+  [ -d "${STATE}/lock" ] || fail "a lock we do not own was removed"
+  assert_eq "lock owner" "someone-else" "$(cat "${STATE}/lock/owner" 2>/dev/null)"
+
+  # Takeover goes by the timestamp, not the token: someone else's stale lock is
+  # still ours to claim.
+  printf '%s\n' "$(( $(date +%s) - 120 ))" >"${STATE}/lock/ts"
+  make_due
+  run_hook >/dev/null
+  assert_file_missing "${STATE}/lock"
   return 0
 }
 
@@ -983,7 +1034,6 @@ case_settings_engines_agree() {
     assert_eq "node register" "$registered" "$(cat "$(settings_file)")"
     install_skills --no-auto-update
     assert_eq "node remove" "$removed" "$(cat "$(settings_file)")"
-    rm -f "${CASE_ROOT}/bin/jq"
     broken_shim node
     "$REAL_NODE" -v >/dev/null 2>&1 || fail "the node shim clobbered $REAL_NODE"
   else
@@ -992,11 +1042,16 @@ case_settings_engines_agree() {
     broken_shim node
   fi
 
-  write_hard_settings
-  install_skills --auto-update
-  assert_eq "jq register" "$registered" "$(cat "$(settings_file)")"
-  install_skills --no-auto-update
-  assert_eq "jq remove" "$removed" "$(cat "$(settings_file)")"
+  if [ -n "$REAL_JQ" ]; then
+    ln -sf "$REAL_JQ" "${CASE_ROOT}/bin/jq"
+    write_hard_settings
+    install_skills --auto-update
+    assert_eq "jq register" "$registered" "$(cat "$(settings_file)")"
+    install_skills --no-auto-update
+    assert_eq "jq remove" "$removed" "$(cat "$(settings_file)")"
+  else
+    echo "    (no jq available, skipping the jq leg)"
+  fi
 }
 
 case_settings_unparsable() {
@@ -1009,6 +1064,85 @@ case_settings_unparsable() {
   assert_eq "file untouched" '{ nope' "$(cat "$(settings_file)")"
 }
 
+case_settings_write_fails() {
+  detect_claude
+  local body foreign
+  body="$(cat <<'SH'
+#!/bin/sh
+# Only the settings write must fail; the invocations record needs a real mv.
+for last; do :; done
+case "$last" in
+  */settings.json) exit 1 ;;
+esac
+exec /bin/mv "$@"
+SH
+)"
+  write_shim mv "$body"
+  install_skills
+  assert_contains "installer output" "$OUT" "could not write to"
+  assert_contains "installer output" "$OUT" "hooks.SessionStart"
+  assert_not_contains "installer output" "$OUT" "Registered a daily"
+  assert_file_missing "$(settings_file)"
+  rm -f "${CASE_ROOT}/bin/mv"
+
+  foreign='{ "model": "opus" }'
+  printf '%s\n' "$foreign" >"$(settings_file)"
+  chmod 500 "${HOME}/.claude"
+  install_skills
+  assert_contains "installer output" "$OUT" "could not write to"
+  assert_contains "installer output" "$OUT" "hooks.SessionStart"
+  assert_not_contains "installer output" "$OUT" "Registered a daily"
+  chmod 700 "${HOME}/.claude"
+  assert_eq "file untouched" "$foreign" "$(cat "$(settings_file)")"
+
+  install_skills
+  assert_eq "one handler" "1" "$(hook_count)"
+  chmod 500 "${HOME}/.claude"
+  install_skills --no-auto-update
+  assert_contains "installer output" "$OUT" "could not write to"
+  assert_contains "installer output" "$OUT" "by hand"
+  chmod 700 "${HOME}/.claude"
+  assert_eq "handler still there" "1" "$(hook_count)"
+}
+
+# Both shapes, through whichever engine is live: a key that is present and null
+# is not an absent key, and overwriting it would throw away what the user wrote.
+assert_null_hooks_refused() {
+  local doc
+  for doc in '{"hooks": null}' '{"hooks": {"SessionStart": null}}'; do
+    printf '%s\n' "$doc" >"$(settings_file)"
+    install_skills
+    assert_contains "$1 refused it" "$OUT" "cannot work with the JSON in"
+    assert_eq "$1 left the file alone" "$doc" "$(cat "$(settings_file)")"
+  done
+}
+
+case_settings_null_hooks() {
+  detect_claude
+  mkdir -p "${HOME}/.claude"
+  assert_null_hooks_refused python3
+
+  if [ -n "$REAL_NODE" ]; then
+    ln -sf "$REAL_NODE" "${CASE_ROOT}/bin/node"
+    broken_shim python3
+    broken_shim jq
+    assert_null_hooks_refused node
+    broken_shim node
+    "$REAL_NODE" -v >/dev/null 2>&1 || fail "the node shim clobbered $REAL_NODE"
+  else
+    echo "    (no node available, skipping the node leg)"
+    broken_shim python3
+    broken_shim node
+  fi
+
+  if [ -n "$REAL_JQ" ]; then
+    ln -sf "$REAL_JQ" "${CASE_ROOT}/bin/jq"
+    assert_null_hooks_refused jq
+  else
+    echo "    (no jq available, skipping the jq leg)"
+  fi
+}
+
 case_interpreter_fallthrough() {
   detect_claude
   broken_shim python3
@@ -1017,14 +1151,19 @@ case_interpreter_fallthrough() {
     broken_shim jq
     install_skills
     assert_eq "node did the merge" "1" "$(hook_count)"
-    rm -f "$(settings_file)" "${CASE_ROOT}/bin/jq"
+    rm -f "$(settings_file)"
     broken_shim node
     "$REAL_NODE" -v >/dev/null 2>&1 || fail "the node shim clobbered $REAL_NODE"
   else
     echo "    (no node available, skipping the node leg)"
   fi
-  install_skills
-  assert_eq "jq did the merge" "1" "$(hook_count)"
+  if [ -n "$REAL_JQ" ]; then
+    ln -sf "$REAL_JQ" "${CASE_ROOT}/bin/jq"
+    install_skills
+    assert_eq "jq did the merge" "1" "$(hook_count)"
+  else
+    echo "    (no jq available, skipping the jq leg)"
+  fi
 }
 
 # Every other remove test runs under python3. node and jq have to drop the
@@ -1040,17 +1179,21 @@ case_remove_interpreter_fallthrough() {
     install_skills --no-auto-update
     assert_eq "node removed" "0" "$(hook_count)"
     assert_eq "node dropped the group" "0" "$(group_count)"
-    rm -f "${CASE_ROOT}/bin/jq"
     broken_shim node
     "$REAL_NODE" -v >/dev/null 2>&1 || fail "the node shim clobbered $REAL_NODE"
   else
     echo "    (no node available, skipping the node leg)"
   fi
-  install_skills --auto-update
-  assert_eq "jq registered" "1" "$(hook_count)"
-  install_skills --no-auto-update
-  assert_eq "jq removed" "0" "$(hook_count)"
-  assert_eq "jq dropped the group" "0" "$(group_count)"
+  if [ -n "$REAL_JQ" ]; then
+    ln -sf "$REAL_JQ" "${CASE_ROOT}/bin/jq"
+    install_skills --auto-update
+    assert_eq "jq registered" "1" "$(hook_count)"
+    install_skills --no-auto-update
+    assert_eq "jq removed" "0" "$(hook_count)"
+    assert_eq "jq dropped the group" "0" "$(group_count)"
+  else
+    echo "    (no jq available, skipping the jq leg)"
+  fi
 }
 
 case_no_interpreter() {
@@ -1136,6 +1279,7 @@ target_removed
 dirty
 second_error_reported
 untracked_conflict
+conflict_skips_replay
 replay_failure
 diverged
 non_default_branch
@@ -1149,6 +1293,7 @@ ssh_guard
 throttled
 lock_held
 stale_lock
+lock_not_ours
 term_releases_the_lock
 state_in_worktree
 state_in_submodule
@@ -1170,6 +1315,8 @@ settings_created
 settings_keeps_foreign_hooks
 settings_engines_agree
 settings_unparsable
+settings_write_fails
+settings_null_hooks
 interpreter_fallthrough
 remove_interpreter_fallthrough
 no_interpreter
@@ -1194,13 +1341,21 @@ build_template() {
   git clone -q --bare "$src" "$TEMPLATE" || die "could not build the template remote"
 }
 
+WANTED="$*"
+KNOWN=" $(printf '%s' "$CASES" | tr '\n' ' ') "
+for name in $WANTED; do
+  case "$KNOWN" in
+    *" ${name} "*) ;;
+    *) die "unknown case: ${name}" ;;
+  esac
+done
+
 mkdir -p "$RUNS"
 export HOME="${RUNS}/_home"
 mkdir -p "$HOME"
 export PATH="$BASE_PATH"
 build_template
 
-WANTED="$*"
 for name in $CASES; do
   if [ -n "$WANTED" ]; then
     case " $WANTED " in *" $name "*) ;; *) continue ;; esac

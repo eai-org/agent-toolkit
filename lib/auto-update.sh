@@ -23,6 +23,7 @@ INV=""
 LOG=""
 ERRF=""
 LOCK=""
+TOKEN=""
 STAMP=""
 OFFLINE=""
 REASON=""
@@ -176,6 +177,13 @@ copies_flag() {
   printf '%s' "$value"
 }
 
+# Only ours to remove: a run that took over after we were declared stale owns
+# the directory now, and deleting it would let a third run in.
+release_lock() {
+  [ "$(cat "${LOCK}/owner" 2>/dev/null)" = "$TOKEN" ] || return 0
+  rm -rf "$LOCK"
+}
+
 main() {
   case "${1:-}" in
     --json) JSON=1 ;;
@@ -209,20 +217,29 @@ main() {
   # session.
   printf '%s\n' "$((now + DAY))" >"$STAMP" 2>/dev/null
 
-  local held
+  local held dead
   if ! mkdir "$LOCK" 2>/dev/null; then
     held=0
     [ -f "${LOCK}/ts" ] && held="$(cat "${LOCK}/ts" 2>/dev/null)"
     case "$held" in ''|*[!0-9]*) held=0 ;; esac
     [ "$((now - held))" -lt "$LOCK_STALE_AFTER" ] && finish_silent
-    # Whoever held it was killed mid-run, most likely by a hook timeout.
-    rm -rf "$LOCK"
+    # Whoever held it was killed mid-run, most likely by a hook timeout. Rename
+    # it aside rather than delete it: only one racer can rename a given
+    # directory, so a loser's rm -rf can never take out the winner's new lock.
+    dead="${LOCK}.dead.$$"
+    rm -rf "$dead" 2>/dev/null
+    mv "$LOCK" "$dead" 2>/dev/null
+    rm -rf "$dead"
     mkdir "$LOCK" 2>/dev/null || finish_silent
   fi
-  trap 'rm -rf "$LOCK"' EXIT
+  # Stamp it before anything else: a lock with no ts reads as stale, and a run
+  # starting right now would take it over.
+  printf '%s\n' "$now" >"${LOCK}/ts" 2>/dev/null
+  TOKEN="$$:${now}"
+  printf '%s\n' "$TOKEN" >"${LOCK}/owner" 2>/dev/null
+  trap release_lock EXIT
   # exit here, or bash resumes the run once the handler returns
   trap 'exit 0' TERM INT HUP
-  printf '%s\n' "$now" >"${LOCK}/ts" 2>/dev/null
 
   : >"$LOG" 2>/dev/null
   : >"$ERRF" 2>/dev/null
@@ -309,6 +326,7 @@ main() {
       detail="$(stderr_detail)"
       add_outcome "error:merge:${branch}:${detail}" \
         "agent-toolkit could not update ${CLONE}: ${detail}"
+      report_and_exit
     fi
   fi
 
