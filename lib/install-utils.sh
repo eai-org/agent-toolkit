@@ -16,6 +16,26 @@ resolve_agents_dir() {
   AGENTS_DIR="$(cd "$AGENTS_DIR" && pwd -P)"
 }
 
+# A CLT-less macOS python3 stub pops a blocking "install developer tools"
+# dialog instead of failing fast; bound the probe so a headless run (the
+# auto-update hook, no one present to dismiss it) can't hang on it.
+python3_usable() {
+  local pid i=0
+  python3 -c 'import json' >/dev/null 2>&1 &
+  pid=$!
+  while kill -0 "$pid" 2>/dev/null; do
+    if [ "$i" -ge 3 ]; then
+      pkill -P "$pid" 2>/dev/null
+      kill "$pid" 2>/dev/null
+      wait "$pid" 2>/dev/null
+      return 1
+    fi
+    sleep 1
+    i=$((i + 1))
+  done
+  wait "$pid"
+}
+
 SYMLINKS_REAL=1
 COPIED_KIND=dir
 NOTHING_INSTALLED=0
@@ -271,7 +291,7 @@ settings_merge() {
 
   # Probe each interpreter before trusting its exit code: the Windows Store
   # python3 stub exits non-zero without running anything.
-  if python3 -c 'import json' >/dev/null 2>&1; then
+  if python3_usable; then
     settings_merge_python "$file" "$mode" "$cmd" "$tmp"
     rc=$?
   fi

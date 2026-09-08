@@ -99,6 +99,9 @@ watchdog() {
   pid=$!
   while kill -0 "$pid" 2>/dev/null; do
     if [ "$i" -ge "$secs" ]; then
+      # git leaves its transport (ssh, a credential helper) as a direct
+      # child; killing git alone orphans it instead of ending the hang.
+      pkill -P "$pid" 2>/dev/null
       kill "$pid" 2>/dev/null
       wait "$pid" 2>/dev/null
       return 124
@@ -349,7 +352,10 @@ main() {
     IFS=$'\t' read -r script agents_dir flag target rec_head copies <<<"$line"
     [ -n "$script" ] || continue
     [ "$rec_head" = "$head_now" ] && continue
-    cmd="bash '${CLONE}/${script}' --agents-dir '${agents_dir}' ${flag} '${target}'"
+    case "${CLONE}${agents_dir}${target}" in
+      *\'*) cmd="${script} for ${target}; its path has an apostrophe, so the command cannot be safely quoted here" ;;
+      *) cmd="bash '${CLONE}/${script}' --agents-dir '${agents_dir}' ${flag} '${target}'" ;;
+    esac
     bash "${CLONE}/${script}" --agents-dir "$agents_dir" "$flag" "$target" >>"$LOG" 2>&1
     rc=$?
     if [ "$rc" -ne 0 ]; then
@@ -363,7 +369,10 @@ main() {
   for line in ${replayed[@]+"${replayed[@]}"}; do
     IFS=$'\t' read -r script agents_dir flag target rec_head copies <<<"$line"
     [ "$(copies_flag "$script" "$target")" = "1" ] || continue
-    cmd="bash '${CLONE}/${script}' --agents-dir '${agents_dir}' ${flag} '${target}' --force"
+    case "${CLONE}${agents_dir}${target}" in
+      *\'*) cmd="${script} for ${target} with --force; its path has an apostrophe, so the command cannot be safely quoted here" ;;
+      *) cmd="bash '${CLONE}/${script}' --agents-dir '${agents_dir}' ${flag} '${target}' --force" ;;
+    esac
     add_outcome "copies:${script}:${target}:${head_now}" \
       "agent-toolkit updated ${CLONE}, but ${target} holds copies rather than links, so it did not follow. Re-run: ${cmd}"
   done

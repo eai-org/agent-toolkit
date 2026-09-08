@@ -948,6 +948,24 @@ case_apostrophe_in_clone_path() {
   assert_eq "nothing registered" "0" "$(hook_count)"
 }
 
+case_apostrophe_in_replay_advice() {
+  detect_claude
+  mkdir -p "${CASE_ROOT}/it's"
+  git clone -q "${CASE_ROOT}/remote.git" "${CASE_ROOT}/it's/clone"
+  CLONE="${CASE_ROOT}/it's/clone"
+  STATE="${CLONE}/.git/agent-toolkit"
+  install_skills
+  push_skill zz-harness-skill
+  chmod 500 "${HOME}/.claude/skills"
+  make_due
+  local out
+  out="$(run_hook)"
+  chmod 700 "${HOME}/.claude/skills"
+  assert_message_contains "$out" "install.sh failed"
+  assert_message_contains "$out" "cannot be safely quoted"
+  assert_not_contains "message" "$(json_message "$out")" "bash '"
+}
+
 case_settings_created() {
   detect_claude
   install_skills
@@ -1311,6 +1329,7 @@ non_claude_skills_dir
 no_upstream_at_install
 detached_at_install
 apostrophe_in_clone_path
+apostrophe_in_replay_advice
 settings_created
 settings_keeps_foreign_hooks
 settings_engines_agree
