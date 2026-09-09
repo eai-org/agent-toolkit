@@ -5,7 +5,7 @@ context: fork
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 license: MIT
 metadata:
-  version: "1.7"
+  version: "1.8"
 ---
 
 # Run Nx Checks
@@ -33,6 +33,28 @@ Keep the Nx daemon warm so the project graph is reused across targets:
 NX_DAEMON=true npx nx daemon --start >/dev/null 2>&1 || true
 ```
 
+### Affected base (skip when `$projectName` was passed)
+
+`nx affected` diffs against the *local* default branch, which is often stale or missing. Resolve
+the remote-tracking ref once and write it literally into every `affected`, `format:write` and
+`show projects --affected` command below as `--base=$base` (each call is a fresh shell, see Steps):
+
+```bash
+base=${NX_BASE:-$(node -p 'const j=require("./nx.json"); j.defaultBase ?? j.affected?.defaultBase ?? "main"' 2>/dev/null || echo main)}
+base=${base#remotes/}; [[ $base == */* ]] || base="origin/$base"
+GIT_TERMINAL_PROMPT=0 GIT_SSH_COMMAND='ssh -o BatchMode=yes -o ConnectTimeout=15' git fetch --quiet "${base%%/*}" "${base#*/}" || echo "fetch failed: base may be stale"
+git rev-parse --verify --quiet "$base" >/dev/null && echo "base=$base" || echo "no such ref: omit --base"
+```
+
+- Omit `--base` when the ref is missing (Nx falls back to `defaultBase`) or `NX_BASE` is set (Nx
+  reads it itself; the fetch still runs).
+- **Never pass `--head`.** With both flags Nx diffs two commits and ignores uncommitted and
+  untracked files, so an agent's unstaged edits vanish and every check passes vacuously.
+- A failed fetch is not a failure: continue on the current ref, flag "base may be stale" in the
+  final report, and never retry outside the sandbox for it.
+
+Why: [affected-base-rationale.md](affected-base-rationale.md).
+
 ## Fix rule
 
 - Apply only mechanical/unambiguous fixes: lint auto-fix output, missing imports/types, obvious type
@@ -47,7 +69,7 @@ NX_DAEMON=true npx nx daemon --start >/dev/null 2>&1 || true
 ## Affected scope — sanity-check before build/test
 
 Affected runs can balloon. Before steps 3–4, check scope with the graph-only
-`npx nx show projects --affected` (fast, no build):
+`npx nx show projects --affected --base=$base` (fast, no build):
 
 - **Sandbox `.env` false positives.** The sandbox denies reading `**/.env`; `nx affected` hashes
   changed files, so an unreadable `.env` reads as *changed* and marks its project affected. Repos
@@ -78,7 +100,9 @@ The invariant: **remote cache always off (unless the user passed `--remote-cache
 always on** — always disable, never autodetect (a passing shell-side auth check doesn't predict the
 in-process credential chain). Why: [remote-cache-rationale.md](remote-cache-rationale.md).
 
-If the user explicitly passed `--remote-cache`, drop both prefixes.
+If the user explicitly passed `--remote-cache`, drop both prefixes. Expect pipeline hits on `build`
+only: `--fix` and `--maxWorkers=1` are hashed overrides, so lint and test entries never match a
+pipeline run without them — keep the flags regardless.
 
 **Always keep the local cache on.** The env vars above disable only the _remote_ read-through cache;
 the local Nx cache must stay enabled so unchanged targets are replayed instead of re-run. Do **not**
@@ -94,15 +118,18 @@ calls (true for any nx env var). Never stash the prefix in a shell variable
 (`NX_OFF="…"; $NX_OFF npx nx …` fails with "command not found": expanded variables are not parsed
 as assignments).
 
-1. Lint — `NX_POWERPACK_CACHE_MODE=no-cache NX_NO_CLOUD=true npx nx affected -t lint --parallel=$cpuCount --fix`
+1. Lint — `NX_POWERPACK_CACHE_MODE=no-cache NX_NO_CLOUD=true npx nx affected -t lint --base=$base --parallel=$cpuCount --fix`
    (or `NX_POWERPACK_CACHE_MODE=no-cache NX_NO_CLOUD=true npx nx lint $projectName --fix`).
-2. Format — `NX_POWERPACK_CACHE_MODE=no-cache NX_NO_CLOUD=true npx nx format:write`
-3. Test — `NX_POWERPACK_CACHE_MODE=no-cache NX_NO_CLOUD=true npx nx affected -t test --parallel=$cpuCount --maxWorkers=1`
+2. Format — `NX_POWERPACK_CACHE_MODE=no-cache NX_NO_CLOUD=true npx nx format:write --base=$base`
+3. Test — `NX_POWERPACK_CACHE_MODE=no-cache NX_NO_CLOUD=true npx nx affected -t test --base=$base --parallel=$cpuCount --maxWorkers=1`
    (or `NX_POWERPACK_CACHE_MODE=no-cache NX_NO_CLOUD=true npx nx test $projectName`).
-4. Build — `NX_POWERPACK_CACHE_MODE=no-cache NX_NO_CLOUD=true npx nx affected -t build --parallel=$cpuCount`
-   (or `NX_POWERPACK_CACHE_MODE=no-cache NX_NO_CLOUD=true npx nx build $projectName --parallel=$cpuCount`).
+4. Build — `NX_POWERPACK_CACHE_MODE=no-cache NX_NO_CLOUD=true npx nx affected -t build --base=$base --configuration=production --parallel=$cpuCount`
+   (or `NX_POWERPACK_CACHE_MODE=no-cache NX_NO_CLOUD=true npx nx build $projectName --configuration=production --parallel=$cpuCount`).
 
 Apply the fix rule on any failure in steps 1–4.
+
+`--configuration=production` mirrors pipelines and surfaces production-only failures (AOT, budgets);
+a project without that configuration falls back to its default, so it is safe workspace-wide.
 
 ### `--maxWorkers=1` on the test step
 
@@ -130,7 +157,8 @@ the Fix rule.
 ## Final report (mandatory)
 
 This skill runs in a forked context, so its final message is the only channel back to the caller.
-End by listing, per target (lint / format / test / build): clean, skipped (with the reason — for
-large fan-out, the project count and scope), or each failing `project:target` with its cause, plus
-any flaky `project:target`. Never report a bare "checks passed" — an unlisted failure or skipped
-target reads as green and the caller can't act on it.
+End by listing the affected base used (or omitted / possibly stale), then per target (lint /
+format / test / build): clean, skipped (with the reason — for large fan-out, the project count and
+scope), or each failing `project:target` with its cause, plus any flaky `project:target`. Never
+report a bare "checks passed" — an unlisted failure or skipped target reads as green and the caller
+can't act on it.
