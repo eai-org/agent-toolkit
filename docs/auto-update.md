@@ -24,9 +24,10 @@ thing it said.
 
 That last point is what to weigh against
 [pillar 3](./core-philosophy.md#pillar-3-human-in-the-loop). It stays on by default because the
-installer announces it, one flag opts out, and it never puts anything in the model's context: what
-it changes is the content of skills and rules you already opted into, exactly what
-`git pull && ./install.sh` does by hand.
+installer announces it, one flag opts out, and the hook itself adds nothing to the model's
+context: its messages go to you, not the model. What changes is what `git pull && ./install.sh`
+would change by hand — the content of the skills and rules you opted into, plus whatever the repo
+added or dropped since.
 
 ## Moving or deleting the clone
 
@@ -42,6 +43,8 @@ it they skip the links still pointing at the old path as entries they do not own
   "$CLAUDE_CONFIG_DIR/rules"` to get wired up; the hook is registered for Claude's own directories
   only.
 - Hooks from user settings do not run in a folder until its workspace-trust dialog is accepted.
+- One hook per settings file: an install from another clone points it at that clone, as it does
+  the links, and `--no-auto-update` from that clone removes it.
 - Windows Git Bash: a profile that echoes unconditionally prepends its output to the hook's, so the
   output no longer starts with `{`, and all of it is injected into the model's context. Keep
   profile echoes behind an interactive check.
@@ -54,14 +57,15 @@ it they skip the links still pointing at the old path as entries they do not own
 The installers only know Claude Code. The recipes below were verified against each agent's docs on
 2026-09-06; `<clone>` is this clone's absolute path. The ones that log to a file resolve it through
 `git rev-parse`, since in a linked worktree or a submodule `.git` is a file and nothing can be
-written beneath it.
+written beneath it. The directory they log to is created by the installers, so run one for the
+agent first — that run is also what the hook will replay.
 
 ### Gemini CLI
 
 In `~/.gemini/settings.json` (`$GEMINI_CLI_HOME` when set), add to `hooks.SessionStart`:
 
 ```json
-{ "matcher": "startup", "hooks": [{ "type": "command", "command": "bash '<clone>/lib/auto-update.sh' --json", "timeout": 10000 }] }
+{ "matcher": "startup", "hooks": [{ "type": "command", "command": "bash '<clone>/lib/auto-update.sh' --json", "timeout": 20000 }] }
 ```
 
 `timeout` is in **milliseconds** here, and `name` is optional. The hook is synchronous but never
@@ -73,7 +77,7 @@ user — so `--json` serves it unchanged.
 `~/.copilot/hooks/agent-toolkit.json` (`$COPILOT_HOME/hooks/` when set):
 
 ```json
-{ "version": 1, "hooks": { "sessionStart": [{ "type": "command", "bash": "bash '<clone>/lib/auto-update.sh' >> \"$(git -C '<clone>' rev-parse --absolute-git-dir)/agent-toolkit/messages.log\"", "timeoutSec": 10 }] } }
+{ "version": 1, "hooks": { "sessionStart": [{ "type": "command", "bash": "bash '<clone>/lib/auto-update.sh' >> \"$(git -C '<clone>' rev-parse --absolute-git-dir)/agent-toolkit/messages.log\"", "timeoutSec": 20 }] } }
 ```
 
 Stdout is parsed as hook JSON, non-JSON is discarded, and nothing reaches you on exit 0 — hence
@@ -86,7 +90,7 @@ for the hook is undocumented.
 `~/.cursor/hooks.json`, for the desktop app (CLI support is undocumented):
 
 ```json
-{ "version": 1, "hooks": { "sessionStart": [{ "command": "bash '<clone>/lib/auto-update.sh' >> \"$(git -C '<clone>' rev-parse --absolute-git-dir)/agent-toolkit/messages.log\"", "timeout": 10 }] } }
+{ "version": 1, "hooks": { "sessionStart": [{ "command": "bash '<clone>/lib/auto-update.sh' >> \"$(git -C '<clone>' rev-parse --absolute-git-dir)/agent-toolkit/messages.log\"", "timeout": 20 }] } }
 ```
 
 It runs from `~/.cursor/`, fire-and-forget, and handles JSON stdout (plain text is undocumented),

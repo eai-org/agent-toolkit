@@ -18,10 +18,10 @@ case's own `bin`. Neither is guaranteed to be on the harness path, so a leg whos
 is skipped with a printed `(no jq available, skipping the jq leg)` line — the same run asserts less
 on a machine without them.
 
-The harness itself needs a working `python3`: it reads `settings.json` and hook output through it,
-resolved once at startup and called by absolute path so the broken-interpreter shims the cases
-stage cannot reach it. Without a usable one, the run refuses to start rather than producing empty
-comparisons — unlike `node` and `jq` above, which are optional and only skip a leg.
+The harness itself needs a working `python3`: it reads `settings.json` and hook output through
+it, resolved once at startup and called by absolute path so the broken-interpreter shims the
+cases stage cannot reach it. Without a usable one, the run refuses to start rather than producing
+empty comparisons — unlike `node` and `jq` above, which are optional and only skip a leg.
 
 It needs write access to the `.git` directories it creates under `runs/` — a sandbox that blocks
 those will fail at the first case.

@@ -20,18 +20,18 @@ resolve_agents_dir() {
 # dialog instead of failing fast; bound the probe so a headless run (the
 # auto-update hook, no one present to dismiss it) can't hang on it.
 python3_usable() {
-  local pid i=0
+  local pid ticks=0
   python3 -c 'import json' >/dev/null 2>&1 &
   pid=$!
   while kill -0 "$pid" 2>/dev/null; do
-    if [ "$i" -ge 3 ]; then
+    if [ "$ticks" -ge 30 ]; then
       pkill -P "$pid" 2>/dev/null
       kill "$pid" 2>/dev/null
       wait "$pid" 2>/dev/null
       return 1
     fi
-    sleep 1
-    i=$((i + 1))
+    sleep 0.1
+    ticks=$((ticks + 1))
   done
   wait "$pid"
 }
@@ -206,6 +206,9 @@ report_install_health() {
 # ---------------------------------------------------------------------------
 
 AUTO_UPDATE_MARK="/lib/auto-update.sh"
+# Seconds Claude Code gives the hook. The updater bounds its fetch at 6, the
+# rest is the installers replaying, which a slow disk or Windows can stretch.
+AUTO_UPDATE_TIMEOUT=20
 
 # Where this clone keeps its update state. Inside the git dir so a second clone
 # tracks its own, and nothing lands in the working tree. --absolute-git-dir
@@ -273,7 +276,8 @@ follow_links() {
 # Converge our SessionStart handler in a settings file, leaving everything else
 # alone. Whichever of python3, node or jq works first does the edit; the file
 # is rewritten (atomically, since agents watch it) only when the parsed
-# structure really changed.
+# structure really changed. A timeout the user raised on our handler stays
+# raised; anything else about it is ours.
 #
 # Returns: 0 written, 2 already as we want it, 3 file we cannot parse,
 # 4 no usable interpreter, 5 we could not write the file.
@@ -319,14 +323,23 @@ settings_merge() {
 
 settings_merge_python() {
   local rc
-  python3 - "$1" "$2" "$3" "$4" "$AUTO_UPDATE_MARK" <<'PY'
+  python3 - "$1" "$2" "$3" "$4" "$AUTO_UPDATE_MARK" "$AUTO_UPDATE_TIMEOUT" <<'PY'
 import copy, json, sys
 
-path, mode, cmd, tmp, mark = sys.argv[1:6]
-entry = {"type": "command", "command": cmd, "timeout": 10}
+path, mode, cmd, tmp, mark, timeout = sys.argv[1:7]
+timeout = int(timeout)
+
+
+def entry(old=None):
+    e = {"type": "command", "command": cmd, "timeout": timeout}
+    t = old.get("timeout") if isinstance(old, dict) else None
+    if isinstance(t, (int, float)) and not isinstance(t, bool) and t > timeout:
+        e["timeout"] = t
+    return e
+
 
 try:
-    with open(path, encoding="utf-8") as fh:
+    with open(path, encoding="utf-8-sig") as fh:
         data = json.load(fh)
 except FileNotFoundError:
     if mode == "remove":
@@ -369,15 +382,17 @@ def ours(handler):
 
 
 kept_one = False
+had_any = False
 new_groups = []
 for group in groups:
     had = any(ours(h) for h in group["hooks"])
+    had_any = had_any or had
     kept = []
     for handler in group["hooks"]:
         if ours(handler):
             if mode == "register" and not kept_one:
                 kept_one = True
-                kept.append(dict(entry))
+                kept.append(entry(handler))
             continue
         kept.append(handler)
     group["hooks"] = kept
@@ -389,9 +404,11 @@ for group in groups:
 
 if mode == "register":
     if not kept_one:
-        new_groups.append({"matcher": "startup", "hooks": [dict(entry)]})
+        new_groups.append({"matcher": "startup", "hooks": [entry()]})
     hooks["SessionStart"] = new_groups
     data["hooks"] = hooks
+elif not had_any:
+    sys.exit(2)
 elif new_groups:
     hooks["SessionStart"] = new_groups
 else:
@@ -410,14 +427,19 @@ PY
 
 settings_merge_node() {
   local rc
-  node - "$1" "$2" "$3" "$4" "$AUTO_UPDATE_MARK" <<'JS'
+  node - "$1" "$2" "$3" "$4" "$AUTO_UPDATE_MARK" "$AUTO_UPDATE_TIMEOUT" <<'JS'
 const fs = require("fs");
-const [path, mode, cmd, tmp, mark] = process.argv.slice(2);
-const entry = () => ({ type: "command", command: cmd, timeout: 10 });
+const [path, mode, cmd, tmp, mark, timeoutArg] = process.argv.slice(2);
+const timeout = parseInt(timeoutArg, 10);
+const entry = (old) => {
+  const e = { type: "command", command: cmd, timeout };
+  if (old && typeof old.timeout === "number" && old.timeout > timeout) e.timeout = old.timeout;
+  return e;
+};
 
 let raw = null;
 try {
-  raw = fs.readFileSync(path, "utf8");
+  raw = fs.readFileSync(path, "utf8").replace(/^\uFEFF/, "");
 } catch (err) {
   if (err.code !== "ENOENT") process.exit(3);
   if (mode === "remove") process.exit(2);
@@ -458,15 +480,17 @@ const before = JSON.stringify(data);
 const ours = (h) => isObject(h) && typeof h.command === "string" && h.command.includes(mark);
 
 let keptOne = false;
+let hadAny = false;
 const newGroups = [];
 for (const group of groups) {
   const had = group.hooks.some(ours);
+  hadAny = hadAny || had;
   const kept = [];
   for (const handler of group.hooks) {
     if (ours(handler)) {
       if (mode === "register" && !keptOne) {
         keptOne = true;
-        kept.push(entry());
+        kept.push(entry(handler));
       }
       continue;
     }
@@ -483,6 +507,8 @@ if (mode === "register") {
   if (!keptOne) newGroups.push({ matcher: "startup", hooks: [entry()] });
   hooks.SessionStart = newGroups;
   data.hooks = hooks;
+} else if (!hadAny) {
+  process.exit(2);
 } else if (newGroups.length > 0) {
   hooks.SessionStart = newGroups;
 } else {
@@ -515,11 +541,14 @@ settings_merge_jq() {
     end' >/dev/null 2>&1 || return 3
 
   settings_read_or_empty "$file" \
-    | jq --indent 2 --arg cmd "$cmd" --arg mode "$mode" --arg mark "$AUTO_UPDATE_MARK" '
+    | jq --indent 2 --arg cmd "$cmd" --arg mode "$mode" --arg mark "$AUTO_UPDATE_MARK" \
+         --argjson timeout "$AUTO_UPDATE_TIMEOUT" '
         def ours: (type == "object")
           and ((.command | type) == "string")
           and ((.command | index($mark)) != null);
-        def entry: {type: "command", command: $cmd, timeout: 10};
+        def entry($old): {type: "command", command: $cmd,
+          timeout: (if ($old.timeout | type) == "number" and $old.timeout > $timeout
+                    then $old.timeout else $timeout end)};
 
         . as $in
         | ((.hooks.SessionStart // []) | to_entries
@@ -527,6 +556,7 @@ settings_merge_jq() {
         | (if $gi == null then null
            else (.hooks.SessionStart[$gi].hooks | to_entries
                  | map(select(.value | ours)) | first | .key?) end) as $hi
+        | (if $gi == null then null else .hooks.SessionStart[$gi].hooks[$hi] end) as $old
         | ([ (.hooks.SessionStart // []) | to_entries[]
              | .key as $i | .value as $g
              | ($g.hooks | map(ours) | any) as $had
@@ -534,17 +564,16 @@ settings_merge_jq() {
              # A group we emptied is ours to clean up; one that came in empty
              # is not ours to touch.
              | if $mode == "register" and $i == $gi
-               then [ $clean | .hooks = (.hooks[0:$hi] + [entry] + .hooks[$hi:]) ]
+               then [ $clean | .hooks = (.hooks[0:$hi] + [entry($old)] + .hooks[$hi:]) ]
                elif $had and (($clean.hooks | length) == 0) then []
                else [ $clean ] end ]
            | add // []) as $new
         | (if $mode == "remove"
-           then (if ($in | has("hooks") | not) or ($in.hooks | has("SessionStart") | not)
-                 then $in
+           then (if $gi == null then $in
                  elif ($new | length) > 0 then ($in | .hooks.SessionStart = $new)
                  else ($in | del(.hooks.SessionStart)) end)
            else (if $gi == null
-                 then ($new + [{matcher: "startup", hooks: [entry]}])
+                 then ($new + [{matcher: "startup", hooks: [entry(null)]}])
                  else $new end) as $groups
                 | ($in | .hooks = ((.hooks // {}) | .SessionStart = $groups))
            end)
@@ -582,7 +611,7 @@ auto_update_snippet() {
   echo "  Add this to hooks.SessionStart in ${file}:"
   echo "    {"
   echo "      \"matcher\": \"startup\","
-  echo "      \"hooks\": [{ \"type\": \"command\", \"command\": \"$(json_escape "$cmd")\", \"timeout\": 10 }]"
+  echo "      \"hooks\": [{ \"type\": \"command\", \"command\": \"$(json_escape "$cmd")\", \"timeout\": ${AUTO_UPDATE_TIMEOUT} }]"
   echo "    }"
   echo "  Details: docs/auto-update.md"
 }
@@ -610,40 +639,51 @@ claude_code_detected() {
 # Record this run and, when it makes sense, wire the daily update hook.
 # Always exits 0: an installer that cannot set this up still installed.
 finish_auto_update() {
-  local state cfg file cmd rc had_ours
-  local opt_out
-
-  state="$(toolkit_state_dir)" || {
-    echo "Auto-update: off. ${REPO_DIR} is not a git work tree we can read, so it cannot update itself."
-    return 0
-  }
-  record_invocation "$state" || true
-
-  local marker="${state}/opt-out"
-  opt_out=0
-  case "${AUTO_UPDATE:-}" in
-    off)
-      opt_out=1
-      if ! : >"$marker" 2>/dev/null; then
-        echo "Auto-update: we could not record the opt-out in ${state}, so a later install will turn it back on."
-      fi
-      ;;
-    on)
-      if ! rm -f "$marker" 2>/dev/null; then
-        echo "Auto-update: we could not clear the opt-out in ${state}, so a later install will switch it back off."
-      fi
-      ;;
-    *)
-      [ -e "$marker" ] && opt_out=1
-      ;;
-  esac
+  local state cfg file cmd rc had_ours marker
+  local opt_out=0
 
   cfg="${CLAUDE_CONFIG_DIR:-${HOME}/.claude}"
   file="${cfg}/settings.json"
   cmd="bash '${REPO_DIR}/lib/auto-update.sh' --json"
 
+  had_ours=0
+  if [ -f "$file" ] && grep -q "$AUTO_UPDATE_MARK" "$file" 2>/dev/null; then
+    had_ours=1
+  fi
+
+  if state="$(toolkit_state_dir)"; then
+    record_invocation "$state" || true
+    marker="${state}/opt-out"
+    case "${AUTO_UPDATE:-}" in
+      off)
+        opt_out=1
+        if ! : >"$marker" 2>/dev/null; then
+          echo "Auto-update: we could not record the opt-out in ${state}, so a later install will turn it back on."
+        fi
+        ;;
+      on)
+        if ! rm -f "$marker" 2>/dev/null; then
+          echo "Auto-update: we could not clear the opt-out in ${state}, so a later install will switch it back off."
+        fi
+        ;;
+      *)
+        [ -e "$marker" ] && opt_out=1
+        ;;
+    esac
+  else
+    # Nothing to record and nothing to replay, but an explicit opt-out still
+    # has to get the hook out of the way, or it fails at every session start
+    # once the clone is gone.
+    state=""
+    [ "${AUTO_UPDATE:-}" = off ] && opt_out=1
+  fi
+
   if [ "$opt_out" -eq 1 ]; then
-    if [ -f "$file" ] && is_claude_target "$cfg"; then
+    # A hook naming this clone is ours wherever the install went; on Claude's
+    # own dir any hook of ours goes, since this install took the links over
+    # from whichever clone left it.
+    if [ "$had_ours" -eq 1 ] \
+      && { is_claude_target "$cfg" || grep -qF "$cmd" "$file" 2>/dev/null; }; then
       rc=0
       settings_merge "$file" remove "$cmd" || rc=$?
       case "$rc" in
@@ -656,6 +696,14 @@ finish_auto_update() {
     else
       echo "Auto-update: off (opted out). --auto-update turns it back on."
     fi
+    if [ -z "$state" ]; then
+      echo "Auto-update: the opt-out is not recorded, ${REPO_DIR} is not a git work tree we can read; a later install from a working clone turns it back on."
+    fi
+    return 0
+  fi
+
+  if [ -z "$state" ]; then
+    echo "Auto-update: off. ${REPO_DIR} is not a git work tree we can read, so it cannot update itself."
     return 0
   fi
 
@@ -665,8 +713,13 @@ finish_auto_update() {
   fi
 
   if ! is_claude_target "$cfg"; then
-    echo "Auto-update: nothing registered for ${TARGET_DIR}, which is not Claude Code's own dir. To wire it up, add a SessionStart hook running: ${cmd}"
-    echo "  Details: docs/auto-update.md"
+    # The hook replays every install this clone recorded, this one included.
+    if [ -f "$file" ] && grep -qF "$cmd" "$file" 2>/dev/null; then
+      echo "Auto-update: on. The daily SessionStart hook already in ${file} replays this install too."
+    else
+      echo "Auto-update: nothing registered for ${TARGET_DIR}, which is not Claude Code's own dir. To wire it up, add a SessionStart hook running: ${cmd}"
+      echo "  Details: docs/auto-update.md"
+    fi
     return 0
   fi
 
@@ -685,11 +738,6 @@ finish_auto_update() {
       auto_update_snippet "$file" "$cmd"
       return 0 ;;
   esac
-
-  had_ours=0
-  if [ -f "$file" ] && grep -q "$AUTO_UPDATE_MARK" "$file" 2>/dev/null; then
-    had_ours=1
-  fi
 
   rc=0
   settings_merge "$file" register "$cmd" || rc=$?

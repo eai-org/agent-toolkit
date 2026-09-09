@@ -36,7 +36,10 @@ DAY=86400
 HOUR=3600
 OFFLINE_STUCK_AFTER=604800
 FETCH_BUDGET=6
-LOCK_STALE_AFTER=60
+# The stamp keeps a second run out for an hour at the least, so a lock
+# younger than that belongs to a run that started alongside this one, not to
+# one that died.
+LOCK_STALE_AFTER=3600
 
 # Collect what this run has to say. Several outcomes can pile up: the keys
 # decide whether it is worth saying again, the lines are what the user reads.
@@ -92,15 +95,17 @@ report_and_exit() {
 
 # Bounded run: no timeout(1) to lean on, and a fetch that hangs would burn the
 # whole hook budget. stdout to the log, stderr kept apart so we can quote it.
+# Polled in tenths: a whole second per poll would cost more than the fetch
+# itself on a good day.
 watchdog() {
   local secs="$1"
   shift
-  local pid i=0 rc
+  local pid ticks=0 rc
   "$@" >>"$LOG" 2>"$ERRF" &
   pid=$!
   CHILD="$pid"
   while kill -0 "$pid" 2>/dev/null; do
-    if [ "$i" -ge "$secs" ]; then
+    if [ "$ticks" -ge "$((secs * 10))" ]; then
       # git leaves its transport (ssh, a credential helper) as a direct
       # child; killing git alone orphans it instead of ending the hang.
       pkill -P "$pid" 2>/dev/null
@@ -109,8 +114,8 @@ watchdog() {
       CHILD=""
       return 124
     fi
-    sleep 1
-    i=$((i + 1))
+    sleep 0.1
+    ticks=$((ticks + 1))
   done
   wait "$pid"
   rc=$?
@@ -192,10 +197,16 @@ copies_flag() {
   printf '%s' "$value"
 }
 
+# The lock can change hands mid-run: a run that outlives LOCK_STALE_AFTER is
+# taken over, and a run that lost the start-up race may only find out here.
+still_owner() {
+  [ "$(cat "${LOCK}/owner" 2>/dev/null)" = "$TOKEN" ]
+}
+
 # Only ours to remove: a run that took over after we were declared stale owns
 # the directory now, and deleting it would let a third run in.
 release_lock() {
-  [ "$(cat "${LOCK}/owner" 2>/dev/null)" = "$TOKEN" ] || return 0
+  still_owner || return 0
   rm -rf "$LOCK"
 }
 
@@ -260,7 +271,7 @@ main() {
   # so nothing is renamed, deleted or replaced, and there is no marker a
   # killed run could leave behind to wedge a later takeover.
   [ "$takeover" -eq 1 ] && sleep 1
-  [ "$(cat "${LOCK}/owner" 2>/dev/null)" = "$TOKEN" ] || finish_silent
+  still_owner || finish_silent
   trap release_lock EXIT
   # exit here, or bash resumes the run once the handler returns
   trap 'kill_child; exit 0' TERM INT HUP
@@ -332,7 +343,7 @@ main() {
   # a feature branch is someone's own work and not ours to fast-forward.
   if [ -n "$default_ref" ] && [ "$upstream" != "$default_ref" ]; then
     add_outcome "stuck:not-default:${branch}" \
-      "agent-toolkit is not updating: ${CLONE} is on ${branch}, which does not track ${remote}/${default}. Run: git -C '${CLONE}' checkout ${default}"
+      "agent-toolkit is not updating while ${CLONE} is on ${branch}, which does not track ${remote}/${default}; it resumes after git -C '${CLONE}' checkout ${default}."
     report_and_exit
   fi
   if ! git -C "$CLONE" merge-base --is-ancestor HEAD "$upstream" >/dev/null 2>&1; then
@@ -344,6 +355,7 @@ main() {
   local head_before head_now rc detail
   head_before="$(git -C "$CLONE" rev-parse HEAD 2>/dev/null)"
   if [ "$head_before" != "$(git -C "$CLONE" rev-parse "$upstream" 2>/dev/null)" ]; then
+    still_owner || finish_silent
     git -C "$CLONE" merge --ff-only '@{u}' >>"$LOG" 2>"$ERRF"
     rc=$?
     cat "$ERRF" >>"$LOG" 2>/dev/null
@@ -378,6 +390,7 @@ main() {
       *\'*) cmd="${script} for ${target}; its path has an apostrophe, so the command cannot be safely quoted here" ;;
       *) cmd="bash '${CLONE}/${script}' --agents-dir '${agents_dir}' ${flag} '${target}'" ;;
     esac
+    still_owner || finish_silent
     bash "${CLONE}/${script}" --agents-dir "$agents_dir" "$flag" "$target" >>"$LOG" 2>&1
     rc=$?
     if [ "$rc" -ne 0 ]; then

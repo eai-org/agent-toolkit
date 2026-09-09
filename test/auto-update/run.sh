@@ -54,18 +54,18 @@ is_repo_root() {
 # it before the first case even runs.
 python_usable() {
   [ -n "$PYTHON" ] || return 1
-  local pid i=0
+  local pid ticks=0
   "$PYTHON" -c 'import json' >/dev/null 2>&1 &
   pid=$!
   while kill -0 "$pid" 2>/dev/null; do
-    if [ "$i" -ge 3 ]; then
+    if [ "$ticks" -ge 30 ]; then
       pkill -P "$pid" 2>/dev/null
       kill "$pid" 2>/dev/null
       wait "$pid" 2>/dev/null
       return 1
     fi
-    sleep 1
-    i=$((i + 1))
+    sleep 0.1
+    ticks=$((ticks + 1))
   done
   wait "$pid"
 }
@@ -310,6 +310,17 @@ write_shim() {
 # A shim that always fails, for staging a missing or broken tool.
 broken_shim() {
   write_shim "$1" $'#!/bin/sh\nexit 127'
+}
+
+# One settings_merge call on its own, for the shapes no installer run reaches.
+settings_merge_rc() {
+  ( . "${CLONE}/lib/install-utils.sh"
+    settings_merge "$1" "$2" "bash '${CLONE}/lib/auto-update.sh' --json" )
+}
+
+# A lock older than the stale threshold, by a margin.
+stale_ts() {
+  printf '%s' "$(( $(date +%s) - 4000 ))"
 }
 
 # --- cases -----------------------------------------------------------------
@@ -709,7 +720,7 @@ case_stale_lock() {
   install_skills
   make_due
   mkdir -p "${STATE}/lock"
-  printf '%s\n' "$(( $(date +%s) - 120 ))" >"${STATE}/lock/ts"
+  printf '%s\n' "$(stale_ts)" >"${STATE}/lock/ts"
   printf 'sentinel\n' >"${STATE}/log"
   local out
   out="$(run_hook)"
@@ -741,7 +752,7 @@ case_lock_not_ours() {
 
   # Takeover goes by the timestamp, not the token: someone else's stale lock is
   # still ours to claim.
-  printf '%s\n' "$(( $(date +%s) - 120 ))" >"${STATE}/lock/ts"
+  printf '%s\n' "$(stale_ts)" >"${STATE}/lock/ts"
   make_due
   run_hook >/dev/null
   assert_file_missing "${STATE}/lock"
@@ -753,7 +764,7 @@ case_lock_takeover_loser() {
   install_skills
   make_due
   mkdir -p "${STATE}/lock"
-  printf '%s\n' "$(( $(date +%s) - 120 ))" >"${STATE}/lock/ts"
+  printf '%s\n' "$(stale_ts)" >"${STATE}/lock/ts"
   printf 'someone-else\n' >"${STATE}/lock/owner"
   chmod 400 "${STATE}/lock/owner"
   printf 'sentinel\n' >"${STATE}/log"
@@ -887,7 +898,7 @@ path = sys.argv[1]
 data = json.load(open(path))
 group = data["hooks"]["SessionStart"][0]
 group["matcher"] = "startup|resume"
-group["hooks"][0]["timeout"] = 99
+group["hooks"][0]["timeout"] = 3
 group["hooks"][0]["extra"] = True
 json.dump(data, open(path, "w"), indent=2)
 PY
@@ -895,9 +906,23 @@ PY
   make_due
   run_hook >/dev/null
   assert_eq "one handler" "1" "$(hook_count)"
-  assert_eq "timeout" "10" "$(settings_get hooks.SessionStart.0.hooks.0.timeout)"
+  assert_eq "lowered timeout reset" "20" "$(settings_get hooks.SessionStart.0.hooks.0.timeout)"
   assert_eq "matcher kept" "startup|resume" "$(settings_get hooks.SessionStart.0.matcher)"
   assert_eq "extra key dropped" "" "$(settings_get hooks.SessionStart.0.hooks.0.extra)"
+
+  # A timeout the user raised is theirs to keep: the daily replay must not
+  # take their escape hatch away.
+  "$PYTHON" - "$(settings_file)" <<'PY'
+import json, sys
+path = sys.argv[1]
+data = json.load(open(path))
+data["hooks"]["SessionStart"][0]["hooks"][0]["timeout"] = 99
+json.dump(data, open(path, "w"), indent=2)
+PY
+  push_skill zz-harness-skill-2
+  make_due
+  run_hook >/dev/null
+  assert_eq "raised timeout kept" "99" "$(settings_get hooks.SessionStart.0.hooks.0.timeout)"
 }
 
 case_opt_out_and_back_in() {
@@ -927,6 +952,32 @@ case_opt_out_and_back_in() {
   make_due
   run_hook >/dev/null
   assert_ran
+}
+
+# An explicit opt-out has to reach the hook even when git cannot read the
+# clone, or the entry outlives the clone and fails at every session start.
+case_opt_out_without_git() {
+  detect_claude
+  install_skills
+  assert_eq "registered" "1" "$(hook_count)"
+  broken_shim git
+  install_skills --no-auto-update
+  assert_eq "installer exit code" "0" "$INSTALL_RC"
+  assert_contains "installer output" "$OUT" "removed our hook"
+  assert_contains "installer output" "$OUT" "not recorded"
+  assert_eq "removed" "0" "$(hook_count)"
+}
+
+# The hook names the clone, so opting out from any install of it removes it,
+# a project's skills dir included.
+case_opt_out_from_other_target() {
+  detect_claude
+  install_skills
+  assert_eq "registered" "1" "$(hook_count)"
+  install_skills --skills-dir "${HOME}/proj/.claude/skills" --no-auto-update
+  assert_contains "installer output" "$OUT" "removed our hook"
+  assert_eq "removed" "0" "$(hook_count)"
+  [ -f "${STATE}/opt-out" ] || fail "opt-out marker was not created"
 }
 
 case_marker_write_fails() {
@@ -1016,6 +1067,15 @@ case_non_claude_skills_dir() {
   assert_contains "installer output" "$OUT" "not Claude Code's own dir"
   assert_contains "installer output" "$OUT" "lib/auto-update.sh"
   assert_eq "nothing registered" "0" "$(hook_count)"
+
+  # Once the clone has its hook, that hook replays this install too, and the
+  # advice to add a second one would be wrong.
+  install_skills
+  assert_eq "registered" "1" "$(hook_count)"
+  install_skills --skills-dir "${HOME}/proj/.claude/skills"
+  assert_contains "installer output" "$OUT" "replays this install too"
+  assert_not_contains "installer output" "$OUT" "not Claude Code's own dir"
+  assert_eq "still one handler" "1" "$(hook_count)"
 }
 
 case_no_upstream_at_install() {
@@ -1090,7 +1150,7 @@ case_settings_created() {
   assert_eq "one handler" "1" "$(hook_count)"
   assert_eq "one group" "1" "$(group_count)"
   assert_eq "matcher" "startup" "$(settings_get hooks.SessionStart.0.matcher)"
-  assert_eq "timeout" "10" "$(settings_get hooks.SessionStart.0.hooks.0.timeout)"
+  assert_eq "timeout" "20" "$(settings_get hooks.SessionStart.0.hooks.0.timeout)"
   assert_eq "top-level keys" '["hooks"]' "$(top_level_keys)"
 }
 
@@ -1128,7 +1188,7 @@ write_hard_settings() {
     "SessionStart": [
       { "matcher": "startup", "hooks": [
         { "type": "command", "command": "echo before" },
-        { "type": "command", "command": "bash '/gone/lib/auto-update.sh' --json", "timeout": 3 },
+        { "type": "command", "command": "bash '/gone/lib/auto-update.sh' --json", "timeout": 45 },
         { "type": "command", "command": "echo after" }
       ] },
       { "matcher": "resume", "hooks": [] },
@@ -1151,6 +1211,7 @@ case_settings_engines_agree() {
   install_skills
   registered="$(cat "$(settings_file)")"
   assert_eq "one handler" "1" "$(hook_count)"
+  assert_eq "raised timeout kept" "45" "$(settings_get hooks.SessionStart.0.hooks.1.timeout)"
   assert_contains "foreign before kept" "$registered" "echo before"
   assert_contains "foreign after kept" "$registered" "echo after"
   assert_contains "Stop kept" "$registered" "echo stop"
@@ -1289,6 +1350,88 @@ case_settings_null_hooks() {
   if [ -n "$REAL_JQ" ]; then
     ln -sf "$REAL_JQ" "${CASE_ROOT}/bin/jq"
     assert_null_hooks_refused jq
+  else
+    echo "    (no jq available, skipping the jq leg)"
+  fi
+}
+
+# Windows editors leave a BOM; Claude Code reads past it, so the engines must
+# too, and drop it on the way out.
+case_settings_with_bom() {
+  detect_claude
+  mkdir -p "${HOME}/.claude"
+  local file
+  file="$(settings_file)"
+  printf '\357\273\277{ "model": "opus" }\n' >"$file"
+  install_skills
+  assert_eq "python3 registered" "1" "$(hook_count)"
+  assert_eq "model kept" "opus" "$(settings_get model)"
+
+  if [ -n "$REAL_NODE" ]; then
+    ln -sf "$REAL_NODE" "${CASE_ROOT}/bin/node"
+    broken_shim python3
+    broken_shim jq
+    printf '\357\273\277{ "model": "opus" }\n' >"$file"
+    install_skills
+    assert_eq "node registered" "1" "$(hook_count)"
+    broken_shim node
+    "$REAL_NODE" -v >/dev/null 2>&1 || fail "the node shim clobbered $REAL_NODE"
+  else
+    echo "    (no node available, skipping the node leg)"
+    broken_shim python3
+    broken_shim node
+  fi
+
+  if [ -n "$REAL_JQ" ]; then
+    ln -sf "$REAL_JQ" "${CASE_ROOT}/bin/jq"
+    printf '\357\273\277{ "model": "opus" }\n' >"$file"
+    install_skills
+    assert_eq "jq registered" "1" "$(hook_count)"
+  else
+    echo "    (no jq available, skipping the jq leg)"
+  fi
+}
+
+# Removing what is not there is a no-op in every engine: a SessionStart list
+# the user left empty is theirs, not a group we emptied.
+case_remove_with_nothing_of_ours() {
+  detect_claude
+  mkdir -p "${HOME}/.claude"
+  local file before rc
+  file="$(settings_file)"
+  before='{ "hooks": { "SessionStart": [] } }'
+  printf '%s\n' "$before" >"$file"
+  install_skills --no-auto-update
+  assert_contains "installer output" "$OUT" "opted out"
+  assert_eq "installer left the file alone" "$before" "$(cat "$file")"
+
+  rc=0
+  settings_merge_rc "$file" remove || rc=$?
+  assert_eq "python3: nothing to do" "2" "$rc"
+  assert_eq "python3: file untouched" "$before" "$(cat "$file")"
+
+  if [ -n "$REAL_NODE" ]; then
+    ln -sf "$REAL_NODE" "${CASE_ROOT}/bin/node"
+    broken_shim python3
+    broken_shim jq
+    rc=0
+    settings_merge_rc "$file" remove || rc=$?
+    assert_eq "node: nothing to do" "2" "$rc"
+    assert_eq "node: file untouched" "$before" "$(cat "$file")"
+    broken_shim node
+    "$REAL_NODE" -v >/dev/null 2>&1 || fail "the node shim clobbered $REAL_NODE"
+  else
+    echo "    (no node available, skipping the node leg)"
+    broken_shim python3
+    broken_shim node
+  fi
+
+  if [ -n "$REAL_JQ" ]; then
+    ln -sf "$REAL_JQ" "${CASE_ROOT}/bin/jq"
+    rc=0
+    settings_merge_rc "$file" remove || rc=$?
+    assert_eq "jq: nothing to do" "2" "$rc"
+    assert_eq "jq: file untouched" "$before" "$(cat "$file")"
   else
     echo "    (no jq available, skipping the jq leg)"
   fi
@@ -1482,6 +1625,8 @@ feedback_is_json_escaped
 moved_clone
 drifted_hook_entry
 opt_out_and_back_in
+opt_out_without_git
+opt_out_from_other_target
 marker_write_fails
 rules_installer_registers
 claude_not_detected
@@ -1499,6 +1644,8 @@ settings_engines_agree
 settings_unparsable
 settings_write_fails
 settings_null_hooks
+settings_with_bom
+remove_with_nothing_of_ours
 interpreter_fallthrough
 remove_interpreter_fallthrough
 no_interpreter

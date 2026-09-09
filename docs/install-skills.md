@@ -61,10 +61,11 @@ level (all projects); to scope them to one project, wire that project's director
 When Claude Code is detected, the install also registers a `SessionStart` hook that fast-forwards
 the clone once a day and re-runs the installers, so you do not have to
 ([auto-update.md](./auto-update.md) covers it in full, other agents included). It is registered
-only for Claude's own `~/.claude/skills` (or `~/.claude/rules`), and only for a clone that tracks
-an upstream; anything else — another agent, a project's `.claude/skills` — gets the one-liner to
-wire by hand instead. `--no-auto-update` turns it off and is remembered, `--auto-update` turns it
-back on.
+only when installing into Claude's own `~/.claude/skills` (or `~/.claude/rules`), and only for a
+clone that tracks an upstream. That one hook replays every install made from the clone, a
+project's `.claude/skills` included; a clone that only ever installed elsewhere — another agent, a
+project — gets the one-liner to wire by hand instead. `--no-auto-update` turns it off and is
+remembered, `--auto-update` turns it back on.
 
 It stays quiet unless the clone is stuck — dirty, detached, without an upstream, off the default
 branch, or diverged — and then says so once, naming the fix. Where entries were installed as
