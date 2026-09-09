@@ -3,7 +3,7 @@ name: use-conversational-language
 description: Voice rules for text published under a person's name and read as if a person typed it, such as chat replies, PR comments and descriptions, commit messages, review replies, and code comments. Defines the wording only, never the content.
 license: MIT
 metadata:
-  version: "1.2"
+  version: "1.3"
 ---
 
 # Use conversational language
@@ -94,3 +94,9 @@ Margin notes a developer jotted, not prose: clipped fragments over full sentence
 reorder, auth must init first"), the plainest words, never fancy ones ("seamlessly", "robust",
 "leverage"). Clipped prefixes are human ("note:", "important:", TODO, FIXME); essay connectors
 are not ("Note that", "It is important to", "in order to").
+
+## Commit messages
+
+The subject states what the change does ("docs: prevent agents from adding useless comments"),
+never a slogan or a paraphrase of the content changed ("docs: a true reason alone doesn't earn a
+comment"), however accurate.
