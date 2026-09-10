@@ -78,9 +78,10 @@ it runs without its confirmation step — with:
 - the mandate framed as a maintainer's merge gate — would anything here block the merge? — and
   extended by: the project's own governing docs (contributing, agent instructions, codestyle) run
   as a checklist, not as background reading, against every changed file and the submission itself,
-  whose metadata the prompt must carry (commit subjects `<base>..<source>`, then any PR title,
-  description, linked issues — hashed in that order, as read, like the diff, for the report); and
-  leftovers — debug prints, commented-out code, stray TODOs, accidentally committed files;
+  whose metadata the prompt must carry (commit subjects, `git log --format=%s <base>..<source>`,
+  then any PR title, description, linked issues, verbatim — hashed in that order like the diff,
+  for the report); and leftovers — debug prints, commented-out code, stray TODOs, accidentally
+  committed files;
 - the grounded bar: a finding exists only with a nameable concrete failure, violated rule, or
   redundancy — hedged speculation is out, zero findings is a valid outcome;
 - an instruction to the reviewer to report back the harness and model it ran on, and whether it
@@ -139,12 +140,12 @@ its reach. The reviewer gets the full current diff as reference, plus:
   files only.
 
 The delta must be exact, else the round runs full, saying why. Exact: the fixes the walk applied —
-possibly none — when the hash the walk took still matches at round start; else `git diff <SHA>`
-(a tip: `<SHA> <source>`), with step 3's pathspec, when the last reviewed state is a commit
-`<SHA>` whose merge base with the target is still `<base>`. Full also whenever the author asks or
-project rules require it. Submission metadata whose hash changed since the last round — a fix the
-author applied, a new commit's subject — joins the delta as its re-read text, judged against the
-diff it describes; alone, it still earns a round.
+possibly none — when the hash the walk took (at a Stamp, the report's **Diff**) still matches at
+round start; else `git diff <SHA>` (a tip: `<SHA> <source>`), with step 3's pathspec, when the
+last reviewed state is a commit `<SHA>` whose merge base with the target is still `<base>`. Full
+also whenever the author asks or project rules require it. Submission metadata whose hash changed
+since the last round — a fix the author applied, a new commit's subject — joins the delta as its
+re-read text, judged against the diff it describes; alone, it still earns a round.
 
 Rounds stop when one earns no fresh round — nothing uncovered, nothing fixed (clean, or every new
 finding dismissed, deferred or a draft still unapplied), no metadata changed — or at the cap of 3
