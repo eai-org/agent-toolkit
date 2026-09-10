@@ -47,9 +47,15 @@ blindness, so someone else's PR has nothing to escape and belongs to `maintainer
    commits as the author's. Empty diff → probably a wrong target (typical: a fork's default
    branch already holding the commits) — say so and ask for the true one; it needs no local
    ref, `git fetch <url> <branch>` works by URL.
+4. Assemble the submission metadata as one block, hashed like the diff: the lines `subjects:`,
+   `title:`, `body:`, `issues:` in that order, each followed by its value's lines verbatim —
+   subjects from `git log --format=%s <base>..<source>`; from the target forge's open PR of source
+   into target, its title, description and the issue ids it lists as linked (bare numbers
+   ascending, one per line); nothing under a label without a value (e.g. no PR yet) — every line
+   LF-terminated, CRLF folded to LF, trailing blank lines dropped.
 
-Done when source branch, target, reviewed state (SHA, or working tree on SHA) and the diff's
-hash (`git diff … | git hash-object --stdin`) are recorded and the diff is non-empty.
+Done when source branch, target, reviewed state (SHA, or working tree on SHA), the diff's hash
+(`git diff … | git hash-object --stdin`) and the metadata's are recorded and the diff is non-empty.
 
 ## Project rules file
 
@@ -78,10 +84,7 @@ it runs without its confirmation step — with:
 - the mandate framed as a maintainer's merge gate — would anything here block the merge? — and
   extended by: the project's own governing docs (contributing, agent instructions, codestyle) run
   as a checklist, not as background reading, against every changed file and the submission itself,
-  whose metadata the prompt must carry verbatim (commit subjects,
-  `git log --format=%s <base>..<source>`, then any PR title, description and sorted linked-issue
-  ids — and, for the report, hashed like the diff as one block, each field under its own
-  `subjects:`/`title:`/`body:`/`issues:` line, empty when absent); and leftovers — debug prints,
+  whose metadata block (step 4) the prompt must carry verbatim; and leftovers — debug prints,
   commented-out code, stray TODOs, accidentally committed files;
 - the grounded bar: a finding exists only with a nameable concrete failure, violated rule, or
   redundancy — hedged speculation is out, zero findings is a valid outcome;
@@ -120,7 +123,8 @@ disposition and is not re-walked; one matching a fixed finding means the fix did
 and walk it again, except an unapplied metadata draft: pending, not failed. The report lists each
 finding once, with its latest disposition.
 
-Done when every finding of the round is dispositioned and the full diff re-hashed as in step 3.
+Done when every finding of the round is dispositioned and diff and metadata re-hashed as in steps
+3 and 4.
 
 ## Rounds
 
@@ -141,12 +145,13 @@ its reach. The reviewer gets the full current diff as reference, plus:
   files only.
 
 The delta must be exact, else the round runs full, saying why. Exact: the fixes the walk applied —
-possibly none — when the hash the walk took (at a Stamp, the report's **Diff**) still matches at
-round start; else `git diff <SHA>` (a tip: `<SHA> <source>`), with step 3's pathspec, when the
-last reviewed state is a commit `<SHA>` whose merge base with the target is still `<base>`. Full
-also whenever the author asks or project rules require it. Submission metadata whose hash changed
-since the last round — a fix the author applied, a new commit's subject — joins the delta as its
-re-read text, judged against the diff it describes; alone, it still earns a round.
+possibly none — when the diff hash the walk took still matches at round start, or none when Stamp
+found **Diff** equal; else `git diff <SHA>` (a tip: `<SHA> <source>`), with step 2's exclusions,
+when the last reviewed state is a commit `<SHA>` whose merge base with the target is still
+`<base>`. Full also whenever the author asks or project rules require it. Submission metadata whose
+hash differs from the last round's (none recorded → differs) — a fix the author applied, a new
+commit's subject — joins the delta as its re-read text, judged against the diff it describes;
+alone, it still earns a round.
 
 Rounds stop when one earns no fresh round — nothing uncovered, nothing fixed (clean, or every new
 finding dismissed, deferred or a draft still unapplied), no metadata changed — or at the cap of 3
@@ -232,10 +237,10 @@ of the split.
 
 Step 3's hash equal to the report's **Diff** → content unchanged (after committing the reviewed
 work, an amend, a rebase leaving the diff byte-identical): no round on it; **Reviewed** line set to
-the current state — a tip → `stamped from <previous state>` replacing `unpinned` — then, given a
-metadata hash differing from the report's or a caveat naming a file uncovered, Review onward as a
-later round on those alone (Rounds), else Wrap up. Different → say so, Review onward as a later
-round (Rounds). Done when the report carries the current state or Review has started.
+the current state — a tip → `stamped from <previous state>` replacing `unpinned` — then, given
+changed metadata (Rounds) or a caveat naming a file uncovered, Review onward as a later round on
+those alone, else Wrap up. Different → say so, Review onward as a later round (Rounds). Done when
+the report carries the current state or Review has started.
 
 ## Wrap up
 
