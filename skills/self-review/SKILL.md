@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "0.7"
+  version: "0.8"
 ---
 
 # Self-review
@@ -54,17 +54,18 @@ hash (`git diff … | git hash-object --stdin`) are recorded and the diff is non
 ## Project rules file
 
 `.agents/docs/self-review-rules.md`, when the project carries one, adds project-specific rules or
-overrides to the review mandate and process (extra focus areas, round cap, report handling, a pinned
-review required — modified tracked files then block every round, fixes committed before the next) —
-never to the Boundaries below. Absent → skip silently. Either way, the report states whether it was
-found and applied.
+overrides to the review mandate and process (extra focus areas, round cap, full rounds only, report
+handling, a pinned review required — modified tracked files then block every round, fixes committed
+before the next) — never to the Boundaries below. Absent → skip silently. Either way, the report
+states whether it was found and applied.
 
 ## Review
 
 A report already present → Stamp (below) first.
 
-Load and follow [fresh-eyes-review](../fresh-eyes-review/SKILL.md) on the reviewed state —
-inputs all explicit, so it runs without its confirmation step — with:
+Load and follow [fresh-eyes-review](../fresh-eyes-review/SKILL.md) on the reviewed state — whole
+in a changeset's first round, narrowed per Rounds below in any later one — inputs all explicit, so
+it runs without its confirmation step — with:
 
 - an intent statement — one or two sentences distilled from the task's ticket or requirements
   when the planning home holds them, never the document itself (it carries the author rationale
@@ -83,7 +84,7 @@ inputs all explicit, so it runs without its confirmation step — with:
 - the grounded bar: a finding exists only with a nameable concrete failure, violated rule, or
   redundancy — hedged speculation is out, zero findings is a valid outcome;
 - an instruction to the reviewer to report back the harness and model it ran on, and whether it
-  covered every changed file — naming any it didn't.
+  covered every changed file in its scope — naming any it didn't.
 
 Done when the reviewer has returned its findings — possibly none — its provenance, and its
 coverage.
@@ -100,7 +101,9 @@ escape hatch. Anything the author says that isn't a disposition is discussion, n
 answer the question, check the code, revise the recommendation, do what they ask with the finding —
 then the walk returns to that same finding, still open. Three dispositions close one:
 
-- **fix** — apply it to the working tree now; committing stays the author's move.
+- **fix** — apply it to the working tree now; committing stays the author's move. Submission
+  metadata (PR title, description, commit subjects) the agent only drafts — applying it is the
+  author's (Boundaries).
 - **dismiss** — record the author's reason, pushing once toward one a maintainer can evaluate
   ("the caller already null-checks", not "disagree"); "mirrors the existing pattern" counts only
   once that pattern is verified sound — an unchecked one ratifies its bugs; if the author
@@ -109,18 +112,44 @@ then the walk returns to that same finding, still open. Three dispositions close
   another PR, a note the author keeps. Record the destination in one line; drafting the text is
   in scope, filing or posting it is not (Boundaries).
 
-Never drop or soften a finding: every one appears in the report with its disposition. Anything fixed
-→ a fresh round runs on the new state — fixes are new unreviewed code; committing between rounds
-stays the author's move (propose a commit message in the repo's style), demanded only where project
-rules require a pinned review. Rounds stop when one yields nothing fixed — clean, or every new
-finding dismissed or deferred — or at the cap of 3 rounds per invocation, there to bound cost; the
-author can stop earlier at any point, or explicitly ask for rounds beyond the cap. Every fix no
-later round covered leaves a "fixes not re-reviewed" caveat in the report. Dispositions carry
-forward across rounds: a re-raised finding matching a dismissed or deferred one keeps that
+Never drop or soften a finding: every one appears in the report with its disposition. Dispositions
+carry forward across rounds: a re-raised finding matching a dismissed or deferred one keeps that
 disposition and is not re-walked; one matching a fixed finding means the fix didn't hold — reopen it
 and walk it again. The report lists each finding once, with its latest disposition.
 
-Done when every finding is dispositioned and a stop condition has ended the rounds.
+Done when every finding of the round is dispositioned and, after the last fix, the full diff
+hashed as in step 3.
+
+## Rounds
+
+Anything fixed → a fresh round on the new state — fixes are new unreviewed code; committing between
+rounds stays the author's move (propose a commit message in the repo's style), demanded only where
+project rules require a pinned review. The first round reviews the whole changeset; every later
+one, in this invocation or a re-run, only the **delta** — what changed since the last reviewed
+state — and its reach. The reviewer gets the full current diff as reference, plus:
+
+- the delta hunks — one the walk applied carries the failure it addressed, never its disposition;
+  dismissed and deferred findings go unmentioned;
+- files the last round reported uncovered, added to the scope;
+- the mandate: check each hunk holds and follow its reach — call sites of what changed, mirrored
+  sites, the tests and docs covering it, whatever else it judges reached; the rest of the changeset
+  was reviewed and stands: no hunting there, though a grounded finding met on the way is reported
+  like any other; governing-docs checklist and leftovers hunt over the delta only.
+
+The delta must be exact, else the round runs full, saying why. Exact: the fixes the walk applied,
+when the full diff's hash taken after the last fix still matches at round start; else
+`git diff <SHA>` (a tip: `<SHA> <source>`), with step 3's pathspec, when the last reviewed state
+is a commit `<SHA>` whose merge base with the target is still `<base>`. Full also whenever the
+author asks or project rules require it. Submission metadata that changed since the last round —
+a fix the author applied, a new commit's subject — joins the delta as its re-read text, judged
+against the diff it describes; alone, it still earns a round.
+
+Rounds stop when one yields nothing fixed — clean, or every new finding dismissed or deferred — or
+at the cap of 3 per invocation, there to bound cost; the author can stop earlier at any point, or
+explicitly ask for rounds beyond the cap. Every fix no later round covered leaves a "fixes not
+re-reviewed" caveat in the report.
+
+Done when a stop condition has ended the rounds.
 
 ## Report
 
@@ -149,10 +178,10 @@ Compact above all: one line per finding, fusing location and concrete failure; t
 in the session. The **Reviewed** line always carries the latest round's state (`working tree on
 <SHA>`, marked `unpinned`, when not a commit; once stamped, the new SHA with `stamped from <that
 state>`) and diffstat; **Diff** its full hash, for the Stamp; history lives in the round headings,
-each naming the state it reviewed. Provenance exactly as the environment reports it, `unknown` when
-it doesn't — never guessed or recalled; the reviewer's model, when it differs from the session's,
-appended to the **By** line as `review by <model>`; skill version from this file's frontmatter,
-date = today.
+each naming the state it reviewed and, after the first, its scope — full with its reason.
+Provenance exactly as the environment reports it, `unknown` when it doesn't — never guessed or
+recalled; the reviewer's model, when it differs from the session's, appended to the **By** line as
+`review by <model>`; skill version from this file's frontmatter, date = today.
 
 ```markdown
 # Self-review — my-feature → main
@@ -181,22 +210,23 @@ date = today.
 4. `src/foo.c:97` — guard duplicates the check 4 lines up → **dismissed**: mirrors the pattern in
    this file, checked sound at :61 and :88; refactor out of scope
 
-## Round 2 — `def5678`, clean
+## Round 2 — `def5678`, round 1 fixes, clean
 
 </details>
 ```
 
 Done when the report holds the outcome line, intent, changeset refs with diffstat, diff hash,
-provenance with skill version and date, rules-file status, and every round with its reviewed state
-and dispositioned findings — each on its mandated side of the split.
+provenance with skill version and date, rules-file status, and every round with its reviewed state,
+scope and dispositioned findings — each on its mandated side of the split.
 
 ## Stamp
 
 Step 3's hash equal to the report's **Diff** → content unchanged (after committing the reviewed
-work, an amend, a rebase leaving the diff byte-identical): no round; **Reviewed** line set to the
+work, an amend, a rebase leaving the diff byte-identical): no round — unless the report lists a
+metadata fix not re-reviewed, then one on its re-read text alone; **Reviewed** line set to the
 current state — a tip → `stamped from <previous state>` replacing `unpinned` — then Wrap up.
-Different → say so, Review onward. Done when the report carries the current state or Review has
-started.
+Different → say so, Review onward as a later round (Rounds). Done when the report carries the
+current state or Review has started.
 
 ## Wrap up
 
