@@ -78,9 +78,9 @@ it runs without its confirmation step — with:
 - the mandate framed as a maintainer's merge gate — would anything here block the merge? — and
   extended by: the project's own governing docs (contributing, agent instructions, codestyle) run
   as a checklist, not as background reading, against every changed file and the submission itself,
-  whose metadata the prompt must carry (commit subjects, and any PR title, description, linked
-  issues); and leftovers — debug prints, commented-out code, stray TODOs, accidentally committed
-  files;
+  whose metadata the prompt must carry (commit subjects `<base>..<source>`, then any PR title,
+  description, linked issues — hashed in that order, as read, like the diff, for the report); and
+  leftovers — debug prints, commented-out code, stray TODOs, accidentally committed files;
 - the grounded bar: a finding exists only with a nameable concrete failure, violated rule, or
   redundancy — hedged speculation is out, zero findings is a valid outcome;
 - an instruction to the reviewer to report back the harness and model it ran on, and whether it
@@ -142,7 +142,7 @@ The delta must be exact, else the round runs full, saying why. Exact: the fixes 
 possibly none — when the hash the walk took still matches at round start; else `git diff <SHA>`
 (a tip: `<SHA> <source>`), with step 3's pathspec, when the last reviewed state is a commit
 `<SHA>` whose merge base with the target is still `<base>`. Full also whenever the author asks or
-project rules require it. Submission metadata that changed since the last round — a fix the
+project rules require it. Submission metadata whose hash changed since the last round — a fix the
 author applied, a new commit's subject — joins the delta as its re-read text, judged against the
 diff it describes; alone, it still earns a round.
 
@@ -170,19 +170,19 @@ Two parts — maintainers drown in AI-generated review walls, so the visible par
 Visible, each line its own paragraph (blank lines between, no blockquote): the heading, **Outcome**,
 outcome-weakening caveats, **Reviewed**, **By**, verification evidence (e.g. testing performed).
 Everything else collapses into `<details>`, in order: **Intent**, **Project rules**, **Diff**,
-procedural caveats, the rounds; the blank line after `</summary>` is required — without it the
-markdown inside won't render. Placement, unless project rules explicitly override: a caveat is
-visible iff it weakens what **Outcome** claims (fixes not re-reviewed, incomplete coverage naming
-the unreviewed files, a same-context fallback), procedural confirmations (e.g. files confirmed
-local-only) collapse; any other line is visible iff it records verification performed or qualifies
-the outcome — proof-of-process collapses.
+**Metadata**, procedural caveats, the rounds; the blank line after `</summary>` is required —
+without it the markdown inside won't render. Placement, unless project rules explicitly override:
+a caveat is visible iff it weakens what **Outcome** claims (fixes not re-reviewed, incomplete
+coverage naming the unreviewed files, a same-context fallback), procedural confirmations (e.g.
+files confirmed local-only) collapse; any other line is visible iff it records verification
+performed or qualifies the outcome — proof-of-process collapses.
 
 Compact above all: one line per finding, fusing location and concrete failure; the full prose stays
 in the session. The **Reviewed** line always carries the latest round's state (`working tree on
 <SHA>`, marked `unpinned`, when not a commit; once stamped, the new SHA with `stamped from <that
-state>`) and diffstat; **Diff** its full hash (never a later fix's), for the Stamp; history lives
-in the round headings, each naming the state it reviewed and, after the first, its scope — full
-with its reason.
+state>`) and diffstat; **Diff** and **Metadata** their full hashes (never a later fix's), for the
+Stamp; history lives in the round headings, each naming the state it reviewed and, after the
+first, its scope — full with its reason.
 Provenance exactly as the environment reports it, `unknown` when it doesn't — never guessed or
 recalled; the reviewer's model, when it differs from the session's, appended to the **By** line as
 `review by <model>`; skill version from this file's frontmatter, date = today.
@@ -205,6 +205,8 @@ recalled; the reviewer's model, when it differs from the session's, appended to 
 
 **Diff** `9f2c1e0b7d3a4c5e6f718293a4b5c6d7e8f90123`
 
+**Metadata** `4d5e6f718293a4b5c6d7e8f901239f2c1e0b7d3a`
+
 ## Round 1 — `abc1234`, 4 findings
 
 1. `src/foo.c:142` — null deref when the timer expires mid-update → **fixed**
@@ -219,18 +221,19 @@ recalled; the reviewer's model, when it differs from the session's, appended to 
 </details>
 ```
 
-Done when the report holds the outcome line, intent, changeset refs with diffstat, diff hash,
-provenance with skill version and date, rules-file status, and every round with its reviewed state,
-scope (after the first) and dispositioned findings — each on its mandated side of the split.
+Done when the report holds the outcome line, intent, changeset refs with diffstat, diff and
+metadata hashes, provenance with skill version and date, rules-file status, and every round with
+its reviewed state, scope (after the first) and dispositioned findings — each on its mandated side
+of the split.
 
 ## Stamp
 
 Step 3's hash equal to the report's **Diff** → content unchanged (after committing the reviewed
 work, an amend, a rebase leaving the diff byte-identical): no round on it; **Reviewed** line set to
 the current state — a tip → `stamped from <previous state>` replacing `unpinned` — then, given a
-commit subject added since or a caveat naming a draft applied since or a file uncovered, Review
-onward as a later round on those alone (Rounds), else Wrap up. Different → say so, Review onward
-as a later round (Rounds). Done when the report carries the current state or Review has started.
+metadata hash differing from the report's or a caveat naming a file uncovered, Review onward as a
+later round on those alone (Rounds), else Wrap up. Different → say so, Review onward as a later
+round (Rounds). Done when the report carries the current state or Review has started.
 
 ## Wrap up
 
@@ -239,8 +242,8 @@ description or a comment; a warning not to commit the report — a later `git ad
 the PR — unless the project rules file says otherwise; a reminder to run the project's usual
 checks (build, lint, tests) before pushing — this skill never runs them; and that the pushed head
 must match the reported SHA: unpinned → commit, then re-invoke to stamp; any later commit or
-applied draft → the same re-invocation: a stamp when the content held, its new metadata reviewed
-alone, else a re-run. Done when all four are printed.
+metadata edit → the same re-invocation: a stamp when the content held, its changed metadata
+reviewed alone, else a re-run. Done when all four are printed.
 
 ## Boundaries
 
