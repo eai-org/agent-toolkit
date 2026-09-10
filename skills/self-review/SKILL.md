@@ -115,39 +115,42 @@ then the walk returns to that same finding, still open. Three dispositions close
 Never drop or soften a finding: every one appears in the report with its disposition. Dispositions
 carry forward across rounds: a re-raised finding matching a dismissed or deferred one keeps that
 disposition and is not re-walked; one matching a fixed finding means the fix didn't hold — reopen it
-and walk it again. The report lists each finding once, with its latest disposition.
+and walk it again, except an unapplied metadata draft: pending, not failed. The report lists each
+finding once, with its latest disposition.
 
-Done when every finding of the round is dispositioned and, after the last fix, the full diff
-hashed as in step 3.
+Done when every finding of the round is dispositioned and the full diff re-hashed as in step 3.
 
 ## Rounds
 
-Anything fixed → a fresh round on the new state — fixes are new unreviewed code; committing between
-rounds stays the author's move (propose a commit message in the repo's style), demanded only where
-project rules require a pinned review. The first round reviews the whole changeset; every later
-one, in this invocation or a re-run, only the **delta** — what changed since the last reviewed
-state — and its reach. The reviewer gets the full current diff as reference, plus:
+Anything fixed, or a file left uncovered, → a fresh round on the new state — fixes are new
+unreviewed code; a metadata draft earns one only once applied (below). Committing between rounds
+stays the author's move (propose a commit message in the repo's style), demanded only where project
+rules require a pinned review. The first round reviews the whole changeset; every later one, in
+this invocation or a re-run, only the **delta** — what changed since the last reviewed state — and
+its reach. The reviewer gets the full current diff as reference, plus:
 
 - the delta hunks — one the walk applied carries the failure it addressed, never its disposition;
   dismissed and deferred findings go unmentioned;
-- files the last round reported uncovered, added to the scope;
+- files the last round reported uncovered, reviewed whole as in a first round;
 - the mandate: check each hunk holds and follow its reach — call sites of what changed, mirrored
   sites, the tests and docs covering it, whatever else it judges reached; the rest of the changeset
   was reviewed and stands: no hunting there, though a grounded finding met on the way is reported
-  like any other; governing-docs checklist and leftovers hunt over the delta only.
+  like any other; governing-docs checklist and leftovers hunt over the delta and the uncovered
+  files only.
 
-The delta must be exact, else the round runs full, saying why. Exact: the fixes the walk applied,
-when the full diff's hash taken after the last fix still matches at round start; else
-`git diff <SHA>` (a tip: `<SHA> <source>`), with step 3's pathspec, when the last reviewed state
-is a commit `<SHA>` whose merge base with the target is still `<base>`. Full also whenever the
-author asks or project rules require it. Submission metadata that changed since the last round —
-a fix the author applied, a new commit's subject — joins the delta as its re-read text, judged
-against the diff it describes; alone, it still earns a round.
+The delta must be exact, else the round runs full, saying why. Exact: the fixes the walk applied —
+possibly none — when the hash the walk took still matches at round start; else `git diff <SHA>`
+(a tip: `<SHA> <source>`), with step 3's pathspec, when the last reviewed state is a commit
+`<SHA>` whose merge base with the target is still `<base>`. Full also whenever the author asks or
+project rules require it. Submission metadata that changed since the last round — a fix the
+author applied, a new commit's subject — joins the delta as its re-read text, judged against the
+diff it describes; alone, it still earns a round.
 
-Rounds stop when one yields nothing fixed — clean, or every new finding dismissed or deferred — or
-at the cap of 3 per invocation, there to bound cost; the author can stop earlier at any point, or
-explicitly ask for rounds beyond the cap. Every fix no later round covered leaves a "fixes not
-re-reviewed" caveat in the report.
+Rounds stop when one earns no fresh round — nothing uncovered, nothing fixed (clean, or every new
+finding dismissed, deferred or a draft still unapplied), no metadata changed — or at the cap of 3
+per invocation, there to bound cost; the author can stop earlier at any point, or explicitly ask
+for rounds beyond the cap. Every fix no later round covered — an unapplied draft included — leaves
+a "fixes not re-reviewed" caveat in the report naming it.
 
 Done when a stop condition has ended the rounds.
 
@@ -218,16 +221,16 @@ recalled; the reviewer's model, when it differs from the session's, appended to 
 
 Done when the report holds the outcome line, intent, changeset refs with diffstat, diff hash,
 provenance with skill version and date, rules-file status, and every round with its reviewed state,
-scope and dispositioned findings — each on its mandated side of the split.
+scope (after the first) and dispositioned findings — each on its mandated side of the split.
 
 ## Stamp
 
 Step 3's hash equal to the report's **Diff** → content unchanged (after committing the reviewed
-work, an amend, a rebase leaving the diff byte-identical): no round — unless the report lists a
-metadata fix not re-reviewed, then one on its re-read text alone; **Reviewed** line set to the
-current state — a tip → `stamped from <previous state>` replacing `unpinned` — then Wrap up.
-Different → say so, Review onward as a later round (Rounds). Done when the report carries the
-current state or Review has started.
+work, an amend, a rebase leaving the diff byte-identical): no round on it; **Reviewed** line set to
+the current state — a tip → `stamped from <previous state>` replacing `unpinned` — then, given a
+commit subject added since or a caveat naming a draft applied since or a file uncovered, Review
+onward as a later round on those alone (Rounds), else Wrap up. Different → say so, Review onward
+as a later round (Rounds). Done when the report carries the current state or Review has started.
 
 ## Wrap up
 
@@ -235,8 +238,9 @@ Print: the report's project-relative path, with the instruction to paste its con
 description or a comment; a warning not to commit the report — a later `git add .` drags it into
 the PR — unless the project rules file says otherwise; a reminder to run the project's usual
 checks (build, lint, tests) before pushing — this skill never runs them; and that the pushed head
-must match the reported SHA: unpinned → commit, then re-invoke to stamp; any later commit → the
-same re-invocation, a stamp when the content held, else a re-run. Done when all four are printed.
+must match the reported SHA: unpinned → commit, then re-invoke to stamp; any later commit or
+applied draft → the same re-invocation: a stamp when the content held, its new metadata reviewed
+alone, else a re-run. Done when all four are printed.
 
 ## Boundaries
 
