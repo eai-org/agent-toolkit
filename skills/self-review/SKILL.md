@@ -177,8 +177,9 @@ the outcome — proof-of-process collapses.
 Compact above all: one line per finding, fusing location and concrete failure; the full prose stays
 in the session. The **Reviewed** line always carries the latest round's state (`working tree on
 <SHA>`, marked `unpinned`, when not a commit; once stamped, the new SHA with `stamped from <that
-state>`) and diffstat; **Diff** its full hash, for the Stamp; history lives in the round headings,
-each naming the state it reviewed and, after the first, its scope — full with its reason.
+state>`) and diffstat; **Diff** its full hash (never a later fix's), for the Stamp; history lives
+in the round headings, each naming the state it reviewed and, after the first, its scope — full
+with its reason.
 Provenance exactly as the environment reports it, `unknown` when it doesn't — never guessed or
 recalled; the reviewer's model, when it differs from the session's, appended to the **By** line as
 `review by <model>`; skill version from this file's frontmatter, date = today.
