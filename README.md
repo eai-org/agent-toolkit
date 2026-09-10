@@ -118,6 +118,10 @@ Update in one command:
 cd agent-toolkit && git pull && ./install.sh
 ```
 
+On Claude Code the install also registers a hook that runs that update for you once a day; an
+install made before it needs the command above once to pick it up
+([docs/auto-update.md](./docs/auto-update.md)).
+
 On Windows the skills link through junctions, so the update command above works as-is, though an
 install predating them needs one `./install.sh --force` to convert. The rules are copied instead
 and need `--force` every time (see [Windows](./docs/install-skills.md#windows)).

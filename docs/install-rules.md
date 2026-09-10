@@ -21,11 +21,13 @@ From the repo root:
 ```
 
 It mirrors [the skills install](./install-skills.md): the same two symlink layers
-(`~/.agents/rules` → `~/.claude/rules`), converging re-runs, and `--agents-dir`, `--rules-dir`,
-and `--force` options. On [Windows](./install-skills.md#windows) the rules do not get the junction
-fallback the skills do, since each rule is a single file, so updating means re-running this script
-with `--force`. Rule links left by older `./install.sh` runs stay intact but are updated only by
-this script — run it after `git pull` to keep them in sync.
+(`~/.agents/rules` → `~/.claude/rules`), converging re-runs, the same `--agents-dir`,
+`--rules-dir`, `--force`, `--no-auto-update` and `--auto-update` options, and the same daily
+[self-update hook](./auto-update.md) when Claude Code is detected. On
+[Windows](./install-skills.md#windows) the rules do not get the junction fallback the skills do,
+since each rule is a single file, so updating means re-running this script with `--force`. Rule
+links left by older `./install.sh` runs stay intact but are updated only by this script — run it
+after `git pull` to keep them in sync.
 
 ## Linking rules by hand
 
