@@ -50,9 +50,9 @@ blindness, so someone else's PR has nothing to escape and belongs to `maintainer
 4. Assemble the submission metadata as one block, hashed like the diff: the lines `subjects:`,
    `title:`, `body:`, `issues:` in that order, each followed by its value's lines verbatim —
    subjects from `git log --format=%s <base>..<source>`; from the target forge's open PR of source
-   into target, its title, description and the issue ids it lists as linked (bare numbers
-   ascending, one per line); nothing under a label without a value (e.g. no PR yet) — every line
-   LF-terminated, CRLF folded to LF, trailing blank lines dropped.
+   into target, its title, description and the issue ids it lists as linked (as the forge shows
+   them, sorted, one per line); nothing under a label without a value (e.g. no PR yet) — every
+   line LF-terminated, CRLF folded to LF, each value's trailing blank lines dropped.
 
 Done when source branch, target, reviewed state (SHA, or working tree on SHA), the diff's hash
 (`git diff … | git hash-object --stdin`) and the metadata's are recorded and the diff is non-empty.
@@ -145,13 +145,13 @@ its reach. The reviewer gets the full current diff as reference, plus:
   files only.
 
 The delta must be exact, else the round runs full, saying why. Exact: the fixes the walk applied —
-possibly none — when the diff hash the walk took still matches at round start, or none when Stamp
-found **Diff** equal; else `git diff <SHA>` (a tip: `<SHA> <source>`), with step 2's exclusions,
-when the last reviewed state is a commit `<SHA>` whose merge base with the target is still
-`<base>`. Full also whenever the author asks or project rules require it. Submission metadata whose
-hash differs from the last round's (none recorded → differs) — a fix the author applied, a new
-commit's subject — joins the delta as its re-read text, judged against the diff it describes;
-alone, it still earns a round.
+possibly none — when the diff hash the walk took still matches at round start, or none in the
+round a Stamp with **Diff** equal orders; else `git diff <SHA>` (a tip: `<SHA> <source>`), with
+step 2's exclusions, when the last reviewed state is a commit `<SHA>` whose merge base with the
+target is still `<base>`. Full also whenever the author asks or project rules require it.
+Submission metadata whose hash differs from the last round's (none recorded → differs) — a fix the
+author applied, a new commit's subject — joins the delta as its re-read text, judged against the
+diff it describes; alone, it still earns a round.
 
 Rounds stop when one earns no fresh round — nothing uncovered, nothing fixed (clean, or every new
 finding dismissed, deferred or a draft still unapplied), no metadata changed — or at the cap of 3
