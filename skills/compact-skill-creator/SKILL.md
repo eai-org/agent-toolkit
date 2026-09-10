@@ -4,7 +4,7 @@ description: Author or refine a skill for maximum token economy without losing i
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
-  version: "1.17"
+  version: "1.18"
 ---
 
 # Compact skill creator
@@ -23,7 +23,7 @@ restates or re-derives them. From the moment you draft (step 4) through self-rev
 present (step 6), **always** invoke compact-docs-writer and follow its workflow on the skill text —
 reading it, applying its principles by hand, or naming it after a direct edit does not count. This
 skill adds only the skill-specific layer: trigger taxonomy, agnosticism, progressive disclosure,
-completion criteria, metadata, and the version-bump decision.
+completion criteria, metadata, and the version bump.
 
 ## Trigger taxonomy — classify first
 
@@ -147,9 +147,7 @@ disclosed doc).
    - No new or grown inline chunk meets the split test (progressive disclosure)?
    - Steps end on checkable, exhaustive completion criteria?
 6. **Present & confirm** through compact-docs-writer (diff + word delta measured from the files,
-   applied only on approval). In improve mode, **always put the version-bump decision to the
-   user** — asking after applying is fine, but the edit stays incomplete until the version is
-   settled; content approval (even given in advance) never covers it, so never let the question
-   drop. If the version was already raised since the last commit, fold the change into that
-   pending bump rather than bump again — and verify that pending state from git (version at HEAD
+   applied only on approval). In improve mode the draft **includes a version bump** — the last
+   component, unless the author names a value — never a question put to the user. Skip it only
+   when the version was already raised since the last commit, verified from git (version at HEAD
    vs working tree), never from session memory: the repo may have moved concurrently.
