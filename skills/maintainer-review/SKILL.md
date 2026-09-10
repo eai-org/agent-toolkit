@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "0.3"
+  version: "0.4"
 ---
 
 # Maintainer review
@@ -124,8 +124,9 @@ reviewed, so say so rather than act. Drafting is not posting, and a request to a
 of the wording: show the text, then wait. Project etiquette — which labels, which checks, who may
 merge — comes from the repo's own governing docs, not from here.
 
-- **Comments** — the concern, the location, the suggested change, nothing else. No preamble, no
-  recap of the PR, no praise padding. Invoke
+- **Comments** — the concern, the location, the suggested change, and nothing else beyond one
+  opening line on the round's first comment, naming what the author fixed since the last round,
+  which is acknowledgment, not padding. No recap of the PR, no praise padding. Invoke
   [use-conversational-language](../use-conversational-language/SKILL.md) for the wording.
 - **Approvals** — plain, with an empty body. Anything worth saying is a separate comment.
 - **Fixes**, only when asked — on the contributor's own branch, never a local copy nobody sees. The

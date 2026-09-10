@@ -4,7 +4,7 @@ description: Author or refine a skill for maximum token economy without losing i
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
-  version: "1.18"
+  version: "1.19"
 ---
 
 # Compact skill creator
@@ -149,5 +149,6 @@ disclosed doc).
 6. **Present & confirm** through compact-docs-writer (diff + word delta measured from the files,
    applied only on approval). In improve mode the draft **includes a version bump** — the last
    component, unless the author names a value — never a question put to the user. Skip it only
-   when the version was already raised since the last commit, verified from git (version at HEAD
-   vs working tree), never from session memory: the repo may have moved concurrently.
+   when the version was already raised, uncommitted or on the branch against its target, verified
+   from git (version at HEAD and at the merge base vs working tree), never from session memory:
+   the repo may have moved concurrently.

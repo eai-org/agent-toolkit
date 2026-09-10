@@ -9,7 +9,8 @@ agent (e.g. "for Claude Code") or model. Install instructions may still name age
 (e.g. `~/.claude/skills/`) — that's the install mechanism, not the content's framing.
 
 New skills ship at version `0.1` as a trial; bump to `1.0` only after a successful real-world run.
-Every other change bumps the last component, unless an uncommitted bump is already pending.
+Every other change bumps the last component, unless an uncommitted bump is already pending or the
+branch already raised it against `main`.
 
 ## Multi-agent quirks
 
