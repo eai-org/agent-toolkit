@@ -3,7 +3,7 @@ name: use-conversational-language
 description: Voice rules for text published under a person's name and read as if a person typed it, such as chat replies, PR comments and descriptions, commit messages, review replies, and code comments. Defines the wording only, never the content.
 license: MIT
 metadata:
-  version: "1.3"
+  version: "1.4"
 ---
 
 # Use conversational language
@@ -97,6 +97,9 @@ are not ("Note that", "It is important to", "in order to").
 
 ## Commit messages
 
-The subject states what the change does ("docs: prevent agents from adding useless comments"),
-never a slogan or a paraphrase of the content changed ("docs: a true reason alone doesn't earn a
-comment"), however accurate.
+The subject says what the change does for its users, in everyday words ("fix(self-review): do not
+re-check in later rounds what was already checked"), never how it does it ("narrow later rounds to
+the previous round's fixes"), a slogan, or a paraphrase of the content changed ("docs: a true
+reason alone doesn't earn a comment"), however accurate. Subjects read better uncontracted ("do
+not", not "don't"). A body, when any, is one or two plain sentences on the why, never a walkthrough
+of the how.
