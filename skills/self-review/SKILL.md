@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "0.9"
+  version: "0.10"
 ---
 
 # Self-review
@@ -34,7 +34,7 @@ blindness, so someone else's PR has nothing to escape and belongs to `maintainer
    excluded from the diff (pathspec) and named in a procedural caveat — exclusion drops the whole
    path, so a tweak atop a changed file the author stashes first; untracked files likewise, and
    since the diff can't see them, those that belong the author `git add`s first — a forgotten one
-   ships unreviewed later. The report this skill writes needs no sorting and is always excluded.
+   ships unreviewed later. The reports this skill writes need no sorting and are always excluded.
    Nothing beyond the tip reviewed → **pinned** to its SHA; otherwise **unpinned** — reviewed,
    but with no SHA for a maintainer to check the pushed head against, until stamped. Pinned is
    preferable, so suggest committing first when the work is ready for it — never insist, the
@@ -67,7 +67,7 @@ states whether it was found and applied.
 
 ## Review
 
-A report already present → Stamp (below) first.
+A report already present → Stamp (below) the latest first.
 
 Load and follow [fresh-eyes-review](../fresh-eyes-review/SKILL.md) on the reviewed state — whole
 in a changeset's first round, narrowed per Rounds below in any later one — inputs all explicit, so
@@ -78,9 +78,9 @@ it runs without its confirmation step — with:
   excluded below), else derived from the branch name and commit subjects; derivation yielding
   noise (`wip` commits, opaque names) → ask the author for a one-liner, proposing a draft.
   Either way, state the intent used — the author must see what the change is judged against;
-- excluded paths: the planning home and the report — author rationale and past dispositions must
+- excluded paths: the planning home and the reports — author rationale and past dispositions must
   never reach the reviewer. Planning files the changeset itself touches ship in the PR, so they
-  are reviewed like any other change; the report stays excluded always;
+  are reviewed like any other change; the reports stay excluded always;
 - the mandate framed as a maintainer's merge gate — would anything here block the merge? — and
   extended by: the project's own governing docs (contributing, agent instructions, codestyle) run
   as a checklist, not as background reading, against every changed file, the unchanged code the
@@ -168,11 +168,12 @@ Done when a stop condition has ended the rounds.
 convention (e.g. `.agents/plans/<slug>/`); reuse the slug of the task's existing artifacts
 (ticket, requirements, plan) — none → derive it from context (branch name, the changes); no
 planning home resolvable → default to `.agents/plans/<slug>/`, stating the choice rather than
-asking. Re-runs and later rounds update the file in place — read it first and carry its rounds
-and dispositions forward, under the carry-forward rule — one file per task, never versioned
-copies: its destination is a single upload. It is for pasting into the PR description or a
-comment, not for committing, unless the project rules file says otherwise — either way committing
-is the author's move, never the agent's.
+asking. Later rounds update the file this invocation wrote; a re-invocation carries the latest
+file's dispositions forward into the next free name — `<slug>.SELF-REVIEW-2.md`, `-3`, … —
+holding only its own rounds, numbered on from it, never overwriting; a stamp alone edits the
+latest in place. The newest is the one to paste into the PR description or a comment. None is for
+committing, unless the project rules file says otherwise — either way committing is the author's
+move, never the agent's.
 
 Two parts — maintainers drown in AI-generated review walls, so the visible part stays minimal.
 Visible, each line its own paragraph (blank lines between, no blockquote): the heading, **Outcome**,
