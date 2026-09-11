@@ -20,6 +20,9 @@
         },
         "no-nonsense-comments.md": {
           "requires": ["skills/use-conversational-language"]
+        },
+        "write-simple-explanations.md": {
+          "requires": ["skills/explain-in-simple-language"]
         }
       }
     },

@@ -3,7 +3,7 @@ name: refine-ticket
 description: Refine a development ticket — or brainstorm a raw idea — into a validated, self-contained REQUIREMENTS document — the "what", verified against the codebase. Invoke manually only.
 license: MIT
 metadata:
-  version: "1.13"
+  version: "1.14"
 ---
 
 # Refine ticket
@@ -44,7 +44,8 @@ the code here is for *validating* requirements, not for designing the solution.
 After gathering and code-verifying, **grill** the user — interview relentlessly, never guessing
 what they could clarify — to close every remaining decision:
 
-- One question at a time, each with your recommended answer.
+- One question at a time, each with your recommended answer, worded via
+  `explain-in-simple-language` when available.
 - If any part of a question is answerable from the codebase, explore it rather than ask — never
   bundle a code-answerable sub-question into a grill. "Which name, type, shape, or pattern fits?" is
   code-answerable: match the closest existing analogue, and let that verified convention outrank the

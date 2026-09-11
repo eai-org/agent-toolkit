@@ -75,6 +75,9 @@ In the toolkit:
 - The golden rule: never guess, ask. When requirements are ambiguous, the agent asks one question
   at a time, always paired with a recommended answer (the "grilling" technique). Questions
   answerable from the codebase go to the codebase, only genuine decisions go to the human.
+- The human can only decide what they understand: questions and explanations to the user are
+  worded for the first read (`explain-in-simple-language`, enforced by the
+  `write-simple-explanations` rule).
 - Suggest, never apply: skills that modify things (memory, docs, other skills, trims to config)
   present a diff or proposal and wait for approval.
 - Predictability over magic: the user always knows what loaded into the context and why — the
