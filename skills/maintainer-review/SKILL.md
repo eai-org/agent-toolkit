@@ -21,18 +21,19 @@ first.
 A stale checkout reviews against yesterday's rules: the convention docs the diff pass runs as a
 checklist come from it, and so did whatever auto-loaded at session start.
 
-Before the gather: `git fetch`, then compare the checkout against the freshest ref of the branch it
-tracks, the repo's default branch when it tracks none. Behind it, say so and offer to fast-forward;
-the update is a write, so it waits for a go-ahead, and a dirty or diverged tree is reported, never
-resolved for the user. The update touched the repo's agent-governing docs or anything they
-reference, re-reading them now does not replace what already loaded: recommend reopening the
-session on the new tip and re-invoking.
+Before the gather: `git fetch`. Fetch failed, say so and ask rather than compare against a stale
+ref. Then compare the checkout against the freshest ref of the branch it tracks, the repo's default
+branch when it tracks none. Behind it, say so and offer to fast-forward; the update is a write, so
+it waits for a go-ahead, and a dirty or diverged tree is reported, never resolved for the user. The
+update touched the repo's agent-governing docs or anything they reference, re-reading them now does
+not replace what already loaded: recommend reopening the session on the new tip and re-invoking.
 
-The checkout's position never decides the diff base: step 2 pins that from the PR, and a base
-elsewhere re-runs this check against it.
+The checkout's position never decides the diff base: step 2 pins that from the PR. Targets a branch
+other than the one checked out, the docs on disk are the wrong ones: say so and leave the call to
+the user, never switch the checkout yourself.
 
-Done when the checkout is clean and on its freshly fetched tip, or you named the drift and the user
-chose to proceed on it.
+Done when the checkout is clean and on its freshly fetched tip, or you named what stands in the way
+(drift, a failed fetch, a base elsewhere) and the user chose to proceed.
 
 ## 2. Gather
 
@@ -46,7 +47,8 @@ Fetch here, never via a review-capture skill: those write the author's triage fi
 status from the forge, which step 4 re-derives against the current head.
 
 Fetch, then diff the merge base — `<base>...<head>`, three-dot — so the target's own commits don't
-read as the author's. A fork's head has no local ref; fetch the forge's PR ref for it.
+read as the author's. A fork's head has no local ref; fetch the forge's PR ref for it. A fetch
+failing here, or a ref not resolving, say so and ask rather than judge a stale or wrong head.
 
 Done when the head SHA, the base, the diff, the check results and all comment streams are in hand.
 
