@@ -40,9 +40,9 @@ just walked up to your desk understand this?
 - **Questions.** Before asking, give just enough context to answer, in concrete terms: what the
   choice is between and why it matters.
 - **"I don't understand".** Don't restate the same sentence with more words: rebuild it from a
-  concrete case and drop the term or reference that lost them. A repeat misunderstanding, after
-  this skill applied or when it should have, is a correction of this skill or of the rule that
-  triggers it: offer `self-improve` when available.
+  concrete case and drop the term or reference that lost them. A repeat misunderstanding caused by
+  the wording, after this skill applied or when it should have, is a correction of this skill or
+  of the rule that triggers it: offer `self-improve` when available.
 
 ## Not about voice
 
