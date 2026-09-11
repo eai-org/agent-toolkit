@@ -3,7 +3,7 @@ name: refine-pr-review
 description: Triage a fetched PR review with the user, comment by comment, drafting each reply and producing a REQUIREMENTS file for the accepted code changes. Takes the PR-REVIEW file produced by fetch-pr-review. Invoke manually only.
 license: MIT
 metadata:
-  version: "1.2"
+  version: "1.3"
 ---
 
 # Refine PR review
@@ -32,7 +32,8 @@ on the page. Only the ANSWERS table's own row numbers stay, for in-file cross-re
 
 Read the code behind each comment first: verify its premise against the current codebase, never
 judging from the quoted hunk alone. Then form a recommendation — verdict, reasoning, and (for
-partial and push back) a draft reply. Nothing is decided silently:
+partial and push back) a draft reply. Nothing is decided silently, and every question to the
+user is worded via `explain-in-simple-language` when available:
 
 - **Contentious ones one at a time**: every comment recommended partial or push back, or
   uncertain, is its own question carrying recommendation, reasoning, and draft reply.

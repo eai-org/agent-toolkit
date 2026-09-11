@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Verify understanding
@@ -25,6 +25,7 @@ only as a tracker URL (no local file) may be fetched read-only at conversation t
 ## The conversation
 
 A conversation, not a test — the last sync between a dev and their PO before development starts.
+Word your probes and corrections via `explain-in-simple-language` when available.
 
 1. Ask the user to explain the feature in their own words: who uses it, what they see and do, why
    the feature exists, and what each ticket contributes.

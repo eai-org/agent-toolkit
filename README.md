@@ -80,9 +80,6 @@ Review helpers that check the codebase while assisting with code or ticket revie
 - **[maintainer-review](./skills/maintainer-review/SKILL.md)** — review someone else's PR as the
   maintainer deciding whether it merges: every prior comment walked, every claim verified, then
   comment, approve or fix the contributor's branch on your go-ahead.
-- **[use-conversational-language](./skills/use-conversational-language/SKILL.md)** — the voice for
-  text that should read as if a person typed it, used by the review skills for comments and
-  replies and by rules for user-facing texts and code comments.
 - **[review-ticket](./skills/review-ticket/SKILL.md)** — triage a ticket or ticket set before
   anyone picks it up, saving a review with a feature walkthrough and the decisions to raise with
   the team.
@@ -98,6 +95,17 @@ Review helpers that check the codebase while assisting with code or ticket revie
   requesting review: a fresh-context reviewer checks it as a maintainer would, you answer every
   finding, and a compact report for the PR proves the review happened.
   Projects can tune the review via an optional `.agents/docs/self-review-rules.md`.
+
+### Talking to humans
+
+Wording for what the agent writes to people, whether the user in the session or other humans.
+
+- **[explain-in-simple-language](./skills/explain-in-simple-language/SKILL.md)** — word
+  explanations, recaps, and questions to the user so they are understood on the first read,
+  without dumbing them down or hiding that an agent wrote them.
+- **[use-conversational-language](./skills/use-conversational-language/SKILL.md)** — the voice for
+  text that should read as if a person typed it, used by the review skills for comments and
+  replies and by rules for user-facing texts and code comments.
 
 ### Code checks
 
@@ -156,6 +164,9 @@ installed separately from the skills.
 - **[write-realistic-texts](./rules/write-realistic-texts.md)** — make text other people will
   read sound natural, and get the user's go-ahead on the wording before publishing the texts it
   names.
+- **[write-simple-explanations](./rules/write-simple-explanations.md)** — word questions,
+  explanations, and recaps to the user via
+  [explain-in-simple-language](./skills/explain-in-simple-language/SKILL.md).
 
 One more rule for non-English speakers ships as a copy-paste snippet rather than a file, since it 
 needs the language filled in — [use-my-mothertongue](./docs/use-my-mothertongue-rule.md) makes  
@@ -217,6 +228,11 @@ flowchart TD
   split --> execute["execute-plan-tasks"]
   plan --> handover["handover"]
   handover --> express
+  simple_rule["write-simple-explanations rule"] --> simple["explain-in-simple-language"]
+  refine -. when available .-> simple
+  plan -. when available .-> simple
+  refine_pr -. when available .-> simple
+  verify_understanding -. when available .-> simple
 
   self_rule["self-improve-on-correction rule"] --> self["self-improve"]
   self --> compact["compact-skill-creator"]

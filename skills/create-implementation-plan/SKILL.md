@@ -3,7 +3,7 @@ name: create-implementation-plan
 description: Turn a refined requirements document into a structured implementation PLAN.md a fresh session can execute. Planning only — decides the "how", not the "what". Invoke manually only.
 license: MIT
 metadata:
-  version: "1.10"
+  version: "1.11"
 ---
 
 # Create Implementation Plan
@@ -64,7 +64,8 @@ design, not a separate phase that runs before planning starts.
    decision into the plan. Interview relentlessly until you reach shared understanding, walking each
    branch of the decision tree and resolving dependencies between decisions:
    - One question at a time.
-   - Every question carries your recommended answer.
+   - Every question carries your recommended answer, worded via `explain-in-simple-language`
+     when available.
    - If a question can be answered by exploring the codebase, explore instead of asking.
    - Cover every gap, ambiguity, or inconsistency surfaced while reading, verifying, and designing.
 
