@@ -3,7 +3,7 @@ name: refine-pr-review
 description: Triage a fetched PR review with the user, comment by comment, drafting each reply and producing a REQUIREMENTS file for the accepted code changes. Takes the PR-REVIEW file produced by fetch-pr-review. Invoke manually only.
 license: MIT
 metadata:
-  version: "1.1"
+  version: "1.2"
 ---
 
 # Refine PR review
@@ -20,6 +20,13 @@ phases see only code changes.
 - **partial**: part of the change is accepted into the requirements, and the reply explains what
   was done and what was kept and why.
 - **push back**: no code change; the reply carries the reason.
+
+## Naming a comment
+
+Never refer to a comment by index or position, anywhere — questions, batch lists, hand-off text.
+Quote its opening words instead, truncated to the shortest unique prefix — the comment "the null
+check here misses …". Always verbatim, never translated or corrected, so the quote can be searched
+on the page. Only the ANSWERS table's own row numbers stay, for in-file cross-references.
 
 ## Phase 1 — triage every comment with the user
 
@@ -68,8 +75,9 @@ When every verdict is push back, skip this phase: no REQUIREMENTS file, nothing 
 `1234-task.PR-REVIEW.ANSWERS.md`) — the user's copy-paste sheet and the durable record of what was
 pushed back. One table row per comment, resolved and bot rows included for completeness:
 
-| # | Location | Verdict | Reply | Notes |
+| # | Original comment | Location | Verdict | Reply | Notes |
 
+- **Original comment** — its opening words verbatim, truncated to the shortest unique prefix.
 - **Location** — `path:line` / thread anchor from the PR-REVIEW file, so each reply is easy to
   place on the platform.
 - **Verdict** — `address` / `partial` / `push back`, or `no action` / `resolved earlier` /

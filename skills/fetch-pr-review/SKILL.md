@@ -3,7 +3,7 @@ name: fetch-pr-review
 description: Fetch all reviewer comments from a pull request URL (GitHub, Azure DevOps, …) and save them as a self-contained markdown PR-REVIEW file in the task's planning directory. Fetch only — no fixing or replying.
 license: MIT
 metadata:
-  version: "1.6"
+  version: "1.7"
 ---
 
 # PR review fetcher
@@ -80,8 +80,9 @@ in the code and understand every piece of feedback without re-fetching.
 > **Fetched** {today YYYY-MM-DD}
 
 ## Review verdicts        — one per reviewer: verdict + summary text
-## Inline threads         — one ### per thread: `path:line`, quoted code context/diff hunk,
-                            comments oldest first as <author> — <date>, status flag
+## Inline threads         — one ### per thread: `path:line` + the opening quote, quoted code
+                            context/diff hunk, comments oldest first as <author> — <date>,
+                            status flag
 ## General comments       — non-inline human conversation, oldest first
 ## Bot comments           — automated feedback, grouped by bot
 ```
