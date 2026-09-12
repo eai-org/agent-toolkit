@@ -24,12 +24,13 @@ checklist come from it, and so did whatever auto-loaded at session start.
 Before the gather: `git fetch`. Fetch failed, say so and ask rather than compare against a stale
 ref. Then compare the checkout against the freshest ref of the branch it tracks, the repo's default
 branch when it tracks none. Behind it, say so and offer to fast-forward; the update is a write, so
-it waits for a go-ahead, and a dirty or diverged tree is reported, never resolved for the user. The
-update touched the repo's agent-governing docs or anything they reference, re-reading them now does
-not replace what already loaded: recommend reopening the session on the new tip and re-invoking.
+it waits for a go-ahead, and a dirty or diverged tree is reported, never resolved for the user.
+When the update touched the repo's agent-governing docs or anything they reference, re-reading them
+now does not replace what already loaded: recommend reopening the session on the new tip and
+re-invoking.
 
-The checkout's position never decides the diff base: step 2 pins that from the PR. Targets a branch
-other than the one checked out, the docs on disk are the wrong ones: say so and leave the call to
+The checkout's position never decides the diff base: step 2 pins that from the PR. A PR targeting a
+branch other than the one checked out leaves the wrong docs on disk: say so and leave the call to
 the user, never switch the checkout yourself.
 
 Done when the checkout is clean and on its freshly fetched tip, or you named what stands in the way
