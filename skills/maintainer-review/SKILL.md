@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "0.4"
+  version: "0.5"
 ---
 
 # Maintainer review
@@ -16,7 +16,27 @@ is fresh already, and staying in it keeps the diff, the comments and your findin
 argument that follows. Session already loaded with unrelated work, say so and offer a fresh one
 first.
 
-## 1. Gather
+## 1. Start clean and current
+
+A stale checkout reviews against yesterday's rules: the convention docs the diff pass runs as a
+checklist come from it, and so did whatever auto-loaded at session start.
+
+Before the gather: `git fetch`. Fetch failed, say so and ask rather than compare against a stale
+ref. Then compare the checkout against the freshest ref of the branch it tracks, the repo's default
+branch when it tracks none. Behind it, say so and offer to fast-forward; the update is a write, so
+it waits for a go-ahead, and a dirty or diverged tree is reported, never resolved for the user.
+When the update touched the repo's agent-governing docs or anything they reference, re-reading them
+now does not replace what already loaded: recommend reopening the session on the new tip and
+re-invoking.
+
+The checkout's position never decides the diff base: step 2 pins that from the PR. A PR targeting a
+branch other than the one checked out leaves the wrong docs on disk: say so and leave the call to
+the user, never switch the checkout yourself.
+
+Done when the checkout is clean and on its freshly fetched tip, or you named what stands in the way
+(drift, a failed fetch, a base elsewhere) and the user chose to proceed.
+
+## 2. Gather
 
 Take a PR reference on any forge and pull, through whatever tooling is connected, **all** of it
 before judging: metadata (title, description, author, base and head refs, draft state, labels,
@@ -25,14 +45,15 @@ review verdicts with their bodies, and inline threads with their replies. A sing
 typically misses the review bodies and the inline threads; expect one request per stream.
 
 Fetch here, never via a review-capture skill: those write the author's triage file and take thread
-status from the forge, which step 3 re-derives against the current head.
+status from the forge, which step 4 re-derives against the current head.
 
 Fetch, then diff the merge base — `<base>...<head>`, three-dot — so the target's own commits don't
-read as the author's. A fork's head has no local ref; fetch the forge's PR ref for it.
+read as the author's. A fork's head has no local ref; fetch the forge's PR ref for it. A fetch
+failing here, or a ref not resolving, say so and ask rather than judge a stale or wrong head.
 
 Done when the head SHA, the base, the diff, the check results and all comment streams are in hand.
 
-## 2. Follow every reference
+## 3. Follow every reference
 
 Extract every issue and PR reference, commit sha, external link and domain identifier (a ticket key
 or product entity id) from the title, the description and **every** comment, then open each,
@@ -51,7 +72,7 @@ absent.
 Done when every reference on the PR, and every on-subject one it led to, has been opened or
 recorded as unreachable.
 
-## 3. Walk every comment
+## 4. Walk every comment
 
 Build an explicit list of every conversation comment, review body and inline thread including
 replies. For each, record what was raised, whether it was answered, and **whether it still applies
@@ -70,17 +91,17 @@ it.
 Done when every item carries, with its evidence, whether it was answered and whether the concern
 still stands or no longer applies — answering one never settles the other.
 
-## 4. Read the diff
+## 5. Read the diff
 
 Load and follow [review-code-assistant](../review-code-assistant/SKILL.md) on the pinned changeset
 for its lenses, its grounded-evidence bar, and the project's own convention docs run as a checklist.
 Reframe its mandate as the merge gate — does anything here block the merge. Its comment handling,
 its branch-freshness rule and its read-only boundary are superseded by this skill: the changeset
-stays the step-1 head SHA, so the diff pass and the comment walk judge the same code.
+stays the step-2 head SHA, so the diff pass and the comment walk judge the same code.
 
 Done when the diff pass has returned its findings, possibly none.
 
-## 5. Fresh eyes over the findings
+## 6. Fresh eyes over the findings
 
 Load [fresh-eyes-review](../fresh-eyes-review/SKILL.md), giving it the diff as the changeset, the
 title, description and linked issue as the intent, and **your draft findings as the artifact to
@@ -93,7 +114,7 @@ Drop what it refutes, fix what it corrects, and report what it raised that you c
 Done when every draft finding was kept, dropped, or knowingly kept against the reviewer's
 objection — with none, when the clean verdict came back unchallenged or gained a finding.
 
-## 6. Report
+## 7. Report
 
 In chat, no file. The reader sees the tail first, so the **scannable** part goes last.
 
@@ -146,5 +167,6 @@ merge — comes from the repo's own governing docs, not from here.
 
 ## Boundaries
 
-Read-only git plus `git fetch`, and no writes to the working tree — until a fix is explicitly
-authorised, the sole exception. Output is chat text; write a file only if asked.
+Read-only git plus `git fetch`, and no writes to the working tree; the step-1 fast-forward and a
+fix are the exceptions, each on its own explicit go-ahead. Output is chat text; write a file only
+if asked.
