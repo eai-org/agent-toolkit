@@ -99,6 +99,68 @@ is_ours() {
     || "$target" == "${AGENTS_DIR}"/* ]]
 }
 
+# Names the user does not want installed, one per line in ${AGENTS_DIR}/$1.
+# Deliberately not part of the invocation record: the auto-update replay
+# re-runs an installer with --agents-dir and its target flag only, so the
+# choice has to live where the replay finds it on its own.
+EXCLUDE_FILE=""
+EXCLUDED=""
+
+load_exclusions() {
+  local line
+  EXCLUDE_FILE="${AGENTS_DIR}/$1"
+  EXCLUDED=""
+  [ -f "$EXCLUDE_FILE" ] || return 0
+  while IFS= read -r line || [ -n "$line" ]; do
+    case "$line" in ''|'#'*) continue ;; esac
+    EXCLUDED="${EXCLUDED}${line}"$'\n'
+  done <"$EXCLUDE_FILE"
+}
+
+is_excluded() {
+  case $'\n'"$EXCLUDED" in
+    *$'\n'"$1"$'\n'*) return 0 ;;
+  esac
+  return 1
+}
+
+exclude_add() {
+  if ! is_excluded "$1"; then
+    EXCLUDED="${EXCLUDED}$1"$'\n'
+  fi
+}
+
+exclude_remove() {
+  local kept="" line
+  while IFS= read -r line || [ -n "$line" ]; do
+    [ -n "$line" ] || continue
+    [ "$line" = "$1" ] && continue
+    kept="${kept}${line}"$'\n'
+  done <<<"$EXCLUDED"
+  EXCLUDED="$kept"
+}
+
+save_exclusions() {
+  local tmp="${EXCLUDE_FILE}.tmp.$$"
+  [ -n "$EXCLUDE_FILE" ] || return 1
+  if [ -z "$EXCLUDED" ]; then
+    rm -f -- "$EXCLUDE_FILE" 2>/dev/null
+    return 0
+  fi
+  printf '%s' "$EXCLUDED" >"$tmp" 2>/dev/null || return 1
+  mv -f "$tmp" "$EXCLUDE_FILE"
+}
+
+# Drop the entry an excluded name holds in directory $2, if it is one of ours.
+# A copy left by an environment that cannot link is not, so it stays: removing
+# a real directory is what --force is for.
+unlink_one() {
+  local name="$1" dest="$2/$1"
+  { [ -L "$dest" ] && is_ours "$dest"; } || return 0
+  rm -- "$dest"
+  echo "  remove ${name} (excluded)"
+}
+
 # Remove broken symlinks we own from directory $1. Broken foreign symlinks
 # are left alone.
 prune_dir() {

@@ -82,7 +82,8 @@ pushed back. One table row per comment, resolved and bot rows included for compl
   place on the platform.
 - **Verdict** — `address` / `partial` / `push back`, or `no action` / `resolved earlier` /
   `bot: ignored` / `bot: included`.
-- **Reply** — voiced per **/use-conversational-language** (Developer conversations, author replies);
+- **Reply** — voiced per **/use-conversational-language** (Developer conversations, author replies),
+  or, when it is not installed, plain prose with no dashes and no AI tells;
   canned one-liner for address. Post-fix stance: written as if the accepted changes are already
   made ("did X, kept Y as is because …") — the sheet is pasted after the fixes land. A reply too
   long for a cell goes below the table, referenced by its row number.

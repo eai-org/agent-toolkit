@@ -31,7 +31,7 @@ reveal it (an upstream bug, a ticket, a hidden side effect).
 
 Comments you do write must sound like a colleague typed them, not an AI: actually invoke the
 `use-conversational-language` skill and follow its conventions — reciting them from memory does
-not count.
+not count. Not installed: write plain prose instead, no dashes and no AI tells.
 
 Bad: `// Overrides default per plan; previously returned null`
 

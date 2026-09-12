@@ -128,6 +128,7 @@ merge — comes from the repo's own governing docs, not from here.
   opening line on the round's first comment, naming what the author fixed since the last round,
   which is acknowledgment, not padding. No recap of the PR, no praise padding. Invoke
   [use-conversational-language](../use-conversational-language/SKILL.md) for the wording.
+  Not installed: write plain prose instead, no dashes and no AI tells.
 - **Approvals** — plain, with an empty body. Anything worth saying is a separate comment.
 - **Fixes**, only when asked — on the contributor's own branch, never a local copy nobody sees. The
   go-ahead reaches that branch's push and no further **on the PR**; putting your own checkout back
