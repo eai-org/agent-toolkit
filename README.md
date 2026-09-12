@@ -122,6 +122,15 @@ On Claude Code the install also registers a hook that runs that update for you o
 install made before it needs the command above once to pick it up
 ([docs/auto-update.md](./docs/auto-update.md)).
 
+Every skill is installed by default. To leave one out, name it once and the choice sticks, daily
+update included:
+
+```sh
+./install.sh --exclude use-conversational-language
+```
+
+`--include <name>` puts it back. Both are repeatable.
+
 On Windows the skills link through junctions, so the update command above works as-is, though an
 install predating them needs one `./install.sh --force` to convert. The rules are copied instead
 and need `--force` every time (see [Windows](./docs/install-skills.md#windows)).
