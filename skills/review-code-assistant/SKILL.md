@@ -168,6 +168,7 @@ Local text only; write no file unless the user later asks to save it.
   copy); when the comment holds a fence, make the outer one longer, never indent or escape the
   inner fence. Before writing any **Suggested comment**, actually invoke
   **/use-conversational-language** and follow it — reciting its rules from memory does not count.
+  Not installed: write plain prose instead, no dashes and no AI tells.
   That brevity and softness is tone, not hedging: it never lowers the evidence bar from *Grounded,
   not speculative* — stay grounded in *what* to raise, human and brief in *how* you word it.
 - **Order mirrors the diff** so the user can read the PR in one window and copy-paste straight down

@@ -6,7 +6,7 @@ description: Texts other people will read follow the use-conversational-language
 Whenever writing text that other people will read as if the user wrote it — commit messages,
 PR descriptions, review comments, code comments, chat messages or questions for colleagues, and
 similar — you must actually invoke the `use-conversational-language` skill and follow its rules
-— reciting them from memory does not count.
+— reciting them from memory does not count. Not installed: write plain prose instead, no dashes and no AI tells.
 
 Replies to the user in the current session are private agent-user communication, out of scope
 however conversational they sound.

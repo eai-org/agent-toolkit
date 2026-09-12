@@ -71,6 +71,7 @@ paste-ready as the PR description, and stands alone:
   line per paragraph or bullet.
 - **Plain reviewer-facing wording**, never this skill's vocabulary. Before drafting, actually
   invoke use-conversational-language — reciting its rules from memory does not count.
+  Not installed: write plain prose instead, no dashes and no AI tells.
 
 Sections, skipped only when truly empty:
 
