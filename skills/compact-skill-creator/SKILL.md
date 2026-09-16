@@ -4,7 +4,7 @@ description: Author or refine a skill for maximum token economy without losing i
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
-  version: "1.20"
+  version: "1.21"
 ---
 
 # Compact skill creator
@@ -145,6 +145,10 @@ disclosed doc).
        invocation work?
 
      Reword until all four hold.
+   - Body consistent with itself? Every "never" checked against each step and source it could
+     forbid; every advertised input type handled by each step that touches it (a check fitting
+     only one type fails the rest); every write surfaced where its reader looks — when a later
+     phase reads only a document derived from the edited one, the addition reaches that one too.
    - No new or grown inline chunk meets the split test (progressive disclosure)?
    - Steps end on checkable, exhaustive completion criteria?
 6. **Present & confirm** through compact-docs-writer (diff + word delta measured from the files,
