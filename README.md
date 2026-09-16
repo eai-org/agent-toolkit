@@ -63,6 +63,9 @@ execute them one at a time and consolidate the changes.
 - **[handover](./skills/handover/SKILL.md)** — package a finished change for its reviewers:
   what it does and why, the decisions and plan deviations worth knowing, and a review guide —
   paste-ready as the PR description. [More about handover](https://medium.com/engineering-in-the-age-of-ai/the-missing-step-in-agentic-coding-the-handover-d1963c3d2c1d).
+- **[prepare-prompt](./skills/prepare-prompt/SKILL.md)** — write the prompt that hands this
+  session's work to a fresh session — what exists, what is open, what to do and in what form, the
+  facts it cannot derive — as short as the next session allows.
 
 ### Review assistants
 
@@ -165,8 +168,9 @@ installed separately from the skills.
   project's planning directory, following a certain structure.
 - **[read-other-repos-governing-docs](./rules/read-other-repos-governing-docs.md)** — before
   editing another repo's files, read and follow that repo's governing docs — they don't auto-load.
-- **[self-contained-docs](./rules/self-contained-docs.md)** — keep planning and design docs
-  concise and executable by a fresh session with no prior context.
+- **[self-contained-docs](./rules/self-contained-docs.md)** — keep planning and design docs, and
+  prompts for another session, concise and executable by a fresh session with no prior context,
+  writing the prompts via [prepare-prompt](./skills/prepare-prompt/SKILL.md).
 - **[self-improve-on-correction](./rules/self-improve-on-correction.md)** — when the user corrects
   something a skill or doc governs, offer to persist the lesson via
   [self-improve](./skills/self-improve/SKILL.md).
@@ -270,7 +274,8 @@ flowchart TD
   plans_rule -. informs .-> handover
   plans_rule -. informs .-> self_review
 
-  docs_rule["self-contained-docs rule"] -. informs .-> fetch_ticket
+  docs_rule["self-contained-docs rule"] --> prepare_prompt["prepare-prompt"]
+  docs_rule -. informs .-> fetch_ticket
   docs_rule -. informs .-> fetch_pr
   docs_rule -. informs .-> refine_pr
   docs_rule -. informs .-> refine

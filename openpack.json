@@ -15,6 +15,9 @@
         "compact-governing-docs.md": {
           "requires": ["skills/compact-skill-creator", "skills/compact-docs-writer"]
         },
+        "self-contained-docs.md": {
+          "requires": ["skills/prepare-prompt"]
+        },
         "write-realistic-texts.md": {
           "requires": ["skills/use-conversational-language"]
         },
