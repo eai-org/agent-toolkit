@@ -49,6 +49,10 @@ execute them one at a time and consolidate the changes.
 - **[attach-to-ticket](./skills/attach-to-ticket/SKILL.md)** — save a pasted screenshot, a file
   or a URL beside a fetched ticket and reference it from the ticket file, e.g. to fill an
   attachment the fetch could not download.
+- **[grill-me](./skills/grill-me/SKILL.md)** — get interviewed relentlessly about a plan, design
+  or idea, one question at a time, each with a recommended answer, until every branch of the
+  decision tree is resolved. Adapted from
+  [Matt Pocock's grill-me](https://github.com/mattpocock/skills) (MIT, copyright 2026 Matt Pocock).
 - **[refine-ticket](./skills/refine-ticket/SKILL.md)** — define the "what" of a task: validate the
   ticket — or a raw idea you want to brainstorm — against the codebase, settle open decisions
   together, and save a self-contained requirements doc a fresh session can pick up.
@@ -258,6 +262,7 @@ flowchart TD
   compact -. when available .-> simple
   memory_doctor -. when available .-> simple
   agentify["agentify-project"] -. when available .-> simple
+  grill_me["grill-me"] -. when available .-> simple
   self_review -. when available .-> simple
   agentify -. when available .-> compact_docs
 
