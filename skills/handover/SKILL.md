@@ -33,6 +33,8 @@ Read these, skipping what doesn't exist:
    file and looks load-bearing for a why — in doubt whether to fetch, ask.
 3. **The session**, when it produced the change: decisions, pivots, constraints.
 4. **The diff** against the target, plus commit subjects.
+5. **The repo's PR template**, wherever the forge looks for one (e.g. root, `.github/`, `docs/`);
+   several → ask the author which.
 
 An earlier artifact — a ticket review, a prior round — counts only where nothing later settled the
 point.
