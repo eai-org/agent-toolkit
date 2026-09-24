@@ -85,12 +85,12 @@ Sections, skipped only when truly empty:
 4. **Known gaps** — at most 3 shortcomings, assumptions or open questions the sources establish;
    none → omit the section, never manufacture one.
 
-**Repo PR template** (e.g. `pull_request_template.md`) → the body is that template filled in, under
+**Repo PR template** (if the repo has one) → the body is that template filled in, under
 a title in the repo's commit convention: each section above goes into the template's matching
 section, else its description section; checkboxes and fields are ticked or filled only where a
 source backs them, else left blank; instructional comments stripped, fixed footers kept; the word
 cap counts only your prose. A project skill for PR descriptions overrides these rules where they
-differ.
+differ. No template → the body is just the sections above.
 
 Done when every section and template field is filled or knowingly skipped, every claim traces to a
 source, and nothing in the text points at something the reviewer cannot open.
