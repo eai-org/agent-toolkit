@@ -3,7 +3,7 @@ name: handover
 description: Use when handing finished work over to code review — writing a PR description or packaging a change for review by a human, an agent, or both.
 license: MIT
 metadata:
-  version: "0.7"
+  version: "0.8"
 ---
 
 # Handover
@@ -33,6 +33,8 @@ Read these, skipping what doesn't exist:
    file and looks load-bearing for a why — in doubt whether to fetch, ask.
 3. **The session**, when it produced the change: decisions, pivots, constraints.
 4. **The diff** against the target, plus commit subjects.
+5. **PR conventions** — the repo's PR template, wherever the forge looks for one (e.g. root,
+   `.github/`, `docs/`; several → ask the author which), and any project skill for PR descriptions.
 
 An earlier artifact — a ticket review, a prior round — counts only where nothing later settled the
 point.
@@ -83,8 +85,15 @@ Sections, skipped only when truly empty:
 4. **Known gaps** — at most 3 shortcomings, assumptions or open questions the sources establish;
    none → omit the section, never manufacture one.
 
-Done when every section is filled or knowingly skipped, every claim traces to a source, and nothing
-in the text points at something the reviewer cannot open.
+**Repo PR template** (if the repo has one) → the body is that template filled in, under
+a title in the repo's commit convention: each section above goes into the template's matching
+section, else its description section; checkboxes and fields are ticked or filled only where a
+source backs them, else left blank; instructional comments stripped, fixed footers kept; the word
+cap counts only your prose. A project skill for PR descriptions overrides these rules where they
+differ. No template → the body is just the sections above.
+
+Done when every section and template field is filled or knowingly skipped, every claim traces to a
+source, and nothing in the text points at something the reviewer cannot open.
 
 ## Boundaries
 
