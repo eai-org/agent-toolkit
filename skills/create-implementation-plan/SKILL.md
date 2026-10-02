@@ -3,7 +3,7 @@ name: create-implementation-plan
 description: Turn a refined requirements document into a structured implementation PLAN.md a fresh session can execute. Planning only — decides the "how", not the "what". Invoke manually only.
 license: MIT
 metadata:
-  version: "1.11"
+  version: "1.12"
 ---
 
 # Create Implementation Plan
@@ -134,26 +134,36 @@ something is a decision or a mechanical detail, put it in.
   the `*.TICKET.md` — close any gaps with the user instead. Never assume a requirement; ask.
 - Write the plan to disk only after every open question is resolved.
 
-State clearly when done that the plan file is ready, referring to it by its **project-relative
-path** (relative to the current working directory — never absolute). Then tell the user to start a
-**fresh execution session** with a clean context that reads **only the plan file**, implements it,
-then runs the project's validation (lint, tests, build).
+When done, state that the plan file is ready, by its **project-relative path** (relative to the
+working directory, never absolute), and offer two ways forward, each as a **single copy-pasteable
+launch command** — session name and prompt combined, so one paste starts a **fresh session** with
+a clean context. Use the agent tool's launch syntax (`claude` below is only the example) and name
+the session after `<slug>`, the plan filename's slug (without id prefix or extension), so the
+phase is recognizable in the session list:
 
-End with a **single copy-pasteable launch command** — session name and prompt combined, so one
-paste starts the execution session. Use the launch syntax of the agent tool in use
-(vendor-agnostic — `claude` below is only the example). Name the session `execute-plan-<slug>`,
-where `<slug>` is the plan filename's slug (without id prefix or extension), so the phase is
-recognizable in the session list, e.g.:
+1. **Execute the plan** — reads **only the plan file**, implements it, then runs the project's
+   validation (lint, tests, build):
 
-```
-claude --name execute-plan-report-approval "Execute the plan .agents/plans/123-report-approval/123-report-approval.PLAN.md"
-```
+   ```
+   claude --name execute-plan-report-approval "Execute the plan .agents/plans/123-report-approval/123-report-approval.PLAN.md"
+   ```
 
-Then offer the alternative — clearing the current session instead (vendor-agnostic — `/clear` below
-is only the example; use the clear command of the agent tool in use):
+2. **Split the plan into tasks** first, when `split-plan-tasks` is available, so the work lands in
+   small reviewable increments:
 
-OR /clear and run:
+   ```
+   claude --name split-plan-tasks-report-approval "/split-plan-tasks .agents/plans/123-report-approval/123-report-approval.PLAN.md"
+   ```
+
+Then offer clearing the current session instead (`/clear` below is only the example; use the agent
+tool's clear command):
+
+OR /clear and run one of:
 
 ```
 Execute the plan .agents/plans/123-report-approval/123-report-approval.PLAN.md
+```
+
+```
+/split-plan-tasks .agents/plans/123-report-approval/123-report-approval.PLAN.md
 ```
