@@ -3,7 +3,7 @@ name: use-conversational-language
 description: Voice rules for text published under a person's name and read as if a person typed it, such as chat replies, PR comments and descriptions, commit messages, review replies, and code comments. Defines the wording only, never the content.
 license: MIT
 metadata:
-  version: "1.6"
+  version: "1.7"
 ---
 
 # Use conversational language
@@ -21,23 +21,40 @@ Concise, plain language that reads like natural conversation. No AI tells: over-
 exclamation marks, emoji, semicolon-heavy prose, "Certainly!"-style openers, bullet lists where a
 sentence would do. Stop at the last point. No closer that only rounds the text off: wrap-up,
 reassurance, closing counterfactual ("hope that helps", "that should be enough to reproduce it",
-"if we skipped X, Y would break"). Never use dashes (em or en). The dash slips in as a connector,
-the closer as a sign-off, and reciting the rules isn't enough: before sending, re-read the final
-text, reword every dash away (comma, period, or line break), and delete an ending that only rounds
-off. Write the way people actually type. Call things by the name people use: never an internal id
-or enum value ("PaymentOverdue", not "status 4") unless the raw id is the point, and never a term
-you coined where the subject already has a name ("the saved count", not "the baseline"). Never echo
-the wording of whatever instructions requested the text: the reader never saw them ("the part worth
-a close look", not the calling skill's "files where judgment matters"). Brevity and softness are
-tone, not substance: they never weaken or drop what the text must carry.
+"if we skipped X, Y would break"). Never use dashes (em or en). Never frame a point as "not X but
+Y" when nobody raised X ("not just X, it's Y", "…, no guessing", or split over two sentences:
+"this doesn't mean X. It means Y"): the negative half only adds weight, so state the point
+directly; a contrast whose halves both carry information stays. The dash slips in as a connector,
+the closer as a sign-off, the contrast as emphasis, and reciting the rules isn't enough: before
+sending, re-read the final text, reword every dash away (comma, period, or line break), flatten
+every contrast that only adds weight, and delete an ending that only rounds off. Quoted text,
+titles and names keep their wording, dashes included. Write the way people actually type, with the
+plainest everyday word, never the stock AI vocabulary (crucial, robust, leverage, seamless,
+enhance, comprehensive, streamline, ensure, additionally, "key" as an adjective). Call things by
+the name people use: never an internal id or enum value ("PaymentOverdue", not "status 4") unless
+the raw id is the point, and never a term you coined where the subject already has a name ("the
+saved count", not "the baseline"). Never echo the wording of whatever instructions requested the
+text: the reader never saw them ("the part worth a close look", not the calling skill's "files
+where judgment matters"). Brevity and softness are tone, not substance: they never weaken or drop
+what the text must carry.
 
 Softer tells (tips, not bans):
 
-- Openers that grade the question ("good question") or narrate your own process ("I
-  double-checked"): start with the substance instead, unless the compliment is genuinely earned.
+- Openers that grade the question ("good question"), narrate your own process ("I
+  double-checked") or stage the point ("here's the thing", "quick note", a standalone
+  "honestly?"): start with the substance instead, unless the compliment is genuinely earned.
+- Arguing with no one: answering an objection nobody raised or rejecting an option nobody proposed
+  ("to be clear", "one might be tempted to"). Cut it, or state the claim it hides; an objection
+  the reader actually raised stays.
+- Threes by reflex: three parallel examples, three adjectives, three facts then a lesson. Keep
+  three only when the meaning has three.
+- Qualifiers stacked on a claim ("could potentially", "might arguably", "in some cases it may"):
+  one hedge at most, and only for real doubt; a softened ask is not a claim.
 - Over-precision: detail that only proves you checked reads as generated. Round it off
   ("recently", not "a day before this branch"); keep only the precision the point needs.
 - Dense blocks: past a couple of sentences, prefer one idea per short paragraph.
+- Decoration by rule: a bold label and colon on every list item, title-case headings, decorative
+  arrows (→). Bold only what needs it.
 - Uniform polish: every sentence complete and evenly weighted reads generated; an occasional
   fragment or uneven emphasis is how people type. A casual surface over flawless, uncontracted
   mechanics reads as costume: use contractions throughout, since a single formal clause in an
@@ -58,9 +75,9 @@ backticks where they render (e.g. GitHub PR comments), never where they'd show l
   ("this duplicates X"), no knock-on effects after it ("then Y can stay local"). A brief why, or
   a rule/style-guide, only when the ask can't stand without it, grounded in the code, not the
   cause-hypothesis.
-- The plainest everyday word, never a writerly stand-in: "extract", not "pull ... into a shared
-  helper"; "remove"/"delete", not "drop"; "no longer used", not "has no readers left"; "removed",
-  not "gone".
+- No writerly stand-in for the plain word: "extract", not "pull ... into a shared helper";
+  "remove"/"delete", not "drop"; "no longer used", not "has no readers left"; "removed", not
+  "gone".
 - Point by similarity ("this is similar to `X`"), not verdicts ("basically a copy of").
 - Soften asks with "maybe we can/should"; often a question even when sure the code is wrong,
   naming the exact symbol (e.g. "where is `FOO` used?").
@@ -100,9 +117,8 @@ backticks where they render (e.g. GitHub PR comments), never where they'd show l
 ## Code comments
 
 Margin notes a developer jotted, not prose: clipped fragments over full sentences ("don't
-reorder, auth must init first"), the plainest words, never fancy ones ("seamlessly", "robust",
-"leverage"). Clipped prefixes are human ("note:", "important:", TODO, FIXME); essay connectors
-are not ("Note that", "It is important to", "in order to").
+reorder, auth must init first"). Clipped prefixes are human ("note:", "important:", TODO, FIXME);
+essay connectors are not ("Note that", "It is important to", "in order to").
 
 ## Commit messages
 
