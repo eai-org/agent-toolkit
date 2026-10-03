@@ -3,7 +3,7 @@ name: create-implementation-plan
 description: Turn a refined requirements document into a structured implementation PLAN.md a fresh session can execute. Planning only — decides the "how", not the "what". Invoke manually only.
 license: MIT
 metadata:
-  version: "1.12"
+  version: "1.13"
 ---
 
 # Create Implementation Plan
@@ -135,7 +135,7 @@ something is a decision or a mechanical detail, put it in.
 - Write the plan to disk only after every open question is resolved.
 
 When done, state that the plan file is ready, by its **project-relative path** (relative to the
-working directory, never absolute), and offer two ways forward, each as a **single copy-pasteable
+working directory, never absolute), and offer these ways forward, each as a **single copy-pasteable
 launch command** — session name and prompt combined, so one paste starts a **fresh session** with
 a clean context. Use the agent tool's launch syntax (`claude` below is only the example) and name
 the session after `<slug>`, the plan filename's slug (without id prefix or extension), so the
@@ -155,6 +155,13 @@ phase is recognizable in the session list:
    claude --name split-plan-tasks-report-approval "/split-plan-tasks .agents/plans/123-report-approval/123-report-approval.PLAN.md"
    ```
 
+3. **Harden the plan** first, when `harden-artifact` is available, so a fresh reviewer challenges
+   it against the ticket and the code before anything is built:
+
+   ```
+   claude --name harden-plan-report-approval "/harden-artifact .agents/plans/123-report-approval/123-report-approval.PLAN.md"
+   ```
+
 Then offer clearing the current session instead (`/clear` below is only the example; use the agent
 tool's clear command):
 
@@ -166,4 +173,8 @@ Execute the plan .agents/plans/123-report-approval/123-report-approval.PLAN.md
 
 ```
 /split-plan-tasks .agents/plans/123-report-approval/123-report-approval.PLAN.md
+```
+
+```
+/harden-artifact .agents/plans/123-report-approval/123-report-approval.PLAN.md
 ```

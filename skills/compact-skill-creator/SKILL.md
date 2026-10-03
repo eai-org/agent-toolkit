@@ -4,7 +4,7 @@ description: Author or refine a skill for maximum token economy without losing i
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
-  version: "1.21"
+  version: "1.22"
 ---
 
 # Compact skill creator
@@ -121,6 +121,9 @@ disclosed doc).
    type**, and any unavoidable coupling, plus whatever each answer opens up. Ask one question at a
    time, each with your recommended answer, worded via `explain-in-simple-language` when
    available; if a question can be answered by exploring the codebase, explore instead of asking.
+   A skill reading what other skills produce, or stepping into their hand-offs, takes its input
+   types, the options its own hand-off carries on, and the files it must never write from a search
+   of every such skill — never from the one pipeline in mind.
    Scale depth to complexity (complex skill → more questions; simple → few). The only limit: never
    interview for its own sake.
 3. **Metadata.** Always include the frontmatter fields; never hardcode their values. Creating: infer

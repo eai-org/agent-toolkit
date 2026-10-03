@@ -66,6 +66,9 @@
         },
         "self-review": {
           "requires": ["skills/fresh-eyes-review"]
+        },
+        "harden-artifact": {
+          "requires": ["skills/fresh-eyes-review"]
         }
       }
     }
