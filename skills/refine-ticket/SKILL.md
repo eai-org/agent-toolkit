@@ -3,7 +3,7 @@ name: refine-ticket
 description: Refine a development ticket — or brainstorm a raw idea — into a validated, self-contained REQUIREMENTS document — the "what", verified against the codebase. Invoke manually only.
 license: MIT
 metadata:
-  version: "1.14"
+  version: "1.15"
 ---
 
 # Refine ticket
@@ -132,9 +132,12 @@ Six parts (Verified codebase facts, Overrides, and Open questions may be empty �
    (e.g. `(Description)`, `(Technical Detail)`, `(AC)`). Group by area when it aids reading. Cite
    the concrete file path / identifier inline wherever a requirement touches code; cite a reused
    pattern as `path:line-range`.
-4. **Overrides** — where the ticket says one thing and the requirement says another (ticket is
-   stale, wrong, or self-contradictory). Each entry: what the ticket says, what the code/AC shows,
-   the resulting requirement.
+4. **Overrides** — every deviation from the ticket in what must be true when the work is done: a
+   ticket statement changed or dropped, a requirement added. Rewording and merged duplicates are not
+   deviations; for an idea, only changing or dropping one of the user's own statements is one —
+   requirements shaped while grilling are not. Each entry: what the ticket says or omits, the
+   resulting requirement, and the reason with its source — what the code/AC shows, or the user's
+   decision while grilling.
 5. **Open questions** — non-blocking ambiguities, each with your tentative answer and why it's
    non-blocking. Blocking questions never appear here.
 6. **Acceptance criteria** — flat, verifiable checklist the implementation must satisfy.
@@ -156,7 +159,10 @@ plus the requirements file's slug:
 ```
 claude --name create-manual-test-<slug> "/create-manual-test-instructions <path>.REQUIREMENTS.md"   # QA manual test
 claude --name create-plan-<slug> "/create-implementation-plan <path>.REQUIREMENTS.md"               # Plan phase
+claude --name harden-requirements-<slug> "/harden-artifact <path>.REQUIREMENTS.md"                  # check it first
 ```
+
+The `harden-artifact` line only when that skill is available.
 
 The phase prefix (`create-plan-`, `execute-plan-`, …) keeps the pipeline phases distinguishable in
 the session list.

@@ -59,6 +59,11 @@ execute them one at a time and consolidate the changes.
 - **[create-implementation-plan](./skills/create-implementation-plan/SKILL.md)** — define the
   "how" of a task: turn the requirements into an implementation plan, settling the technical
   decisions together, then save it for a fresh session to execute.
+- **[harden-artifact](./skills/harden-artifact/SKILL.md)** — harden a requirements doc or a plan
+  before the next phase picks it up: a fresh-context reviewer tests every deviation from the
+  ticket and every claim against the code and related tickets, the session challenges each
+  finding, and proven mistakes get fixed in the document (say `autoaccept` to skip the asks for
+  those).
 - **[split-plan-tasks](./skills/split-plan-tasks/SKILL.md)** — break a plan into individually
   reviewable tasks grouped into PR-sized batches, appended to the plan file for a fresh session to
   execute one at a time.
@@ -104,7 +109,8 @@ Review helpers that check the codebase while assisting with code or ticket revie
 - **[self-review](./skills/self-review/SKILL.md)** — get your changeset merge-ready before
   requesting review: a fresh-context reviewer checks it as a maintainer would, you answer every
   finding (or say `autoaccept` to let the agent decide), and a compact report for the PR proves
-  the review happened.
+  the review happened. Findings that reveal a durable lesson end in an offer to run self-improve,
+  when installed.
   Projects can tune the review via an optional `.agents/docs/self-review-rules.md`.
 
 ### Talking to humans
@@ -235,6 +241,16 @@ flowchart TD
   review_code["review-code-assistant"] --> express
   review_code --> simple["explain-in-simple-language"]
   self_review["self-review"] --> fresh_eyes["fresh-eyes-review"]
+  self_review -. when available .-> self
+  harden["harden-artifact"] --> fresh_eyes
+  harden -. when available .-> plan
+  harden -. when available .-> manual
+  harden -. when available .-> split
+  harden -. when available .-> execute
+  refine -. when available .-> harden
+  plan -. when available .-> harden
+  harden -. when available .-> simple
+  harden -. when available .-> self
   maintainer_review["maintainer-review"] --> review_code
   maintainer_review --> fresh_eyes
   maintainer_review --> express
