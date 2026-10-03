@@ -53,10 +53,10 @@ intent (the ticket's title — without a ticket, the artifact's own summary — 
 artifact feeds), the sources above (skipped repos named as unavailable), and this mandate in
 place of its default:
 
-- **Deviations.** List every difference between artifact and ticket in what must be true when the
-  work is done — dropped, added, changed; rewording and merged duplicates are not differences, nor
-  is a plan's "how". Each needs a written reason, anywhere in the artifact or its upstream: none →
-  a finding. A reason is itself a claim.
+- **Deviations.** List every difference between artifact and ticket (for a ticketless plan, its
+  upstream) in what must be true when the work is done — dropped, added, changed; rewording and
+  merged duplicates are not differences, nor is a plan's "how". Each needs a written reason,
+  anywhere in the artifact or its upstream: none → a finding. A reason is itself a claim.
 - **Claims.** Every decision and factual statement is a claim to test, never accepted because it
   is written. Probe each source class:
   - code — every repo, both sides of each integration, searching for the concept and never only
