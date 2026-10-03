@@ -101,11 +101,11 @@ Done when every finding is dropped, proven or suspected.
 One finding at a time, recommending a disposition with a one-line why, worded via
 `explain-in-simple-language` when available — the user decides:
 
-- **fix** — edit the document the mistake originates in, then every document derived from it: a
-  plan faithful to requirements that lost an acceptance criterion → restore it in the
-  requirements, then align the plan; a requirements fix reaches an existing plan of the same base.
-  A plan's `## Tasks` section is never edited: a split plan any fix reached, its tasks included,
-  is re-split instead.
+- **fix** — edit the document the mistake originates in, then the requirements or plan of the same
+  base the fix reaches: a plan faithful to requirements that lost an acceptance criterion →
+  restore it in the requirements, then align the plan; a requirements fix reaches an existing plan
+  of the same base. A plan's `## Tasks` section is never edited: a split plan a fix reached is
+  re-split by the Wrap up hand-off, never during the walk.
   A mistake the ticket itself carries is corrected in the documents derived from it, upstream
   first — a ticket file is never edited — and recorded with its reason where each keeps its
   overrides; a deviation the user confirms deliberate gets its reason recorded there too, so no

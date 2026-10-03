@@ -134,10 +134,10 @@ Six parts (Verified codebase facts, Overrides, and Open questions may be empty �
    pattern as `path:line-range`.
 4. **Overrides** — every deviation from the ticket in what must be true when the work is done: a
    ticket statement changed or dropped, a requirement added. Rewording and merged duplicates are not
-   deviations; for an idea, only a statement of the user's changed or dropped is one — requirements
-   shaped while grilling are not. Each entry: what the ticket says or omits, the resulting
-   requirement, and the reason with its source — what the code/AC shows, or the user's decision
-   while grilling.
+   deviations; for an idea, only changing or dropping one of the user's own statements is one —
+   requirements shaped while grilling are not. Each entry: what the ticket says or omits, the
+   resulting requirement, and the reason with its source — what the code/AC shows, or the user's
+   decision while grilling.
 5. **Open questions** — non-blocking ambiguities, each with your tentative answer and why it's
    non-blocking. Blocking questions never appear here.
 6. **Acceptance criteria** — flat, verifiable checklist the implementation must satisfy.
