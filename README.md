@@ -118,7 +118,8 @@ Review helpers that check the codebase while assisting with code or ticket revie
 Wording for what the agent writes to people, whether the user in the session or other humans.
 
 - **[explain-in-simple-language](./skills/explain-in-simple-language/SKILL.md)** — word
-  explanations, recaps, and questions to the user so they are understood on the first read,
+  explanations, recaps, questions to the user, and documents humans read so they are understood
+  on the first read,
   without dumbing them down or hiding that an agent wrote them.
 - **[use-conversational-language](./skills/use-conversational-language/SKILL.md)** — the voice for
   text that should read as if a person typed it, used by the review skills for comments and
@@ -192,7 +193,7 @@ installed separately from the skills.
   read sound natural, and get the user's go-ahead on the wording before publishing the texts it
   names.
 - **[write-simple-explanations](./rules/write-simple-explanations.md)** — word questions,
-  explanations, and recaps to the user via
+  explanations, recaps to the user, and documents humans read via
   [explain-in-simple-language](./skills/explain-in-simple-language/SKILL.md).
 
 One more rule for non-English speakers ships as a copy-paste snippet rather than a file, since it 
@@ -258,6 +259,10 @@ flowchart TD
   nonsense_rule["no-nonsense-comments rule"] --> express
   review_ticket["review-ticket"] --> fetch_ticket
   review_ticket --> express
+  review_ticket --> simple
+  maintainer_review --> simple
+  check_impl --> simple
+  manual --> simple
   review_ticket --> verify_understanding["verify-understanding"]
   review_ticket --> refine
   verify_understanding --> refine

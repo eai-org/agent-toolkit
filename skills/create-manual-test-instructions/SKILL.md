@@ -4,7 +4,7 @@ description: Turn a ticket or requirements document into a concise QA manual-tes
 context: fork
 license: MIT
 metadata:
-  version: "1.4"
+  version: "1.5"
 ---
 
 # Create manual test instructions
@@ -27,6 +27,10 @@ parts:
 3. **Before vs after** — how the area behaved before, how it should behave now.
 4. **What to verify** — checklist of behaviors to confirm, including edge cases (empty values,
    multiple items, boundaries) where relevant.
+
+Before writing, actually invoke [explain-in-simple-language](../explain-in-simple-language/SKILL.md)
+and follow it — reciting its rules from memory does not count. Not installed: plain words, one idea
+per sentence, and nothing named only by a stand-in the reader hasn't seen.
 
 Do not modify any source files; the only file you write is the manual-test document.
 
