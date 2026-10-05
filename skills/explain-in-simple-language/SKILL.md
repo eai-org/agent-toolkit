@@ -1,17 +1,18 @@
 ---
 name: explain-in-simple-language
-description: Explain code, a decision, a recap, or a question to the user in simple language that a fluent but often non-native developer who did not see what the agent saw understands on the first read. Use when explaining or asking the user anything, or when the user asks for simpler words or says they did not understand. Changes the wording only, never the content.
+description: Explain code, a decision, a recap, or a question to the user, or write a document a human reads to understand something, in simple language that a fluent but often non-native developer who did not see what the agent saw understands on the first read. Use when explaining or asking the user anything, when writing a review, report, or brief a human reads (never text sent under the user's name), or when the user asks for simpler words or says they did not understand. Changes the wording only, never the content.
 license: MIT
 metadata:
-  version: "0.1"
+  version: "0.2"
 ---
 
 # Explain in simple language
 
-Comprehension is the only goal: the reader understands on the first read. Defines only the
-wording of what you say to the user; what to say (evidence, scope, structure) stays with whatever
-asked for the text. Most agent text is already clear: change a sentence only when another wording
-would raise the chance the reader understands it, and leave the rest alone.
+Comprehension is the only goal: the reader understands on the first read. Defines only the wording
+of what you say to the user or write in a document a human reads; what to say (evidence, scope,
+structure) stays with whatever asked for the text. Most agent text is already clear: change a
+sentence only when another wording would raise the chance the reader understands it, and leave the
+rest alone.
 
 ## The reader
 

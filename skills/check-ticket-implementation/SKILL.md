@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Check ticket implementation
@@ -65,7 +65,10 @@ now, and the header says when and against what. (No task dir and nothing to fetc
 project's/user's planning-dir convention, defaulting to `.agents/plans/`; ask only if genuinely
 ambiguous.)
 
-Format for human eyes — verdicts up front, blocks fenced by `━` rules:
+Format for human eyes — verdicts up front, blocks fenced by `━` rules. Before writing the notes,
+actually invoke [explain-in-simple-language](../explain-in-simple-language/SKILL.md) and follow it —
+reciting its rules from memory does not count. Not installed: plain words, one idea per sentence,
+and nothing named only by a stand-in the reader hasn't seen.
 
 ```markdown
 # <ticket title> — implementation status

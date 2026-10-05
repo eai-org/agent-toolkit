@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.3"
+  version: "1.4"
 ---
 
 # Review ticket
@@ -115,6 +115,11 @@ answer is a kill, held to the same citation bar; when enacting it lies outside t
 scope, the question converts to a handoff.
 
 ## Output
+
+Before writing the walkthrough and the why-it-matters notes, actually invoke
+[explain-in-simple-language](../explain-in-simple-language/SKILL.md) and follow it — reciting its
+rules from memory does not count. Not installed: plain words, one idea per sentence, and nothing
+named only by a stand-in the reader hasn't seen.
 
 1. **Verdict line** first, so the answer lands at once, e.g.
    `2 questions to resolve before starting` or `Looks ready to pick up, no blockers.`

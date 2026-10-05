@@ -43,7 +43,11 @@
           "requires": ["skills/self-improve"]
         },
         "review-ticket": {
-          "requires": ["skills/fetch-ticket", "skills/use-conversational-language"]
+          "requires": [
+            "skills/fetch-ticket",
+            "skills/use-conversational-language",
+            "skills/explain-in-simple-language"
+          ]
         },
         "refine-pr-review": {
           "requires": ["skills/refine-ticket", "skills/use-conversational-language"]
@@ -55,11 +59,15 @@
           "requires": [
             "skills/review-code-assistant",
             "skills/fresh-eyes-review",
-            "skills/use-conversational-language"
+            "skills/use-conversational-language",
+            "skills/explain-in-simple-language"
           ]
         },
         "check-ticket-implementation": {
-          "requires": ["skills/fetch-ticket"]
+          "requires": ["skills/fetch-ticket", "skills/explain-in-simple-language"]
+        },
+        "create-manual-test-instructions": {
+          "requires": ["skills/explain-in-simple-language"]
         },
         "handover": {
           "requires": ["skills/use-conversational-language"]

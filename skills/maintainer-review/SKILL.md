@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "0.6"
+  version: "0.7"
 ---
 
 # Maintainer review
@@ -116,7 +116,10 @@ objection — with none, when the clean verdict came back unchallenged or gained
 
 ## 7. Report
 
-In chat, no file. The reader sees the tail first, so the **scannable** part goes last.
+In chat, no file. The reader sees the tail first, so the **scannable** part goes last. Before
+writing it, actually invoke [explain-in-simple-language](../explain-in-simple-language/SKILL.md) and
+follow it — reciting its rules from memory does not count. Not installed: plain words, one idea per
+sentence, and nothing named only by a stand-in the reader hasn't seen.
 
 **Detail first.** Every finding with its `path:line` and evidence, then the comment walk. Facts, not
 restatement; no item outgrows a short paragraph. Name what was checked against what, and what wasn't
