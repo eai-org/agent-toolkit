@@ -161,6 +161,15 @@ On Windows the skills link through junctions, so the update command above works 
 install predating them needs one `./install.sh --force` to convert. The rules are copied instead
 and need `--force` every time (see [Windows](./docs/install-skills.md#windows)).
 
+To install a single skill without cloning, use [skills.sh](https://skills.sh/):
+
+```sh
+npx skills add eai-org/agent-toolkit --skill self-review
+```
+
+It leaves out the skills a skill requires, listed in [`openpack.json`](openpack.json); name them
+too, e.g. `--skill self-review fresh-eyes-review`.
+
 How the symlink install works and the other install methods — hand-picking skills, other agents,
 [skills.sh](https://skills.sh/), the Claude Code plugin marketplace — are covered in
 [docs/install-skills.md](./docs/install-skills.md).

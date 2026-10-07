@@ -135,6 +135,16 @@ You can also use the [skills.sh](https://skills.sh/) installer to install the sk
 npx skills add eai-org/agent-toolkit
 ```
 
+`--skill` installs only the skills it names, which may be several:
+
+```sh
+npx skills add eai-org/agent-toolkit --skill self-review fresh-eyes-review
+```
+
+It does not resolve dependencies, so also name the skills each one requires, listed in
+[`openpack.json`](../openpack.json): installed alone, `self-review` cannot load
+`fresh-eyes-review`.
+
 ## Install via Claude Code plugin marketplace
 
 Add the marketplace, then install the toolkit:
