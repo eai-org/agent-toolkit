@@ -19,8 +19,8 @@ Tools to create and continuously improve the skills and docs your agents rely on
   economy.
 - **[compact-skill-creator](./skills/compact-skill-creator/SKILL.md)** — create or edit skills,
   keeping them lean and efficient.
-- **[self-improve](./skills/self-improve/SKILL.md)** — capture a lesson into the skill or doc that
-  governs it, so mistakes aren't repeated and agents keep getting better at the project.
+- **[self-improve](./skills/self-improve/SKILL.md)** — capture a lesson into the skill, doc or check
+  that governs it, so mistakes aren't repeated and agents keep getting better at the project.
 
 ### Context & memory hygiene
 

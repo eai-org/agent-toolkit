@@ -92,8 +92,8 @@ persisted somewhere durable, versioned, and shared, or it will be repeated.
 
 In the toolkit:
 
-- `/self-improve` locates the governing skill, rule or doc behind a mistake and proposes a compact
-  edit that would have prevented it.
+- `/self-improve` locates the governing skill, rule, doc or check behind a mistake and proposes a
+  compact edit, or a check, that would have prevented it.
 - The `self-improve-on-correction` rule closes the loop by offering this automatically whenever
   the user corrects the agent; `/refine-pr-review`, `/self-review` and `/harden-artifact` do the
   same for the durable lessons in accepted review findings.
