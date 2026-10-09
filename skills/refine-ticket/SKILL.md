@@ -3,7 +3,7 @@ name: refine-ticket
 description: Refine a development ticket — or brainstorm a raw idea — into a validated, self-contained REQUIREMENTS document — the "what", verified against the codebase. Invoke manually only.
 license: MIT
 metadata:
-  version: "1.15"
+  version: "1.16"
 ---
 
 # Refine ticket
@@ -33,9 +33,12 @@ the code here is for *validating* requirements, not for designing the solution.
   — never assume it matches the environment where the reported behaviour occurred; ask the user to
   confirm such values.
 - Treat "this probably works like X" as a question, not a fact. Keep "I confirmed X", "the ticket
-  claims X", and "I assume X" distinct; the latter two never become the first without evidence.
-- Before declaring something missing, broaden the search — "not found under the name the ticket
-  used" is not "not present".
+  claims X", and "I assume X" distinct; the latter two never become the first without evidence. A
+  decision marked settled by a ticket or design carries the quote that settles it; no quote, still
+  open.
+- Before declaring something missing, unique or unhandled ("no X does Y", "X's only user", "the
+  existing ones don't cover Z"), search every repo the feature spans for the concept — "not found
+  under the name the ticket used" is not "not present".
 - Verify both sides of an integration: if a requirement relies on another layer behaving a certain
   way, open that layer and confirm it.
 
