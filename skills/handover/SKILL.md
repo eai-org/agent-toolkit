@@ -36,7 +36,8 @@ Read these, skipping what doesn't exist:
 3. **The session**, when it produced the change: decisions, pivots, constraints.
 4. **The diff** from the merge base with the target, plus commit subjects. Target: the one a
    prior review or handover round records, else the open PR's base, else ask; state it and
-   `git fetch` it. Uncommitted changes are named and the author asked whether they belong.
+   `git fetch` its remote (local-only target → nothing to fetch; a failed fetch → ask, never diff
+   stale refs). Uncommitted changes are named and the author asked whether they belong.
 5. **PR conventions** — the repo's PR template, wherever the forge looks for one (e.g. root,
    `.github/`, `docs/`; several → ask the author which), and any project skill for PR descriptions.
 

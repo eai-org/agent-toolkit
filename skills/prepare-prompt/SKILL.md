@@ -58,9 +58,9 @@ What stays and what goes:
 ## Form
 
 Plain imperative prose in paragraphs, no headings, bullets for lists. Agent-facing, so no
-conversational voice. Print it as one fenced block, commands and paths inline in backticks, never
-a nested fence; then a `---` line before any note to the user; every revision reprints the whole
-block.
+conversational voice. Print it as one fenced block, commands and paths inline in backticks (never
+the opening slash command), never a nested fence; then a `---` line before any note to the user;
+every revision reprints the whole block.
 
 ## Check before printing
 
