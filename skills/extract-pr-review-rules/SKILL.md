@@ -52,12 +52,13 @@ Record the time the fetch **started** (ISO 8601, UTC) as the next checkpoint —
 comment's timestamp, which would skip anything posted while the run was working.
 
 Then, still on disk, drop bots (the forge's account-type flag, or a `[bot]`-style handle), deleted
-accounts (no author on the comment, or the forge's placeholder such as GitHub's `ghost`) and, on a
-refresh, comments created before the checkpoint (edits of old ones; the doc already holds their
-evidence); tally comments per author and split the file into one per author, keeping per comment
-only what extraction needs (id, URL, created date, path, body, author) — hunks and link blobs go,
-so an author's file stays small. Nothing left to process → say so, leave the doc untouched, and
-stop.
+accounts (no author on the comment, or the forge's placeholder such as GitHub's `ghost`), comments
+created after the fetch started (the next refresh takes them) and, on a refresh, comments created
+before the checkpoint (edits of old ones; the doc already holds their evidence); tally comments
+per author and split the file into one per author, oldest first, keeping per comment only what
+extraction needs (id, URL, created date, path, body, author) — hunks and link blobs go, so an
+author's file stays small. Nothing left to process → print step 6's counts, leave the doc
+untouched, and stop.
 
 Done when the fetch exited 0, each author's file exists, the tallies plus the dropped comments sum
 to the fetched total, and the new checkpoint is recorded.
@@ -83,7 +84,8 @@ time, in slices. Prompt each with:
 
 Done when every author has returned a section or reported no rule clearing the bar, and each
 returned read count equals that author's tally; a shortfall is re-run on the unread part (the file
-from the count on), and one that remains is reported at the close, never passed off as read.
+from the count on), its rules merged into the first section as step 4 merges, and one that
+remains is reported at the close, never passed off as read.
 
 ## 4. Merge — refresh only
 
@@ -145,10 +147,10 @@ one-line index entry with a read-when hook and add it on approval:
 Declined → say the review skills reach the doc only through such a line.
 
 Close with the doc's project-relative path; the counts: fetched, dropped (bots, deleted accounts,
-edits of old comments), processed (fetched minus dropped), rules added, reinforced, superseded,
-authors with no rule; anything not read (an author file or slice a subagent did not finish); and
-the new checkpoint. Added and reinforced rules had no per-rule review: say so and point at the
-doc, on a refresh its diff, to read before committing.
+edits of old comments, comments posted mid-fetch), processed (fetched minus dropped), rules added,
+reinforced, superseded, authors with no rule; anything not read (an author file or slice a
+subagent did not finish); and the new checkpoint. Added and reinforced rules had no per-rule
+review: say so and point at the doc, on a refresh its diff, to read before committing.
 
 Done when the doc is indexed or the user declined, and every item above is printed, `none` where
 empty.
