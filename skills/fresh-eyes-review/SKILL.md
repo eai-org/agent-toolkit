@@ -47,31 +47,31 @@ artifacts.
    that are not part of it (plans, notes, scratch), since a fresh context cannot tell them apart.
    It writes nothing into the project: every run it makes (tests, probes) disables or redirects to
    scratch space its side outputs (coverage, reports, snapshots), which tooling writes in-tree by
-   default. Before spawning, create a marker file in scratch space and note
-   `git status --porcelain` of each repo or directory the reviewer may run in; afterwards, what
-   the review wrote is every file there newer than the marker
-   (`find <dir> -type f -newer <marker> -not -path '*/.git/*'`) plus any tracked file the status
-   now shows deleted. Its mandate, unless the invocation redirects it (e.g. security only):
-   regressions and correctness, including contradictions with surrounding code, rules, or docs —
-   though matching surrounding code is not correctness: verify any pattern the change extends or
-   mirrors is itself sound, since completing a broken rollout inherits its breakage; ambiguities
-   a reader without context would trip on; when an intent statement was given, whether the change
-   does what it says; and omissions — what the change should have touched and didn't: an altered
-   contract (file format, payload, schema, config or CLI surface) has counterparts that must move
-   with it — templates, samples, fixtures, seed data, docs. Find those by content, not location:
-   they often sit outside the changed tree and its stack, and a literal a changed file copies from
-   a shipped artifact (a header row, a sample payload) names one. A deferral the submission itself
-   states — a PR description or commit subject carried verbatim — is a claim to test, not scope
-   conceded. Tough but grounded, aimed at mistakes that matter: every finding names its location
-   and a concrete failure scenario; style nits, speculation, and padding are out of scope, and zero
-   findings is a valid outcome. Besides what the invocation asks, it returns its findings numbered
-   and what in scope it did not read, by name (or that it read everything). Out of scope bounds
-   what is reported, never what is investigated: a pre-existing anomaly in the mechanism the change
-   touches is a reason to audit it. If the harness cannot isolate a context, fall back to an
-   adversarial pass over the same inputs in the main session. Done when an isolated reviewer has
-   returned its findings, or the fallback pass ran and its result is flagged as same-context
-   (weaker) — and each repo or directory the reviewer may run in, compared against that baseline,
-   holds nothing the review wrote: created files removed, modified ones reported.
+   default. Before spawning, create a marker file in scratch space and save there the file list
+   (`find <dir> -type f -not -path '*/.git/*'`) of each repo or directory the reviewer may run in;
+   afterwards, a listed file now gone was deleted, an unlisted one created, and a listed one newer
+   than the marker (`-newer <marker>`) modified. Its mandate, unless the invocation redirects it
+   (e.g. security only): regressions and correctness, including contradictions with surrounding
+   code, rules, or docs — though matching surrounding code is not correctness: verify any pattern
+   the change extends or mirrors is itself sound, since completing a broken rollout inherits its
+   breakage; ambiguities a reader without context would trip on; when an intent statement was
+   given, whether the change does what it says; and omissions — what the change should have touched
+   and didn't: an altered contract (file format, payload, schema, config or CLI surface) has
+   counterparts that must move with it — templates, samples, fixtures, seed data, docs. Find those
+   by content, not location: they often sit outside the changed tree and its stack, and a literal a
+   changed file copies from a shipped artifact (a header row, a sample payload) names one. A
+   deferral the submission itself states — a PR description or commit subject carried verbatim — is
+   a claim to test, not scope conceded. Tough but grounded, aimed at mistakes that matter: every
+   finding names its location and a concrete failure scenario; style nits, speculation, and padding
+   are out of scope, and zero findings is a valid outcome. Besides what the invocation asks, it
+   returns its findings numbered and what in scope it did not read, by name (or that it read
+   everything). Out of scope bounds what is reported, never what is investigated: a pre-existing
+   anomaly in the mechanism the change touches is a reason to audit it. If the harness cannot
+   isolate a context, fall back to an adversarial pass over the same inputs in the main session.
+   Done when an isolated reviewer has returned its findings, or the fallback pass ran and its result
+   is flagged as same-context (weaker) — and each repo or directory the reviewer may run in,
+   compared against that baseline, holds nothing the review wrote: created files removed, modified
+   and deleted ones reported.
 4. **Report back.** Relay every finding intact — location and failure scenario included — plus
    whatever else the reviewer was instructed to return; add the session's own assessment when
    useful, but never silently drop or soften a finding. What to do with the findings is the

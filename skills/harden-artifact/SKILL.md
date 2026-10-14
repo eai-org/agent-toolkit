@@ -143,9 +143,10 @@ Done when a stop condition has ended the rounds.
 ## Wrap up
 
 Before printing, write each source left unchecked that a claim of the artifact rests on into the
-artifact, as the author's text under Decide's edit rules and with no round for it: in requirements
-a non-blocking Open questions entry with its tentative answer; in a plan a note in the How of the
-step relying on it.
+artifact, as the author's text under Decide's edit rules and with no round for it, when a
+reasonable default exists: in requirements a non-blocking Open questions entry with its tentative
+answer; in a plan a note in the How of the step relying on it. Without one it blocks: an ask, the
+artifact not ready while it is unanswered.
 
 Print — no review file is written; what a later reader needs lives in the artifact:
 
