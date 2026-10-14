@@ -1,11 +1,11 @@
 ---
 name: harden-artifact
-description: Harden a REQUIREMENTS or PLAN document before the next phase picks it up — checked against its ticket, the code and related tickets, proven mistakes fixed in place.
+description: Harden a REQUIREMENTS or PLAN document against its ticket and the code before the next phase picks it up.
 disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "0.2"
+  version: "0.3"
 ---
 
 # Harden artifact
@@ -28,9 +28,10 @@ before continuing.
   suffix replaced by `.TICKET` (`FOO.PLAN.md` → `FOO.TICKET.md`), or, when the stem names another
   source, that file (`FOO.PR-REVIEW.REQUIREMENTS.md` → `FOO.PR-REVIEW.md`). A source with
   decisions recorded beside it (a PR review's `.ANSWERS.md`) is read with them: only what they
-  accept is the ticket — the rest is out of scope, never a deviation, never recorded in the
-  artifact. Ambiguous → ask; no file → ask whether the ticket lives elsewhere (a tracker id,
-  pasted text) before treating it as none.
+  accept (verdict `address`, `partial`, `bot: included` or `bot: partial`) is the ticket — the
+  rest is out of scope, never a deviation, never recorded in the artifact. Ambiguous → ask; no
+  file → ask whether the ticket lives elsewhere (a tracker id, pasted text) before treating it as
+  none.
   None (e.g. requirements brainstormed from an idea) → say so: a plan is compared with its
   upstream instead; with neither, the review runs without the Deviations lens.
 - **Upstream** (a plan only) — its name with `.PLAN` replaced by `.REQUIREMENTS`, when that
@@ -112,7 +113,7 @@ One finding at a time, recommending a disposition with a one-line why, worded vi
   later reader re-raises it.
 - **dismiss** — record the user's reason for the summary.
 - **defer** — handed onward (a question for the requirements owner, a follow-up ticket): record
-  the destination in one line; drafting its text is in scope, posting it is not.
+  the destination in one line for the summary; drafting its text is in scope, posting it is not.
 
 **Autoaccept** — the word `autoaccept`, in the invocation or said during the walk, hands the
 remaining decisions of this invocation, later rounds included, to the agent: a proven finding is
@@ -141,10 +142,15 @@ Done when a stop condition has ended the rounds.
 
 ## Wrap up
 
-Print — no file is written; what a later reader needs lives in the artifact:
+Before printing, write each source left unchecked that a claim of the artifact rests on into the
+artifact, as the author's text under Decide's edit rules and with no round for it: in requirements
+a non-blocking Open questions entry with its tentative answer; in a plan a note in the How of the
+step relying on it.
 
-- whether the artifact is ready for the next phase, and what blocks it if not (a deferred finding,
-  an unanswered ask);
+Print — no review file is written; what a later reader needs lives in the artifact:
+
+- whether the artifact is ready for the next phase, what blocks it if not (a deferred finding, an
+  unanswered ask), and whether the review ran same-context (weaker);
 - **Fixed** — each with the text before and after, and its evidence;
 - **Dropped in challenge**, **Dismissed**, **Deferred** — each with its reason or destination, a
   deferred one also with its drafted text;
@@ -165,7 +171,7 @@ only when that skill is available:
 ```
 claude --name create-plan-<slug> "/create-implementation-plan <path>.REQUIREMENTS.md"               # after requirements
 claude --name create-manual-test-<slug> "/create-manual-test-instructions <path>.REQUIREMENTS.md"   # after requirements
-claude --name execute-plan-<slug> "Execute the plan <path>.PLAN.md"                                 # after an unsplit plan
+claude --name execute-plan-<slug> "Execute the plan <path>.PLAN.md, then run the project's validation (lint, tests, build); report, never commit"   # after an unsplit plan
 claude --name split-plan-tasks-<slug> "/split-plan-tasks <path>.PLAN.md"                            # after an unsplit plan, or a split one a fix reached (replace)
 claude --name execute-tasks-<slug> "/execute-plan-tasks <path>.PLAN.md"                             # after a split plan no fix reached
 ```
