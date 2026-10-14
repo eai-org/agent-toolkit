@@ -30,6 +30,6 @@ Its report is `done` or `blocked`:
   default. One exception: a thread with **unclear** status does not block — flag it `unclear` in
   the document, with what makes it unclear, for the triage to settle.
 - **Report, don't hand off.** Return only: `done` with the project-relative path of the
-  `.PR-REVIEW.md` and the list of threads flagged unclear (none → say so); or `blocked` with the
-  decision or obstacle, its candidate answers, and your pick with why. No comment content, no
-  next-step commands.
+  `.PR-REVIEW.md` and the list of threads flagged unclear (none → say so), a refresh saying so with
+  the current head; or `blocked` with the decision or obstacle, its candidate answers, and your
+  pick with why. No comment content, no next-step commands.

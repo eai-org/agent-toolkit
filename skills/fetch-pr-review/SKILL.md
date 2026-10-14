@@ -93,7 +93,7 @@ in the code and understand every piece of feedback without re-fetching.
 > **State** {open/merged/…}
 > **Author** {display name}
 > **Linked ticket** [<id>](<url>) — omit if none
-> **Fetched** {today YYYY-MM-DD}
+> **Fetched** {now, ISO 8601 with UTC offset}
 
 ## Description            — verbatim, or one line saying it is empty
 ## Since round N-1        — `-N` files only (see Later rounds)

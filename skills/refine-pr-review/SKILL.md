@@ -43,12 +43,14 @@ on the page. Only the ANSWERS table's own row numbers stay, for in-file cross-re
 Before the first code check, compare the checkout with the PR-REVIEW head: a different commit or
 branch, or a dirty tree, is reported and the user decides; never switch branches yourself. A PR
 head that moved since the fetch (check the remote) → offer a re-fetch before triage; a refresh
-(no new activity) keeps the file, the checkout then compared with the current head. The URL path
-gets the same check — the subagent's fetch is seconds old, the checkout is still the user's. On a
-`-N` file, read the earlier rounds' ANSWERS first: a comment re-raising one already triaged keeps
-its verdict and reply unless it brings evidence the earlier one lacked, and its Notes say
-`kept from round N, row M`. An earlier round without ANSWERS was never triaged: its comments join
-this triage.
+(no new activity) keeps the file, the checkout then compared with the current head, and a refresh
+the URL path's fetch just reported needs no re-fetch. The URL path gets the same check — the
+subagent's fetch is seconds old, the checkout is still the user's. On a `-N` file, read the earlier
+rounds' ANSWERS first: a comment re-raising one already triaged keeps its verdict and reply unless
+it brings evidence the earlier one lacked, and its Notes say `kept from round K, row M`; a kept
+row's work and lessons stay with round K, never counted as accepted below. An earlier round without
+ANSWERS was never triaged: its comments join this triage. This round's ANSWERS file already
+exists → ask before triage to update it in place (declined → stop).
 
 Read the code behind each comment first: verify its premise against the checkout, never judging
 from the quoted hunk alone. Then form a recommendation — verdict, reasoning, and (for partial and
@@ -93,8 +95,9 @@ naming — all as written, with these overrides:
 - The PR-REVIEW file is the local input, so the output lands next to it per its naming rule
   (`1234-task.PR-REVIEW.md` → `1234-task.PR-REVIEW.REQUIREMENTS.md`); later review rounds carry
   their suffix through (`…PR-REVIEW-2.REQUIREMENTS.md`).
-- A requirement's source tag is the comment's opening words and its `path:line`, e.g.
-  `("Validate both new option arguments", install.sh:88)` — never a row number.
+- A requirement's source tag is the comment's opening words and its `path:line` (threadless: its
+  Location label), e.g. `("Validate both new option arguments", install.sh:88)` — never a row
+  number.
 - Nothing about replies or verdicts enters the REQUIREMENTS file.
 - Ignore its closing hand-off instructions — this skill owns the hand-off.
 
@@ -105,17 +108,18 @@ REQUIREMENTS file, nothing to plan or execute.
 
 `<input name>.ANSWERS.md` next to the input (`1234-task.PR-REVIEW.md` →
 `1234-task.PR-REVIEW.ANSWERS.md`) — the user's copy-paste sheet and the durable record of what was
-pushed back. Already there → ask before updating it in place (declined → stop); never overwrite
-silently. Header: `# Answers: <PR title>`, then `> **Source** [<PR id>](<url>)`, `> **Head** <sha>`
-(the head the verdicts were settled against), `> **Triaged** YYYY-MM-DD`; round and requirements
-file follow from the file name. Then one table row per comment, resolved and bot rows included for
-completeness:
+pushed back. Header: `# Answers: <PR title>`, then `> **Source** [<PR id>](<url>)`,
+`> **Head** <sha>` (the head the verdicts were settled against), `> **Triaged** YYYY-MM-DD`; round
+and requirements file follow from the file name. Then one table row per comment, resolved and bot
+rows included for completeness:
 
 | # | Original comment | Location | Verdict | Reply | Notes |
 
 - **Original comment** — its opening words verbatim, truncated to the shortest unique prefix.
 - **Location** — the thread's permalink from the PR-REVIEW file, with `path:line` as the readable
-  label; a reply goes inside its thread, never as a top-level comment.
+  label; a reply goes inside its thread, never as a top-level comment. A review summary or general
+  comment has no thread: labelled `review summary` or `general comment`, linked to its permalink
+  when the fetch has one, its reply a top-level comment quoting the ask.
 - **Verdict** — `address` / `partial` / `push back` / `no action`, or `resolved earlier` /
   `bot: included` / `bot: partial` / `bot: ignored`.
 - **Reply** — canned one-liner for address. Post-fix stance: written as if the accepted changes
@@ -145,7 +149,7 @@ row numbers; none → no section.
 State the output paths (project-relative). Remind the user the ANSWERS file is theirs to post
 manually once the fixes land. No REQUIREMENTS file → no launch command, only that reminder (and
 the self-improve line below when Lessons were written). Otherwise hand off by the size of the
-accepted change set, leading with your recommendation but giving both options as single
+accepted change set, leading with your recommendation but giving the options as single
 copy-pasteable launch commands (vendor-agnostic — `claude` below is only the example):
 
 Small, mechanical change set — execute directly:
