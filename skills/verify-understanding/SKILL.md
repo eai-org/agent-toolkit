@@ -22,8 +22,9 @@ state kept between runs.
 A `.TICKET-REVIEW.md`. Read it and the ticket files and parent it links. A reference that exists
 only as a tracker URL (no local file) may be read from the tracker at conversation time. A ticket
 with a newer `-vN` fetch beside the one the review read has likely overtaken it: say so, read the
-newest ticket files, and treat the review's open questions as possibly answered there. A
-`.REQUIREMENTS.md` of the same base is read for its Overrides, which win over the ticket text.
+newest ticket files, and treat the review's open questions as possibly answered there. The
+`.REQUIREMENTS.md` of the newest ticket file's base (none: the ticket's latest across `-vN`
+versions) is read for its Overrides, which win over the ticket text.
 Given a ticket file and no review, ask whether to run `/review-ticket` first when it is installed;
 never improvise the review.
 

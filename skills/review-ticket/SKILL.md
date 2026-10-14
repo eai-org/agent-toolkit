@@ -23,9 +23,11 @@ asking whoever owns the requirements.
   running [fetch-ticket](../fetch-ticket/SKILL.md) per its
   [delegate.md](../fetch-ticket/delegate.md), so the tickets land on disk without the fetch
   bloating this session's context, then review the local files. No subagents in the harness → run
-  fetch-ticket inline. A non-empty warn list stops for one question: supply the files now
-  (`/attach-to-ticket` when installed) or review without them; the review then names each missing
-  attachment as unchecked material.
+  fetch-ticket inline.
+
+Missing attachments (a non-empty warn list, or a ticket file marking one `not downloaded`) stop for
+one question: supply the files now (`/attach-to-ticket` when installed) or review without them;
+the review then names each missing attachment as unchecked material.
 
 If the input is ambiguous or unrecognized, ask rather than guess.
 
