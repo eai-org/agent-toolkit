@@ -27,14 +27,13 @@ Tools to create and continuously improve the skills and docs your agents rely on
 Maintenance to run from time to time, keeping your setup tidy and your context sharp.
 
 - **[agentify-project](./skills/agentify-project/SKILL.md)** — make a project agent-ready by
-  converging it toward a canonical agent-neutral structure: a lean AGENTS.md index with
-  progressive disclosure, shared skills, and gitignore hygiene. Re-runnable, and doubles as an
-  audit.
+  converging it toward a canonical agent-neutral structure (a lean AGENTS.md index with
+  progressive disclosure, shared skills, gitignore hygiene). Re-runnable, and doubles as an audit.
 - **[context-checkup](./skills/context-checkup/SKILL.md)** — audit what auto-loads into a
   session's context and spot what can be trimmed to reduce startup tokens.
   [Why this is important](https://medium.com/engineering-in-the-age-of-ai/keep-your-ai-agents-context-window-sharp-7255d83a8949).
-- **[memory-doctor](./skills/memory-doctor/SKILL.md)** — clean up the memory your agents keep
-  auto-accumulating, moving the relevant parts to the right place.
+- **[memory-doctor](./skills/memory-doctor/SKILL.md)** — drain the memory your agents keep
+  auto-accumulating, block by block, moving each entry to the right place or archiving it.
   [More about memory-doctor](https://medium.com/engineering-in-the-age-of-ai/keep-your-ai-agents-memory-clean-and-organized-with-memory-doctor-a79f7174f257).
 
 ### Task workflow
@@ -295,6 +294,10 @@ flowchart TD
   grill_me["grill-me"] -. when available .-> simple
   self_review -. when available .-> simple
   agentify -. when available .-> compact_docs
+  agentify -. when available .-> memory_doctor
+  agentify -. when available .-> context_checkup["context-checkup"]
+  context_checkup -. when available .-> agentify
+  context_checkup -. when available .-> memory_doctor
 
   self_rule["self-improve-on-correction rule"] --> self["self-improve"]
   self --> compact["compact-skill-creator"]

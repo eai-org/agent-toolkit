@@ -1,11 +1,11 @@
 ---
 name: memory-doctor
-description: Audit the current project's agent-memory and, block by block, relocate each entry into a user-controlled home (project doc/skill/rule or user-level skill/rule) or archive it — draining memory so nothing uncontrolled accumulates in the agent's context.
+description: Drain the agent's project memory block by block, relocating each entry into a home the user controls or archiving it.
 disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.7"
+  version: "1.8"
 ---
 
 # Memory doctor
@@ -22,17 +22,21 @@ user — not the memory store — decides what reaches the context window.
 **The skill guesses and recommends; the user decides.** Every verdict, scope, form, and target is a
 *proposal* the user confirms or flips. When unsure, ask. Nothing is moved, deleted, or written
 without explicit per-item approval. For every block the user gets the whole fixed menu —
-relocate/merge, archive (delete), keep, or a custom action they type — never just the recommended
-verdict, never a pruned subset.
+relocate/merge, archive (recoverable), keep, or a custom action they type — never just the
+recommended verdict, never a pruned subset.
 
 ## Locate the memory
 
 Find the memory store for the current project. Its location is agent-specific — other agents store
-it elsewhere, or not at all. **Claude Code** example: slugify the project's absolute
-working-directory path by replacing each `/` with `-` and prefixing one `-`, then look for
-`~/.claude/projects/<slug>/memory/MEMORY.md` (e.g. cwd `/Users/me/app` → `-Users-me-app`). If that
-path is absent, or the user runs a different agent, **ask the user for the memory path**. Only
-discovery is agent-specific; everything below is agent-agnostic.
+it elsewhere, or not at all. **Claude Code** example: first check the settings for a relocated
+memory dir (`autoMemoryDirectory` in any scope, or the `CLAUDE_CODE_PROJECT_DIR_NAME` env var).
+Otherwise slugify the main worktree root — the parent of
+`git rev-parse --path-format=absolute --git-common-dir` (not `--show-toplevel`, which in a linked
+worktree returns the worktree's own path), else the cwd — by replacing every non-alphanumeric
+character with `-` (e.g. `/Users/me/my.app` → `-Users-me-my-app`), then look for
+`~/.claude/projects/<slug>/memory/MEMORY.md`; no exact match → list `~/.claude/projects/` and pick
+the entry matching the repo root. If that fails too, or the user runs a different agent, **ask the
+user for the memory path**. Only discovery is agent-specific; everything below is agent-agnostic.
 
 **Block** = the smallest self-contained memory unit — typically one memory file plus its `MEMORY.md`
 index line, generally one fact each, though a store may group differently. If the memory is a single
@@ -54,14 +58,16 @@ flat file with no index, treat each section as a block.
    about exactly one block per prompt. For each, lead with the detail the table only summarized — a
    verbatim content excerpt plus the full justification — so the user can judge, then present its
    recommended verdict as the default, then the **same fixed menu every time** regardless of that
-   verdict — relocate/merge, archive (delete), keep, or other (the user types a custom action).
+   verdict — relocate/merge, archive (recoverable), keep, or other (the user types a custom action).
    Never drop an option because it seems not to apply; the user must never have to type a standard
    option by hand. Record each confirmed choice and move straight to the next block — **act on
    nothing yet**; never skip a block or record a choice without its own explicit confirmation.
    Word each question via `explain-in-simple-language` when available.
 4. **Execute, once every block is decided.** Apply the recorded actions in index order, honoring the
    Safety rules below (relocate-before-delete, honest index). Doing all the work in one pass —
-   never interleaved with the questions — keeps the decision phase a fast, uninterrupted Q&A.
+   never interleaved with the questions — keeps the decision phase a fast, uninterrupted Q&A. Step
+   3 confirmed verdict, scope, form and path; each relocate or merge still gets self-improve's diff
+   approval here, so expect one short approval per write. Archive moves need no further approval.
 
 ## Verdicts
 
@@ -88,13 +94,17 @@ Both axes are proposals the user confirms or flips.
 - **Form** — short standing behavioral constraint → **rule**; multi-step procedure with a trigger →
   **skill**; reference knowledge/design/context read when relevant but not an instruction → **doc**.
 
-If using Claude Code: user-level config lives in `~/.claude/skills` and `~/.claude/rules`,
-project-level in the repo's `.claude/skills` and `.claude/rules`.
+**Target path.** Each relocate or merge proposal names the concrete file: an existing doc, skill or
+rule to merge into, or a new file in the home the repo's governing docs name (the docs index,
+onboarding or doc-placement doc), with the agent's project config dirs (e.g. `.claude/skills`,
+`.claude/rules`) as the fallback. User-level homes are the agent's own config dirs (e.g.
+`~/.claude/skills`, `~/.claude/rules`).
 
-**Do the relocation through [self-improve](../self-improve/SKILL.md)** — it finds the home, drafts
-the least-text edit, and applies it (routing the write through the matching compaction skill). This
-skill owns discovery, enumeration, classification, and the archive/delete path; self-improve owns
-writing the content into its home.
+Do each relocate or merge through [self-improve](../self-improve/SKILL.md) in its driven mode: hand
+it the block's content plus the confirmed scope, form and path; it drafts and applies the edit
+(routing the write through the matching compaction skill), and locates the home itself only for a
+target the user left open. This skill owns discovery, enumeration, classification and the archive
+path; self-improve owns the write.
 
 ## Safety
 
