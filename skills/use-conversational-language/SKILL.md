@@ -1,6 +1,6 @@
 ---
 name: use-conversational-language
-description: Voice rules for text published under a person's name and read as if a person typed it, such as chat messages to colleagues, PR comments and descriptions, commit messages, review replies, and code comments. Defines the voice and each genre's shape; a caller's rules on what to say win.
+description: Voice rules for text published under a person's name and read as if a person typed it, such as chat messages to colleagues, PR comments and descriptions, commit messages, review replies, and code comments. Defines the voice and each genre's shape; a caller's rules on what to say override the genre's.
 license: MIT
 metadata:
   version: "1.9"

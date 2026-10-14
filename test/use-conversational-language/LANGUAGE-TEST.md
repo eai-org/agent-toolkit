@@ -56,8 +56,9 @@ human-written, and training the skill on what fails. Repo-internal: `test/` is n
 A run takes a list of genre ids (one, several — default: all) and a working dir in the
 session's scratch space. Per run, max 3 iterations:
 
-1. Spawn the scenario writer; save the set to `<run-dir>/scenarios.tsv` (id, judge context,
-   brief — tab-separated).
+1. Probe each panel alias with the judge invocation and the prompt "Reply with exactly your model
+   id", for `header.md`. Spawn the scenario writer; save the set to `<run-dir>/scenarios.tsv` (id,
+   judge context, brief — tab-separated).
 2. Spawn a clean-room generator for the run's briefs; one text per scenario, to
    `<run-dir>/iter<N>/texts/<id>.txt`.
 3. Judge each text with the panel: `./judge.sh <run-dir> <N>`. It exits non-zero when any judge
@@ -75,7 +76,7 @@ session's scratch space. Per run, max 3 iterations:
    compact-skill-creator). **Auto-apply exception**: for these runs the skill owner pre-authorizes
    applying without per-edit approval — self-improve's confirm-first rule is waived here, and only
    here. Never commit; the owner reviews the accumulated diff. On a run's first edit, bump the
-   version per `docs/authoring-conventions.md` (not when the branch already raised it).
+   version per `docs/authoring-conventions.md`.
 6. Next iteration: regenerate every selected scenario with the updated skill (an edit for one
    genre can regress another), fresh generator, fresh judges.
 
@@ -85,8 +86,7 @@ After 3 iterations without a full pass: stop and report what still fails and why
 
 Write `runs/<YYYY-MM-DD-HHmm>.md` (gitignored) via `./assemble-log.sh <run-dir> <log>`. It
 stitches, in order: `header.md` (skill version under test, panel with the id each alias resolved
-to at run start, one probe call per alias with the prompt "Reply with exactly your model id",
-selected genres, per-iteration pass counts), the scenario set, per iteration and scenario the
+to, selected genres, per-iteration pass counts), the scenario set, per iteration and scenario the
 generated text and the verdicts with tells cited, `triage-iter<N>.md` (triage decision, any
 applied edit old → new), and `outcome.md` — all written by the orchestrator into the run dir.
 
