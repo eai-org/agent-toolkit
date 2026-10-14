@@ -70,7 +70,8 @@ execute them one at a time and consolidate the changes.
   execute one at a time.
 - **[execute-plan-tasks](./skills/execute-plan-tasks/SKILL.md)** — execute one task of that
   breakdown at a time: implement it, verify it, tick it off in the plan, and hand it back for
-  review before the next.
+  review before the next; when a group is done, hand it to self-review (if installed) before the
+  next group starts.
 - **[create-manual-test-instructions](./skills/create-manual-test-instructions/SKILL.md)** —
   derive manual test steps from a ticket or requirements file, useful for the developer or QA.
 - **[handover](./skills/handover/SKILL.md)** — package a finished change for its reviewers:
@@ -280,8 +281,8 @@ flowchart TD
   refine --> plan["create-implementation-plan"]
   plan --> split["split-plan-tasks"]
   split --> execute["execute-plan-tasks"]
-  plan --> handover["handover"]
-  handover --> express
+  execute -. when available .-> self_review
+  handover["handover"] --> express
   simple_rule["write-simple-explanations rule"] --> simple["explain-in-simple-language"]
   refine -. when available .-> simple
   plan -. when available .-> simple
