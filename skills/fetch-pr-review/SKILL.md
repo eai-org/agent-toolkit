@@ -17,10 +17,11 @@ on (e.g. via `/refine-pr-review`). Someone else's PR to review is not this skill
 
 Identify the platform from the PR URL (host shape) and fetch through the matching MCP server or
 CLI — e.g. **GitHub MCP / `gh`** for GitHub PRs, **Azure DevOps MCP** for ADO pull requests. Use
-whichever equivalent tools are connected; tool name prefixes vary by config. Expect one request per
-stream: metadata, review verdicts, inline threads with their resolution and outdated flags (usually
-a thread-level API, not the flat comment list), conversation comments. If the input is ambiguous,
-or no matching MCP/CLI is available, ask the user / stop — don't guess.
+whichever equivalent tools are connected; tool name prefixes vary by config. Fetch each stream
+through its last page, thread replies included: metadata, review verdicts, inline threads with
+their resolution and outdated flags (usually a thread-level API, not the flat comment list),
+conversation comments. If the input is ambiguous, or no matching MCP/CLI is available, ask the
+user / stop — don't guess.
 
 ## Golden rule: never assume — ask
 
