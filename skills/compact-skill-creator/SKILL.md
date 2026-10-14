@@ -4,7 +4,7 @@ description: Author or refine a skill for maximum token economy without losing i
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
-  version: "1.22"
+  version: "1.23"
 ---
 
 # Compact skill creator
@@ -100,6 +100,7 @@ loads **only when the agent follows the pointer** — that is the lever.
   pointer plus a round-trip can cost more than it saves). These are signals, not hard limits.
 - Test: *"Needed on every invocation, or only in a sub-case — and big enough that inlining taxes
   every invocation? If both, extract it."*
+- Every referenced doc links from `SKILL.md` directly, never only from another referenced doc.
 
 ## Completion criteria — steps end checkable
 
@@ -126,11 +127,12 @@ disclosed doc).
    of every such skill — never from the one pipeline in mind.
    Scale depth to complexity (complex skill → more questions; simple → few). The only limit: never
    interview for its own sake.
-3. **Metadata.** Always include the frontmatter fields; never hardcode their values. Creating: infer
-   defaults from context (sibling `SKILL.md` files, `git config user.name`, repo `LICENSE`), ask the
-   user to confirm or override. Version starts at `"1.0"`, or `"0.x"` when the author wants a trial
-   period before declaring the skill stable — ask which. Improving: preserve existing fields, and
-   flag any missing one.
+3. **Metadata.** Frontmatter always carries `name` and `description`, plus every field the
+   project's sibling skills or conventions carry (e.g. a license, `metadata.version`, tool
+   grants); never hardcode values. Creating: infer defaults from context (sibling `SKILL.md`
+   files, `git config user.name`, repo `LICENSE`), ask the user to confirm or override. The first
+   version follows the project's stated convention; none stated → ask `"1.0"` or a `"0.x"` trial.
+   Improving: preserve existing fields, and flag any missing one.
 4. **Draft** (create) or **improve** (existing): get the skill's content right — the rules it
    encodes, plus what improving adds (clarify where it's vague, under-specified, or missing a rule;
    loop back to intake if gaps surface) — compacting it through compact-docs-writer as you write,
@@ -139,24 +141,40 @@ disclosed doc).
    compaction and removal-audit checks):
    - Wording agent-agnostic? Project coupling contained? Cross-references limited to declared
      dependencies or a real operational benefit?
-   - Trigger type identified, and the description written to fit it? Test it four ways, reading
-     only the description:
-     - would an agent open the skill for the intended task?
-     - would it skip a similar but unrelated task?
+   - Trigger type identified, and the description written to fit it? Test it, reading only the
+     description:
+     - Mandatory or Self-Evident: write three prompts the skill must fire on and three near
+       misses it must not (a similar task, a different input type) and judge each from the
+       description alone. Manual: would an agent open it for the intended task, and skip a
+       similar but unrelated one?
      - does it match what the skill now does (no stale claim the body contradicts)?
      - does it carry the skill's leading word itself — a paraphrase feels compliant but does no
        invocation work?
 
-     Reword until all four hold.
+     Reword until all hold.
    - Body consistent with itself? Every "never" checked against each step and source it could
      forbid; every advertised input type handled by each step that touches it (a check fitting
      only one type fails the rest); every write surfaced where its reader looks — when a later
      phase reads only a document derived from the edited one, the addition reaches that one too.
+   - Spawns a subagent, reviewer or fork? Its brief and its return are defined: what it receives,
+     what it reports back (paths written, verdicts, blockers, edits made, what it did not check),
+     and that it hands nothing off itself.
+   - Creating: hand a fresh agent (a subagent when the tool offers one, else a prompt the user
+     runs in a clean session) only the draft and one realistic input; have it narrate step by step
+     and list each point where the text is ambiguous, contradictory or silent. Each point loops
+     back to draft; done when the run reports none. Improving: offer the run, never require it.
    - No new or grown inline chunk meets the split test (progressive disclosure)?
    - Steps end on checkable, exhaustive completion criteria?
+   - [scripts/check-skill.sh](scripts/check-skill.sh) `<skill-dir>` passes? While the draft sits
+     in scratch, set `CHECK_SKILL_AS=<real folder>`. It holds the conventions above that a script
+     can check (wrap, links, frontmatter) and prints the version at HEAD, merge base and working
+     tree for step 6; fix every failure before presenting.
 6. **Present & confirm** through compact-docs-writer (diff + word delta measured from the files,
    applied only on approval). In improve mode the draft **includes a version bump** — the last
    component, unless the author names a value — never a question put to the user. Skip it only
    when the version was already raised, uncommitted or on the branch against its target, verified
    from git (version at HEAD and at the merge base vs working tree), never from session memory:
-   the repo may have moved concurrently.
+   the repo may have moved concurrently. Done when the skill and every place the project catalogs
+   its skills (a README entry, a manifest or dependency list, a relationship graph) carry the
+   change, including any hard dependency a new cross-reference adds; find them by searching the
+   repo for a sibling skill's name.

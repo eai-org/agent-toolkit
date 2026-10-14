@@ -3,7 +3,7 @@ name: refine-pr-review
 description: Triage a fetched PR review with the user, comment by comment, drafting each reply and producing a REQUIREMENTS file for the accepted code changes. Takes the PR-REVIEW file produced by fetch-pr-review, or a PR URL. Invoke manually only.
 license: MIT
 metadata:
-  version: "1.6"
+  version: "1.7"
 ---
 
 # Refine PR review
@@ -135,8 +135,8 @@ Substantial change set (cross-file rework, design decisions) — plan first:
 claude --name create-plan-<slug> "/create-implementation-plan <path>.PR-REVIEW.REQUIREMENTS.md"
 ```
 
-Lessons written and `/self-improve` installed — persist them; document-only, so it runs alongside
-the execute session:
+Lessons written and `/self-improve` installed — persist them; a mechanical lesson may edit a lint
+config or CI job, so run it after the execute session when the lessons are mechanical:
 
 ```
 claude --name self-improve-<slug> "/self-improve Persist the lessons listed under Lessons in <path>.PR-REVIEW.ANSWERS.md"

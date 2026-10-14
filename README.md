@@ -250,6 +250,7 @@ flowchart TD
   review_code --> simple["explain-in-simple-language"]
   self_review["self-review"] --> fresh_eyes["fresh-eyes-review"]
   self_review -. when available .-> self
+  simple -. when available .-> self
   harden["harden-artifact"] --> fresh_eyes
   harden -. when available .-> plan
   harden -. when available .-> manual
