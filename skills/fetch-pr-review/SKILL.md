@@ -59,10 +59,11 @@ an answer.
 
 ## Later rounds
 
-A review round is new reviewer activity (a review, a thread, a reply) since the previous PR-REVIEW
-file was fetched. The `-N` file holds only that activity, plus a `## Since round N-1` block: head
-then and now, and a then/now status table for every earlier thread whose status changed. Same head
-and no new activity is a refresh, not a round: say so and ask before writing anything.
+A review round is new reviewer activity (a review, a thread, a reply, a reopened thread) since the
+previous PR-REVIEW file was fetched. The `-N` file holds only that activity, each touched thread
+whole, plus a `## Since round N-1` block: head then and now, and a then/now status table for every
+earlier thread whose status changed. No new activity is a refresh, not a round, even when the head
+moved: write nothing, report it with the current head, and hand off the latest existing file.
 
 ## Status flags
 
@@ -128,7 +129,7 @@ session. Use the launch syntax of the agent tool in use (vendor-agnostic — `cl
 the example), naming the session `refine-pr-<slug>`:
 
 ```
-claude --name refine-pr-<slug> "/refine-pr-review <output-dir>/<slug>.PR-REVIEW.md"
+claude --name refine-pr-<slug> "/refine-pr-review <pr-review-file>"
 ```
 
 Then offer the alternative — clearing the current session instead (vendor-agnostic — `/clear` below
@@ -137,5 +138,5 @@ is only the example; use the clear command of the agent tool in use):
 OR /clear and run:
 
 ```
-/refine-pr-review <output-dir>/<slug>.PR-REVIEW.md
+/refine-pr-review <pr-review-file>
 ```

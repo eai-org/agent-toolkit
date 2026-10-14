@@ -42,11 +42,13 @@ on the page. Only the ANSWERS table's own row numbers stay, for in-file cross-re
 
 Before the first code check, compare the checkout with the PR-REVIEW head: a different commit or
 branch, or a dirty tree, is reported and the user decides; never switch branches yourself. A PR
-head that moved since the fetch (check the remote) → offer a re-fetch (a new round) before triage.
-The URL path gets the same check — the subagent's fetch is seconds old, the checkout is still the
-user's. On a `-N` file, read the earlier rounds' ANSWERS first: a comment re-raising one already
-triaged keeps its verdict and reply unless it brings evidence the earlier one lacked, and its
-Notes say `kept from round N, row M`.
+head that moved since the fetch (check the remote) → offer a re-fetch before triage; a refresh
+(no new activity) keeps the file, the checkout then compared with the current head. The URL path
+gets the same check — the subagent's fetch is seconds old, the checkout is still the user's. On a
+`-N` file, read the earlier rounds' ANSWERS first: a comment re-raising one already triaged keeps
+its verdict and reply unless it brings evidence the earlier one lacked, and its Notes say
+`kept from round N, row M`. An earlier round without ANSWERS was never triaged: its comments join
+this triage.
 
 Read the code behind each comment first: verify its premise against the checkout, never judging
 from the quoted hunk alone. Then form a recommendation — verdict, reasoning, and (for partial and
@@ -103,7 +105,7 @@ REQUIREMENTS file, nothing to plan or execute.
 
 `<input name>.ANSWERS.md` next to the input (`1234-task.PR-REVIEW.md` →
 `1234-task.PR-REVIEW.ANSWERS.md`) — the user's copy-paste sheet and the durable record of what was
-pushed back. Already there → ask whether to update it in place or write beside it; never overwrite
+pushed back. Already there → ask before updating it in place (declined → stop); never overwrite
 silently. Header: `# Answers: <PR title>`, then `> **Source** [<PR id>](<url>)`, `> **Head** <sha>`
 (the head the verdicts were settled against), `> **Triaged** YYYY-MM-DD`; round and requirements
 file follow from the file name. Then one table row per comment, resolved and bot rows included for
@@ -149,27 +151,27 @@ copy-pasteable launch commands (vendor-agnostic — `claude` below is only the e
 Small, mechanical change set — execute directly:
 
 ```
-claude --name execute-review-<slug> "Apply <path>.PR-REVIEW.REQUIREMENTS.md, then run the project's validation (lint, tests, build)"
+claude --name execute-review-<slug> "Apply <requirements-file>, then run the project's validation (lint, tests, build)"
 ```
 
 Substantial change set (cross-file rework, design decisions) — plan first:
 
 ```
-claude --name create-plan-<slug> "/create-implementation-plan <path>.PR-REVIEW.REQUIREMENTS.md"
+claude --name create-plan-<slug> "/create-implementation-plan <requirements-file>"
 ```
 
 `/harden-artifact` installed — harden the requirements first, recommended for a substantial change
 set:
 
 ```
-claude --name harden-requirements-<slug> "/harden-artifact <path>.PR-REVIEW.REQUIREMENTS.md"
+claude --name harden-requirements-<slug> "/harden-artifact <requirements-file>"
 ```
 
 Lessons written and `/self-improve` installed — persist them; document-only, so it runs alongside
 the execute session:
 
 ```
-claude --name self-improve-<slug> "/self-improve Persist the lessons listed under Lessons in <path>.PR-REVIEW.ANSWERS.md"
+claude --name self-improve-<slug> "/self-improve Persist the lessons listed under Lessons in <answers-file>"
 ```
 
 Then offer the alternative — clearing the current session (vendor-agnostic — `/clear` is only the
