@@ -280,7 +280,7 @@ flowchart TD
   refine --> plan["create-implementation-plan"]
   plan --> split["split-plan-tasks"]
   split --> execute["execute-plan-tasks"]
-  plan --> handover["handover"]
+  self_review -. when available .-> handover["handover"]
   handover --> express
   simple_rule["write-simple-explanations rule"] --> simple["explain-in-simple-language"]
   refine -. when available .-> simple
