@@ -121,7 +121,9 @@ onboarding doc (target-structure §8).
 
 ## 5. Close
 
-Suggest, each only when installed and applicable — skip silently otherwise:
+Suggest, each only when installed (look in the agent's skills and plugin dirs, as manual-only
+skills are missing from the in-session list) and applicable, with this skill's own namespace prefix
+if any — skip silently otherwise:
 
 - `/memory-doctor` — when the agent accumulates project memory (e.g. auto memory) — to relocate
   saved lessons into the new docs structure and share them with the team; it no-ops harmlessly on

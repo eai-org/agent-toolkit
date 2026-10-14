@@ -39,8 +39,8 @@ system-reminders**, not disk — read them from your own context.
 
 ## Checklist
 
-Mechanics below are one agent's (settings keys, `~/.claude` paths); on another agent, map each
-item to its equivalent or ask.
+Mechanics below are one agent's (settings keys, `~/.claude` paths, which `CLAUDE_CONFIG_DIR`
+relocates); on another agent, map each item to its equivalent or ask.
 
 **0. Verify tool search is on first.** Evidence is the session itself: MCP tools listed as deferred
 (names only, searched on demand) means on, even once a search has pulled some schemas in; full
@@ -52,10 +52,11 @@ read the env var or setting (`ENABLE_TOOL_SEARCH`, incl. `auto:N` threshold mode
 **every parent dir up to root**, the user-level entry file (`~/.claude/CLAUDE.md`), the
 managed-policy one (a file such as `/Library/Application Support/ClaudeCode/CLAUDE.md` or
 `/etc/claude-code/CLAUDE.md`, or the managed `claudeMd` setting), and every rules file,
-subdirectories and symlinks included (a symlink leading outside the project only once external
-imports are approved), in the project and user rules dirs (`.claude/rules/`, `~/.claude/rules/`)
-that is not path-scoped. Expand `@import` lines (recursive). `wc -w` each; an `AGENTS.md` or the
-user-level file counts once, whether read natively, imported or met on the parent walk.
+subdirectories and symlinks included, in the project and user rules dirs (`.claude/rules/`,
+`~/.claude/rules/`) that is not path-scoped — a project-rules symlink leading outside the project
+only once external imports are approved. Expand `@import` lines (recursive). `wc -w` each; an
+`AGENTS.md` or the user-level file counts once, whether read natively, imported or met on the
+parent walk.
 
 **2. Descriptions (often the largest unexamined chunk).** Skim the in-session lists of **skills,
 subagent types, and slash commands** — their descriptions are always loaded, except
@@ -83,17 +84,18 @@ cost.
 A short sizes table (source → ≈ tokens → auto-loaded? → relevant to user's work?), then a
 prioritized action list. For each action give the exact setting/file edit, the rough savings, and
 how to reverse it (prefer per-session toggles). Skip anything under ~a few hundred tokens unless
-asked to be exhaustive. Each action names the skill that performs it when installed (manual-only
-skills are missing from the in-session list): a fat entry file → `/agentify-project` (slimming
-into docs); a fat memory index → `/memory-doctor`. Then ask before editing.
+asked to be exhaustive. Each action names the skill that performs it when installed (look in the
+agent's skills and plugin dirs, as manual-only skills are missing from the in-session list), with
+this skill's own namespace prefix if any: a fat entry file → `/agentify-project` (slimming into
+docs); a fat memory index → `/memory-doctor`. Then ask before editing.
 
 ## Useful probes
 
 ```bash
 # always-on instruction files: entry-file chain up to /, user-level and managed entry files, unscoped rules
-d=$PWD; while :; do for f in AGENTS.md .claude/AGENTS.md CLAUDE.md .claude/CLAUDE.md CLAUDE.local.md; do [ "$d/$f" = "$HOME/.claude/CLAUDE.md" ] || { [ -f "$d/$f" ] && wc -w "$d/$f"; }; done; [ "$d" = / ] && break; d=$(dirname "$d"); done
-wc -w ~/.claude/CLAUDE.md "/Library/Application Support/ClaudeCode/CLAUDE.md" /etc/claude-code/CLAUDE.md 2>/dev/null
-find -L .claude/rules ~/.claude/rules -name '*.md' -exec grep -L '^paths:' {} + 2>/dev/null | tr '\n' '\0' | xargs -0 -r wc -w
+c=${CLAUDE_CONFIG_DIR:-$HOME/.claude}; d=$PWD; while :; do for f in AGENTS.md .claude/AGENTS.md CLAUDE.md .claude/CLAUDE.md CLAUDE.local.md; do [ "$d/$f" = "$c/CLAUDE.md" ] || { [ -f "$d/$f" ] && wc -w "$d/$f"; }; done; [ "$d" = / ] && break; d=$(dirname "$d"); done
+wc -w "$c/CLAUDE.md" "/Library/Application Support/ClaudeCode/CLAUDE.md" /etc/claude-code/CLAUDE.md 2>/dev/null
+find -L .claude/rules "$c/rules" -name '*.md' -exec grep -L '^paths:' {} + 2>/dev/null | tr '\n' '\0' | xargs -0 -r wc -w
 # enabled MCP + settings
-cat .mcp.json; cat .claude/settings.json .claude/settings.local.json ~/.claude/settings.json 2>/dev/null
+cat .mcp.json; cat .claude/settings.json .claude/settings.local.json "$c/settings.json" 2>/dev/null
 ```

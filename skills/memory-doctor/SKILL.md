@@ -98,9 +98,9 @@ Both axes are proposals the user confirms or flips.
 
 **Target path.** Each relocate or merge proposal names the concrete file: an existing doc, skill or
 rule to merge into, or a new file in the home the repo's governing docs name (the docs index,
-onboarding or doc-placement doc), with the agent's project config dirs (e.g. `.claude/skills`,
-`.claude/rules`) as the fallback. User-level homes are the agent's own config dirs (e.g.
-`~/.claude/skills`, `~/.claude/rules`).
+onboarding or doc-placement doc); without one, a skill or rule falls back to the agent's project
+config dirs (e.g. `.claude/skills`, `.claude/rules`), a doc to a path the user names. User-level
+homes are the agent's own config dirs (e.g. `~/.claude/skills`, `~/.claude/rules`).
 
 Do each relocate or merge through [self-improve](../self-improve/SKILL.md) in its driven mode: hand
 it the block's content plus the confirmed scope, form and path; it drafts and applies the edit
