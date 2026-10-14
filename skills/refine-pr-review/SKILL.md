@@ -20,7 +20,7 @@ A PR URL instead: when the harness has subagents and fetch-pr-review is installe
 `/fetch-pr-review <url>` to a fresh session and stop.
 
 Its own `.PR-REVIEW.REQUIREMENTS.md` instead, once a blocking answer is in: Phase 1 and Lessons
-stand as the ANSWERS file records them; run only Phase 2 on that file, then Next step.
+stand as its `.PR-REVIEW.ANSWERS.md` records them; run only Phase 2 on that file, then Next step.
 
 ## Verdicts
 
