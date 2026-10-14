@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.1"
+  version: "1.2"
 ---
 
 # Check ticket implementation
@@ -19,10 +19,9 @@ Input is a ticket URL / bare id — run [fetch-ticket](../fetch-ticket/SKILL.md)
 the tracker and planning dir and persists the `.TICKET.md`) — or a path to an already-fetched
 ticket file or its task dir. Ambiguous input: ask, don't guess.
 
-Run the fetch in a **subagent** when the runtime supports one, so its tool traffic stays out of
-this session's context: it returns the ticket-file path plus any blocker it hit (ambiguous
-tracker, auth, no planning-dir convention) for you to settle with the user — it never guesses.
-Without subagent support, invoke fetch-ticket inline.
+Run the fetch in a **subagent** when the runtime supports one, per fetch-ticket's
+[delegate.md](../fetch-ticket/delegate.md), so its tool traffic stays out of this session's
+context. Without subagent support, invoke fetch-ticket inline.
 
 The **ticket text is what gets annotated** — its `.REQUIREMENTS.md` (same dir and `<id>-<slug>`
 base — a shared dir may hold siblings') may be read as context for intent, never annotated in its

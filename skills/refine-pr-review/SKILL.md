@@ -1,9 +1,9 @@
 ---
 name: refine-pr-review
-description: Triage a fetched PR review with the user, comment by comment, drafting each reply and producing a REQUIREMENTS file for the accepted code changes. Takes the PR-REVIEW file produced by fetch-pr-review. Invoke manually only.
+description: Triage a fetched PR review with the user, comment by comment, drafting each reply and producing a REQUIREMENTS file for the accepted code changes. Takes the PR-REVIEW file produced by fetch-pr-review, or a PR URL. Invoke manually only.
 license: MIT
 metadata:
-  version: "1.5"
+  version: "1.6"
 ---
 
 # Refine PR review
@@ -12,6 +12,12 @@ The **Refine** phase for review feedback: turn a `.PR-REVIEW.md` (from /fetch-pr
 the path is ambiguous) into user-settled per-comment verdicts, drafted replies, and a REQUIREMENTS
 file covering the accepted code changes. Triage and replies are settled here; the plan and execute
 phases see only code changes.
+
+A PR URL instead: when the harness has subagents and fetch-pr-review is installed
+(`../fetch-pr-review/SKILL.md` beside this skill), a subagent fetches it first per its
+[delegate.md](../fetch-pr-review/delegate.md) and the file it returns is the input. Not installed
+→ say so and ask for the fetched file; installed but no subagents → hand off
+`/fetch-pr-review <url>` to a fresh session and stop.
 
 ## Verdicts
 
@@ -46,6 +52,8 @@ Per comment type:
 - Open/active human threads → full triage.
 - **Outdated** → code check first; when the concern is moot in the current code, recommend "no
   action, optional courtesy reply".
+- **Unclear** (a status the fetch could not settle) → ask the user its status first, then triage
+  it as that status.
 - **Resolved** → no questions; table row marked "resolved earlier".
 - Review verdict summaries and general comments → each actionable ask inside them is triaged like
   a thread.

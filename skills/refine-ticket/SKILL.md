@@ -3,7 +3,7 @@ name: refine-ticket
 description: Refine a development ticket — or brainstorm a raw idea — into a validated, self-contained REQUIREMENTS document — the "what", verified against the codebase. Invoke manually only.
 license: MIT
 metadata:
-  version: "1.16"
+  version: "1.17"
 ---
 
 # Refine ticket
@@ -15,6 +15,16 @@ must be true when the work is done, never **how** to build it, and never touches
 An idea is a ticket that doesn't exist yet: treat the user's words as the ticket text, and grill
 to shape the idea itself — goal, in vs out of scope — before closing the branches that block
 implementation.
+
+## Input
+
+A `.TICKET.md` path, a ticket URL or bare id, or an idea in words. When the harness has subagents
+and fetch-ticket is installed (`../fetch-ticket/SKILL.md` beside this skill), a URL or id is
+fetched first by a subagent per fetch-ticket's [delegate.md](../fetch-ticket/delegate.md) — one
+ticket per run; several → point at a fetch session instead, which handles sets. A non-empty warn
+list stops for one question: supply the files now (`/attach-to-ticket` when installed) or refine
+without them. The fetched file is then the local ticket file. No subagents, or fetch-ticket not
+installed → read the ticket from its tracker and refine with no local ticket file.
 
 ## What, not how — but verified against the code
 
@@ -113,10 +123,11 @@ Location:
 - If the ticket input is a **local file**, write the REQUIREMENTS file in the **same directory**,
   replacing `.TICKET` with `.REQUIREMENTS` (e.g. `FOO.TICKET.md` → `FOO.REQUIREMENTS.md`); if the
   input doesn't follow that convention, append `.REQUIREMENTS` before `.md`.
-- If there is **no local ticket file** (a tracker URL/ID, pasted text), follow the project's/user's
-  convention for where planning documents live (default: `.agents/plans/`). Propose a kebab-case
-  `<slug>` (prefix the tracker id when the ticket is bound to one) and the target path, **confirm
-  both with the user**, then write `<slug>/<slug>.REQUIREMENTS.md` there.
+- If there is **no local ticket file** (a tracker URL/ID read without a fetch, pasted text),
+  follow the project's/user's convention for where planning documents live (default:
+  `.agents/plans/`). Propose a kebab-case `<slug>` (prefix the tracker id when the ticket is bound
+  to one) and the target path, **confirm both with the user**, then write
+  `<slug>/<slug>.REQUIREMENTS.md` there.
 
 Six parts (Verified codebase facts, Overrides, and Open questions may be empty — don't pad):
 

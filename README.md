@@ -55,7 +55,8 @@ execute them one at a time and consolidate the changes.
   [Matt Pocock's grill-me](https://github.com/mattpocock/skills) (MIT, copyright 2026 Matt Pocock).
 - **[refine-ticket](./skills/refine-ticket/SKILL.md)** — define the "what" of a task: validate the
   ticket — or a raw idea you want to brainstorm — against the codebase, settle open decisions
-  together, and save a self-contained requirements doc a fresh session can pick up.
+  together, and save a self-contained requirements doc a fresh session can pick up. Takes a
+  fetched ticket file, or a ticket URL a subagent fetches first.
 - **[create-implementation-plan](./skills/create-implementation-plan/SKILL.md)** — define the
   "how" of a task: turn the requirements into an implementation plan, settling the technical
   decisions together, then save it for a fresh session to execute.
@@ -89,7 +90,8 @@ Review helpers that check the codebase while assisting with code or ticket revie
 - **[refine-pr-review](./skills/refine-pr-review/SKILL.md)** — go through a fetched PR review
   together, comment by comment — address, partial, or push back — drafting the replies, turning
   the accepted changes into a requirements doc, and recording the durable lessons, which
-  self-improve persists when installed.
+  self-improve persists when installed. Takes the fetched file, or a PR URL a subagent fetches
+  first.
 - **[extract-pr-review-rules](./skills/extract-pr-review-rules/SKILL.md)** — mine the conventions
   your reviewers actually enforce out of every PR review comment in a repo, saved as a per-reviewer
   rules doc the review skills read as a checklist; later runs resume from a checkpoint and read
@@ -253,6 +255,8 @@ flowchart TD
   harden -. when available .-> split
   harden -. when available .-> execute
   refine -. when available .-> harden
+  refine -. when available .-> fetch_ticket
+  refine_pr -. when available .-> fetch_pr
   plan -. when available .-> harden
   harden -. when available .-> simple
   harden -. when available .-> self

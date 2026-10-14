@@ -3,7 +3,7 @@ name: fetch-pr-review
 description: Fetch all reviewer comments from a pull request URL (GitHub, Azure DevOps, …) and save them as a self-contained markdown PR-REVIEW file in the task's planning directory. Fetch only — no fixing or replying.
 license: MIT
 metadata:
-  version: "1.7"
+  version: "1.8"
 ---
 
 # PR review fetcher

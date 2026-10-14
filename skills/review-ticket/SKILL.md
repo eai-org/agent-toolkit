@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.4"
+  version: "1.5"
 ---
 
 # Review ticket
@@ -20,8 +20,10 @@ asking whoever owns the requirements.
 - **Local ticket document(s)**: a single `.TICKET.md`, several, a ticket-set directory, or a
   `.TICKET.md` whose `## Ticket set` section lists siblings.
 - **One or more ticket URLs or bare ids/keys**: delegate — even for a single one — to a subagent
-  that invokes [fetch-ticket](../fetch-ticket/SKILL.md), so the tickets land on disk without the
-  fetch bloating this session's context, then review the local files.
+  running [fetch-ticket](../fetch-ticket/SKILL.md) per its
+  [delegate.md](../fetch-ticket/delegate.md), so the tickets land on disk without the fetch
+  bloating this session's context, then review the local files. No subagents in the harness → run
+  fetch-ticket inline.
 
 If the input is ambiguous or unrecognized, ask rather than guess.
 
