@@ -23,8 +23,9 @@ Identify the forge from the repo URL and work through whatever MCP or CLI is con
 (GitHub → `gh`). Unrecognized URL, or nothing connected → ask.
 
 The URL is only the comment source; the doc lands in the **current** project, where it keeps its
-agent docs (its doc-placement guide, else the directory its entry file links), default
-`.agents/docs/pr-review-rules.md`. Absent → **first run**, no checkpoint, whole history in scope.
+agent docs (its doc-placement guide such as `.agents/docs/README.md`, else the directory its
+entry file links), default `.agents/docs/pr-review-rules.md`. Absent → **first run**, no
+checkpoint, whole history in scope.
 Already there → read it: built from the same repo, its checkpoint and standing rules make this a
 **refresh**; built from another repo, ask — another doc path, or replace it with a first run.
 
@@ -40,25 +41,27 @@ listing of inline review comments, paged and filtered by time; on GitHub (first 
 `&since=<checkpoint>`):
 
 ```bash
+date -u +%Y-%m-%dT%H:%M:%SZ > "$SCRATCH/started"
 gh api --paginate --slurp "repos/<owner>/<repo>/pulls/comments?per_page=100&since=<checkpoint>" \
   > "$SCRATCH/pages.json" && jq add "$SCRATCH/pages.json" > "$SCRATCH/comments.json"
 ```
 
 A forge with threads only per PR → list the PRs updated since the checkpoint and page each one's
-threads. A non-zero exit from either command, or a file that is not one JSON array, is a partial
-fetch: record no checkpoint, split nothing, report and stop.
+threads. A non-zero exit from any command, or an output file that is not one JSON array, is a
+partial fetch: record no checkpoint, split nothing, report and stop.
 
-Record the time the fetch **started** (ISO 8601, UTC) as the next checkpoint — not the newest
-comment's timestamp, which would skip anything posted while the run was working.
+On any forge, write the UTC start time to `$SCRATCH/started` before the first request, as the
+`date` line does: it is the next checkpoint, not the newest comment's timestamp, which would skip
+anything posted while the run was working.
 
 Then, still on disk, drop bots (the forge's account-type flag, or a `[bot]`-style handle), deleted
 accounts (no author on the comment, or the forge's placeholder such as GitHub's `ghost`), comments
 created after the fetch started (the next refresh takes them) and, on a refresh, comments created
 at or before the checkpoint (edits of old ones; the doc already has their evidence); tally comments
 per author and split the file into one per author, oldest first, keeping per comment only what
-extraction needs (id, URL, created date, path, body, author) — hunks and link blobs go, so an
-author's file stays small. Nothing left to process → print step 6's counts, leave the doc
-untouched, and stop.
+extraction needs (id, URL, created date, path, the hunk's last few lines, body, author) — the rest
+of the hunk and link blobs go, so an author's file stays small. Nothing left to process → print
+step 6's counts, leave the doc untouched, and stop.
 
 Done when the fetch exited 0, each author's file exists, the tallies plus the dropped comments sum
 to the fetched total, and the new checkpoint is recorded.
@@ -84,8 +87,9 @@ time, in slices. Prompt each with:
 
 Done when every author has returned a section or reported no rule clearing the bar, and each
 returned read count equals that author's tally; a shortfall is re-run on the unread part (the file
-from the count on), its rules merged into the first section as step 4 merges, and one that
-remains is reported at the close, never passed off as read.
+from the count on), its rules merged into the first section as step 4 merges; one that remains is
+a partial extraction: doc and checkpoint untouched, print step 6's counts naming the unread part,
+and stop.
 
 ## 4. Merge — refresh only
 
@@ -136,8 +140,8 @@ pull-request review comments. Each rule links the comments it came from.
 - <rule> ([#<comment-id>](<comment-url>), …)
 ```
 
-Done when every rule from steps 3–4 is in the file and the checkpoint line carries this run's
-timestamp.
+Done when every rule from steps 3–4 is in the file and the checkpoint line carries the time in
+`$SCRATCH/started`.
 
 ## 6. Index and close
 
