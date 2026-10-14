@@ -109,7 +109,8 @@ Separate two kinds of uncertainty:
 A blocking question only someone else can answer: write the file anyway, with the question under
 Open questions marked **blocking**, naming who answers it and the question drafted ready to send
 (via `use-conversational-language` when available). Print no hand-off commands while a blocking
-entry exists; re-run this skill on the file once the answer is in.
+entry exists. Once the answer is in, re-run this skill on the same input: read that REQUIREMENTS
+file first and grill only on what the answer opens.
 
 ## "Already exists" / "reuse X" is a directive
 
@@ -135,7 +136,7 @@ Location:
   `<slug>/<slug>.REQUIREMENTS.md` there.
 - When the target file exists, say so and ask: update it in place (recommended — it is the living
   artifact later phases edit, and any `.PLAN` or `.MANUAL-TEST` of the same base goes stale, say
-  which) or write the next `-vN`.
+  which) or write a fresh copy numbered after the suffix (`FOO.REQUIREMENTS-2.md`, `-3`, …).
 
 Six parts (Verified codebase facts, Overrides, and Open questions may be empty — don't pad):
 

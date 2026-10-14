@@ -3,7 +3,7 @@ name: refine-pr-review
 description: Triage a fetched PR review with the user, comment by comment, drafting each reply and producing a REQUIREMENTS file for the accepted code changes. Takes the PR-REVIEW file produced by fetch-pr-review, or a PR URL. Invoke manually only.
 license: MIT
 metadata:
-  version: "1.6"
+  version: "1.7"
 ---
 
 # Refine PR review
@@ -119,9 +119,10 @@ none → no section.
 ## Next step
 
 State the output paths (project-relative). Remind the user the ANSWERS file is theirs to post
-manually once the fixes land. Then hand off by the size of the accepted change set, leading with
-your recommendation but giving both options as single copy-pasteable launch commands
-(vendor-agnostic — `claude` below is only the example):
+manually once the fixes land. While the REQUIREMENTS file holds a **blocking** Open questions
+entry, print no execute or plan command, only who must answer it. Otherwise hand off by the size
+of the accepted change set, leading with your recommendation but giving both options as single
+copy-pasteable launch commands (vendor-agnostic — `claude` below is only the example):
 
 Small, mechanical change set — execute directly:
 
