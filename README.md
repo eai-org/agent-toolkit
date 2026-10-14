@@ -41,8 +41,8 @@ Maintenance to run from time to time, keeping your setup tidy and your context s
 
 A daily routine for any programming task, following the
 [RPAC workflow](https://medium.com/engineering-in-the-age-of-ai/the-refine-plan-act-pattern-for-agentic-ai-coding-59ee013e4427):
-fetch a ticket, refine it, plan it, split the plan into small tasks, then let a fresh session
-execute them one at a time and consolidate the changes.
+fetch a ticket, refine it, harden it, plan it, harden it again, split the plan into small tasks,
+then let a fresh session execute them one at a time and consolidate the changes.
 
 - **[fetch-ticket](./skills/fetch-ticket/SKILL.md)** — download a ticket from any tracker
   (e.g. GitHub, Jira, Azure DevOps) and save it as a self-contained markdown file.
@@ -64,7 +64,8 @@ execute them one at a time and consolidate the changes.
   before the next phase picks it up: a fresh-context reviewer tests every deviation from the
   ticket and every claim against the code and related tickets, the session challenges each
   finding, and proven mistakes get fixed in the document (say `autoaccept` to skip the asks for
-  those).
+  those). Findings that reveal a durable lesson end in an offer to run self-improve, when
+  installed.
 - **[split-plan-tasks](./skills/split-plan-tasks/SKILL.md)** — break a plan into individually
   reviewable tasks grouped into PR-sized batches, appended to the plan file for a fresh session to
   execute one at a time.
@@ -258,7 +259,6 @@ flowchart TD
   refine -. when available .-> harden
   refine -. when available .-> fetch_ticket
   refine_pr -. when available .-> fetch_pr
-  refine_pr -. when available .-> harden
   plan -. when available .-> harden
   harden -. when available .-> simple
   harden -. when available .-> self
@@ -302,7 +302,7 @@ flowchart TD
   self --> compact_docs["compact-docs-writer"]
   compact --> compact_docs
   memory_doctor["memory-doctor"] --> self
-  refine_pr -. when available .-> self
+  refine_pr --> self
   compact_gov["compact-governing-docs rule"] --> compact
   compact_gov --> compact_docs
 
