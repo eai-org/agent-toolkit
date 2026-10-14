@@ -4,19 +4,20 @@ description: Turn a ticket or requirements document into a concise QA manual-tes
 context: fork
 license: MIT
 metadata:
-  version: "1.5"
+  version: "1.6"
 ---
 
 # Create manual test instructions
 
-Read the input ticket or requirements document (and, where needed for accurate navigation, the
-code it cites). Write the manual-test file in the **same directory**, naming it by replacing
-`.REQUIREMENTS` or `.TICKET` with `.MANUAL-TEST` (e.g. `FOO.REQUIREMENTS.md` →
-`FOO.MANUAL-TEST.md`); if the input follows neither convention, append `.MANUAL-TEST` before
-`.md`. If there is no file (pasted text), follow the project's/user's convention for where plans
-live (default: `.agents/plans/`), derive a kebab-case `<slug>` from the content, and write
-`<slug>/<slug>.MANUAL-TEST.md` there. Running forked, you can't ask mid-run: flag any guessed
-location or slug in the final message for the user to verify.
+Read the input ticket or requirements document and, where needed for accurate navigation, the
+code it cites and the design frames or screenshots it links when they are on disk. Write the
+manual-test file in the **same directory**, naming it by replacing `.REQUIREMENTS` or `.TICKET`
+with `.MANUAL-TEST` (e.g. `FOO.REQUIREMENTS.md` → `FOO.MANUAL-TEST.md`); if the input follows
+neither convention, append `.MANUAL-TEST` before `.md`. If there is no file (pasted text), follow
+the project's/user's convention for where plans live (default: `.agents/plans/`), derive a
+kebab-case `<slug>` from the content, and write `<slug>/<slug>.MANUAL-TEST.md` there. An existing
+manual-test file of that name is replaced; the final message says so. Running forked, you can't
+ask mid-run: flag any guessed location or slug in the final message for the user to verify.
 
 The file must be followable by someone **unfamiliar with the ticket** — short but complete. Four
 parts:
@@ -26,7 +27,9 @@ parts:
    any prerequisite state).
 3. **Before vs after** — how the area behaved before, how it should behave now.
 4. **What to verify** — checklist of behaviors to confirm, including edge cases (empty values,
-   multiple items, boundaries) where relevant.
+   multiple items, boundaries) where relevant. A behaviour resting on an Open question of the
+   input (a blocking one included) goes under a closing **Not settled yet** line with its
+   tentative answer, never as a plain check.
 
 Before writing, actually invoke [explain-in-simple-language](../explain-in-simple-language/SKILL.md)
 and follow it — reciting its rules from memory does not count. Not installed: plain words, one idea

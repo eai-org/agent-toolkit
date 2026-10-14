@@ -3,7 +3,7 @@ name: refine-ticket
 description: Refine a development ticket — or brainstorm a raw idea — into a validated, self-contained REQUIREMENTS document — the "what", verified against the codebase. Invoke manually only.
 license: MIT
 metadata:
-  version: "1.17"
+  version: "1.18"
 ---
 
 # Refine ticket
@@ -52,34 +52,6 @@ the code here is for *validating* requirements, not for designing the solution.
 - Verify both sides of an integration: if a requirement relies on another layer behaving a certain
   way, open that layer and confirm it.
 
-## Grill to resolve every branch
-
-After gathering and code-verifying, **grill** the user — interview relentlessly, never guessing
-what they could clarify — to close every remaining decision:
-
-- One question at a time, each with your recommended answer, worded via
-  `explain-in-simple-language` when available.
-- If any part of a question is answerable from the codebase, explore it rather than ask — never
-  bundle a code-answerable sub-question into a grill. "Which name, type, shape, or pattern fits?" is
-  code-answerable: match the closest existing analogue, and let that verified convention outrank the
-  ticket's contrary suggestion. Grill only on what genuinely remains (product intent, cross-task
-  timing).
-- Walk each branch of the decision tree, resolving dependencies between decisions, until there is
-  shared understanding and no open branch that blocks implementation.
-
-Separate two kinds of uncertainty:
-- **Blocking** — implementation can't proceed without it (a contradiction, a missing referenced
-  file). Resolve during grilling, before writing the file.
-- **Non-blocking** — a reasonable default exists but a human should confirm. Record under Open
-  questions with your tentative answer.
-
-## "Already exists" / "reuse X" is a directive
-
-When the ticket says a capability exists or names something to reuse, find what's *behind* it (the
-service method, query, SP it calls) and anchor the requirement on the smallest extension — relax a
-parameter, widen a filter, lift a guard. "Not an exact match" doesn't license a net-new build:
-reuse-vs-build-new is a **blocking** question for the user, never a silent default.
-
 ## Reconcile against the design when one is referenced
 
 When a ticket points at a design (mockup, screenshot, prototype, design-tool link), that design is
@@ -97,21 +69,54 @@ part of the spec. Visual decisions made without seeing it lock in wrong defaults
 When the ticket references others that matter to it (BE/FE counterparts, dependencies, follow-ups),
 read them too — they complete the picture and sharpen how this ticket's requirements are meant. A
 `## Ticket set` section in the ticket file lists locally fetched siblings: read every linked
-`.TICKET.md` before grilling; for tracker-only references, judge relevance before fetching. What a
-sibling supplies — execution order, contracts it owns, superseded-spec notes — is context only,
-never requirements: scope stays this ticket's, and anything a sibling suggests changing is a
-question for the user, never a silent scope change.
+`.TICKET.md` before grilling; for tracker-only references, judge relevance before fetching, then
+fetch one the way Input does. What a sibling supplies — execution order, contracts it owns,
+superseded-spec notes — is context only, never requirements: scope stays this ticket's, and
+anything a sibling suggests changing is a question for the user, never a silent scope change.
 
 ## A prior ticket review is leads, never facts
 
 Unless one was passed in, look for a `.TICKET-REVIEW.md` next to the ticket or in its set
-directory — an earlier session's triage; say which one you use, or that none exists. Challenge and
-re-verify everything in it before relying on it (its citations make that cheap). Its shipped
-questions are blocking items: grill first whether the owner answered. The defaults it assumed for
-dropped cheap details are decisions to close here — grilled or recorded as Open questions, never
-adopted silently. Handoffs are out-of-scope dependencies; verdict and walkthrough are context only.
-The ticket file and the code always win; a review older than the ticket file has likely been
-overtaken — say so.
+directory, preferring the one whose base matches the ticket file's `-vN` base — an earlier
+session's triage; say which one you use, or that none exists. Challenge and re-verify everything
+in it before relying on it (its citations make that cheap). Its shipped questions are blocking
+items: grill first whether the owner answered. The defaults it assumed for dropped cheap details
+are decisions to close here — grilled or recorded as Open questions, never adopted silently.
+Handoffs are out-of-scope dependencies; verdict and walkthrough are context only. The ticket file
+and the code always win; a review older than the ticket file has likely been overtaken — say so.
+
+## Grill to resolve every branch
+
+After gathering and code-verifying, **grill** the user — interview relentlessly, never guessing
+what they could clarify — to close every remaining decision:
+
+- One question at a time, each with your recommended answer, worded so that "yes" accepts it, via
+  `explain-in-simple-language` when available.
+- Facts are yours to find (codebase, docs, tool output): look them up, never ask. Decisions are
+  the user's. Never bundle a code-answerable sub-question into a grill: "Which name, type, shape,
+  or pattern fits?" is code-answerable — match the closest existing analogue, and let that
+  verified convention outrank the ticket's contrary suggestion. Grill only on what genuinely
+  remains (product intent, cross-task timing).
+- Walk each branch of the decision tree, resolving dependencies between decisions, until there is
+  shared understanding and no open branch that blocks implementation.
+
+Separate two kinds of uncertainty:
+- **Blocking** — implementation can't proceed without it (a contradiction, a missing referenced
+  file). Resolve during grilling, before writing the file.
+- **Non-blocking** — a reasonable default exists but a human should confirm. Record under Open
+  questions with your tentative answer.
+
+A blocking question only someone else can answer: write the file anyway, with the question under
+Open questions marked **blocking**, naming who answers it and the question drafted ready to send
+(via `use-conversational-language` when available). Print no hand-off commands while a blocking
+entry exists; re-run this skill on the file once the answer is in.
+
+## "Already exists" / "reuse X" is a directive
+
+When the ticket says a capability exists or names something to reuse, find what's *behind* it (the
+service method, query, SP it calls) and anchor the requirement on the smallest extension — relax a
+parameter, widen a filter, lift a guard. "Not an exact match" doesn't license a net-new build:
+reuse-vs-build-new is a **blocking** question for the user, never a silent default.
 
 ## Output: the REQUIREMENTS file
 
@@ -128,6 +133,9 @@ Location:
   `.agents/plans/`). Propose a kebab-case `<slug>` (prefix the tracker id when the ticket is bound
   to one) and the target path, **confirm both with the user**, then write
   `<slug>/<slug>.REQUIREMENTS.md` there.
+- When the target file exists, say so and ask: update it in place (recommended — it is the living
+  artifact later phases edit, and any `.PLAN` or `.MANUAL-TEST` of the same base goes stale, say
+  which) or write the next `-vN`.
 
 Six parts (Verified codebase facts, Overrides, and Open questions may be empty — don't pad):
 
@@ -142,10 +150,12 @@ Six parts (Verified codebase facts, Overrides, and Open questions may be empty �
    never *how to change it*. When non-empty, open with one line pinning the commit (short hash,
    noting uncommitted changes if the tree is dirty) and absolute date, warning the code may have
    changed since and specifics need re-verifying.
-3. **Requirements** — deduplicated functional + technical list. Tag each item with its ticket source
-   (e.g. `(Description)`, `(Technical Detail)`, `(AC)`). Group by area when it aids reading. Cite
-   the concrete file path / identifier inline wherever a requirement touches code; cite a reused
-   pattern as `path:line-range`.
+3. **Requirements** — deduplicated functional + technical list. Tag each item with its source in
+   the input: a ticket field (`(Description)`, `(AC)`, `(Comment)`), the user's idea statement
+   (`(Idea)`), a grilling answer (`(Grilling)`), a review comment by its opening words and
+   `path:line` (`("Validate both new option arguments", install.sh:88)`) — never an answers-sheet
+   row number. Group by area when it aids reading. Cite the concrete file path / identifier inline
+   wherever a requirement touches code; cite a reused pattern as `path:line-range`.
 4. **Overrides** — every deviation from the ticket in what must be true when the work is done: a
    ticket statement changed or dropped, a requirement added. Rewording and merged duplicates are not
    deviations; for an idea, only changing or dropping one of the user's own statements is one —
@@ -153,39 +163,45 @@ Six parts (Verified codebase facts, Overrides, and Open questions may be empty �
    resulting requirement, and the reason with its source — what the code/AC shows, or the user's
    decision while grilling.
 5. **Open questions** — non-blocking ambiguities, each with your tentative answer and why it's
-   non-blocking. Blocking questions never appear here.
+   non-blocking. A blocking question appears here only marked **blocking**: one someone else must
+   answer (above).
 6. **Acceptance criteria** — flat, verifiable checklist the implementation must satisfy.
 
 Each requirement is self-contained; user-facing strings that must stay in a given language are
 quoted verbatim.
 
+Done when the six parts are present and
+`grep -nE "as discussed|we agreed|see ticket|as mentioned"` on the file returns nothing.
+
 ## Boundaries
 
 - Do **not** write an implementation plan or describe "how".
-- Do **not** modify any source files. The only file you write is the REQUIREMENTS document.
+- Do **not** modify any source files. The only file you write is the REQUIREMENTS document; the
+  ticket file comes from a delegated fetch-ticket.
 
 When done, state — in **project-relative paths** — that the requirements file is ready, then hand
 off each next phase as a **single copy-pasteable launch command** — phase-prefixed session name and
 prompt combined, so one paste starts the session. Use the launch syntax of the agent tool in use
 (vendor-agnostic — `claude` below is only the example), naming the session with the phase prefix
-plus the requirements file's slug:
+plus the requirements file's slug; a line naming a skill only when that skill is available, in
+either form:
 
 ```
-claude --name create-manual-test-<slug> "/create-manual-test-instructions <path>.REQUIREMENTS.md"   # QA manual test
-claude --name create-plan-<slug> "/create-implementation-plan <path>.REQUIREMENTS.md"               # Plan phase
 claude --name harden-requirements-<slug> "/harden-artifact <path>.REQUIREMENTS.md"                  # check it first
+claude --name create-plan-<slug> "/create-implementation-plan <path>.REQUIREMENTS.md"               # Plan phase
+claude --name create-manual-test-<slug> "/create-manual-test-instructions <path>.REQUIREMENTS.md"   # QA manual test
 ```
-
-The `harden-artifact` line only when that skill is available.
 
 The phase prefix (`create-plan-`, `execute-plan-`, …) keeps the pipeline phases distinguishable in
 the session list.
 
-Then offer the plan phase's alternative — clearing the current session instead (vendor-agnostic —
-`/clear` below is only the example; use the clear command of the agent tool in use):
+Then offer the alternative — clearing the current session instead (vendor-agnostic — `/clear` below
+is only the example; use the clear command of the agent tool in use):
 
-OR /clear and run:
+OR /clear and run one of:
 
 ```
+/harden-artifact <path>.REQUIREMENTS.md
 /create-implementation-plan <path>.REQUIREMENTS.md
+/create-manual-test-instructions <path>.REQUIREMENTS.md
 ```
