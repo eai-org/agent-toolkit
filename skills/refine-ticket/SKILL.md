@@ -26,6 +26,10 @@ list stops for one question: supply the files now (`/attach-to-ticket` when inst
 without them. The fetched file is then the local ticket file. No subagents, or fetch-ticket not
 installed → read the ticket from its tracker and refine with no local ticket file.
 
+An existing `.REQUIREMENTS.md` (a re-run, e.g. once a blocking answer is in): read it and its
+ticket file (`.REQUIREMENTS` → `.TICKET`, when beside it) first, grill only on what changed since,
+and update it in place.
+
 ## What, not how — but verified against the code
 
 You cannot define the "what" in a vacuum. Every requirement must be checked against the **actual
@@ -109,8 +113,7 @@ Separate two kinds of uncertainty:
 A blocking question only someone else can answer: write the file anyway, with the question under
 Open questions marked **blocking**, naming who answers it and the question drafted ready to send
 (via `use-conversational-language` when available). Print no hand-off commands while a blocking
-entry exists. Once the answer is in, re-run this skill on the same input: read that REQUIREMENTS
-file first and grill only on what the answer opens.
+entry exists, only the one for once the answer is in: `/refine-ticket <path>.REQUIREMENTS.md`.
 
 ## "Already exists" / "reuse X" is a directive
 
@@ -134,9 +137,9 @@ Location:
   `.agents/plans/`). Propose a kebab-case `<slug>` (prefix the tracker id when the ticket is bound
   to one) and the target path, **confirm both with the user**, then write
   `<slug>/<slug>.REQUIREMENTS.md` there.
-- When the target file exists, say so and ask: update it in place (recommended — it is the living
-  artifact later phases edit, and any `.PLAN` or `.MANUAL-TEST` of the same base goes stale, say
-  which) or write a fresh copy numbered after the suffix (`FOO.REQUIREMENTS-2.md`, `-3`, …).
+- A REQUIREMENTS input is its own target. An existing target is updated in place, after the user
+  confirms unless it was the input; say which `.PLAN` or `.MANUAL-TEST` of the same base goes
+  stale.
 
 Six parts (Verified codebase facts, Overrides, and Open questions may be empty — don't pad):
 

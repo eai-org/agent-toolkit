@@ -19,6 +19,9 @@ A PR URL instead: when the harness has subagents and fetch-pr-review is installe
 → say so and ask for the fetched file; installed but no subagents → hand off
 `/fetch-pr-review <url>` to a fresh session and stop.
 
+Its own `.PR-REVIEW.REQUIREMENTS.md` instead, once a blocking answer is in: Phase 1 and Lessons
+stand as the ANSWERS file records them; run only Phase 2 on that file, then Next step.
+
 ## Verdicts
 
 - **address**: the change enters the requirements in full; the reply stays a canned one-liner
@@ -75,7 +78,7 @@ written, with these overrides:
   (`1234-task.PR-REVIEW.md` → `1234-task.PR-REVIEW.REQUIREMENTS.md`); later review rounds carry
   their suffix through (`…PR-REVIEW-2.REQUIREMENTS.md`).
 - Nothing about replies or verdicts enters the REQUIREMENTS file.
-- Ignore its closing hand-off instructions — this skill owns the hand-off.
+- Ignore its hand-off commands, the blocking-question one included — this skill owns the hand-off.
 
 When every verdict is push back, skip this phase: no REQUIREMENTS file, nothing to plan or execute.
 
@@ -120,7 +123,8 @@ none → no section.
 
 State the output paths (project-relative). Remind the user the ANSWERS file is theirs to post
 manually once the fixes land. While the REQUIREMENTS file holds a **blocking** Open questions
-entry, print no execute or plan command, only who must answer it. Otherwise hand off by the size
+entry, print no execute or plan command, only who must answer it and the command for once the
+answer is in: `/refine-pr-review <path>.PR-REVIEW.REQUIREMENTS.md`. Otherwise hand off by the size
 of the accepted change set, leading with your recommendation but giving both options as single
 copy-pasteable launch commands (vendor-agnostic — `claude` below is only the example):
 
