@@ -3,7 +3,7 @@ name: fetch-ticket
 description: Fetch one or more tickets/issues from their tracker (Azure DevOps, Jira, GitHub, …) and save each as a self-contained markdown ticket file. Fetch only — no analysis or planning.
 license: MIT
 metadata:
-  version: "1.13"
+  version: "1.14"
 ---
 
 # Ticket Fetcher
@@ -16,11 +16,12 @@ Identify the tracker from the input (URL host, or id shape) and fetch through th
 server — e.g. **Azure DevOps MCP** for ADO work items, **Atlassian MCP** for Jira issues, **GitHub
 MCP / `gh`** for GitHub issues. Use whichever equivalent tools are connected; tool name prefixes
 vary by config. Resolve once any handle the MCP needs (e.g. Atlassian `cloudId`, ADO project) and
-reuse it. If the input is ambiguous, ask the user — don't guess. If no matching MCP is connected:
-a public ticket may be scraped from its URL as a fallback (you may still suggest installing the
-matching MCP when it would do the job better); a private one can't — the URL returns a login page,
-not the ticket — so stop and tell the user to install and authenticate the matching MCP server,
-then re-run.
+reuse it. A bare id that fits several trackers: the one the project's governing docs name, else
+the `Source` host of a ticket file in the planning directory, else the only connected tracker MCP;
+still open → ask, naming your pick. If no matching MCP is connected: a public ticket may be
+scraped from its URL as a fallback (you may still suggest installing the matching MCP when it
+would do the job better); a private one can't — the URL returns a login page, not the ticket — so
+stop and tell the user to install and authenticate the matching MCP server, then re-run.
 
 ## Your task
 
@@ -32,12 +33,12 @@ then re-run.
    a fixed set of fields. Convert whatever rich-text form you get (HTML, ADF, …) to clean Markdown.
 3. **Pick a slug.** Short kebab-case slug, 3–5 words, from the title/summary — greppable, don't
    overthink it.
-4. **Decide the output directory.** First resolve the project's **planning directory** (e.g.
-   `.agents/plans/`) — follow the project's/user's convention for where plans live. Inside it,
-   first match wins:
-   1. **Re-fetch** — the ticket already has a plan directory or flat `.TICKET.md`: suggest the
-      next `<id>-<slug>-v2`, `-v3`, … name beside it (directory or filename alike) — **never
-      overwrite**; history per re-fetch is kept on purpose.
+4. **Decide the output directory.** First resolve the project's **planning directory**: the one
+   its governing docs name or already in use, default `.agents/plans/`. Inside it, first match
+   wins:
+   1. **Re-fetch** — the ticket already has a plan directory or flat `.TICKET.md`: write to the
+      next `<id>-<slug>-v2`, `-v3`, … name beside it (directory or filename alike) and say so in
+      the result — **never overwrite**; history per re-fetch is kept on purpose.
    2. **Existing family** — an ancestor (parent/epic, nearest first) has a plan directory
       (`<ancestor-id>-*`, hyphen included; confirm via its `.TICKET.md` that it's really that
       ancestor's; latest `-vN` when several), or a group directory's `## Ticket set` lists this
@@ -45,8 +46,8 @@ then re-run.
       `## Ticket set` sections per [multiple-tickets.md](multiple-tickets.md).
    3. **Otherwise** — a new `<id>-<slug>/` subdirectory.
 
-   In doubt at any point (no convention defined, unsure a directory is really the family's, …):
-   ask the user. **Never guess** — better one extra question than a potential mistake.
+   In doubt at any point (unsure a directory is really the family's, …): ask the user, proposing
+   the answer you would pick. **Never guess** — better one extra question than a potential mistake.
 5. **Write the ticket file** at `<output-dir>/<id>-<slug>.TICKET.md`.
 6. **Download attachments** — if the ticket carries attachments, inline images, external linked
    assets, or design-tool links, read [attachments.md](attachments.md) first, then download into
@@ -83,7 +84,8 @@ the tracker provides. Example:
 
 ### Body sections
 
-Emit in this order, **only if present and non-empty**:
+A grouped ticket's `## Ticket set` comes first, directly after the header — see
+[multiple-tickets.md](multiple-tickets.md). Then, in this order, **only if present and non-empty**:
 
 1. `## Description`
 2. `## Acceptance criteria` — if the tracker has a dedicated AC field populated
@@ -132,7 +134,8 @@ entry templates — lives in [attachments.md](attachments.md). Three rules alway
   ticket explicitly links, which you still fetch (see [attachments.md](attachments.md)).
 - **Do not** modify the ticket in its tracker — fetching is **read-only** (no comments, transitions,
   edits, worklogs).
-- The only files you create: the `.TICKET.md`, its attachments, and any linked docs you fetched.
+- The only files you create: the `.TICKET.md`, its attachments, and any linked docs you fetched;
+  the only edits to existing files are sibling `## Ticket set` sections.
 
 ## Next step
 

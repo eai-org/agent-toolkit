@@ -6,13 +6,15 @@ feature, one ticket citing another's id). Group only the related ones — unrela
 their own `<id>-<slug>/` directories; say which. A related group shares one directory:
 `<parent-id>-<shared-slug>/` when the group hangs off one parent, else a sensible
 shared name; each file keeps its own `<id>-<slug>.TICKET.md` name on the shared slug base plus a
-differentiator (`…-widget`, `…-approvals`).
+differentiator (`…-widget`, `…-approvals`). Grouping on content alone, or under a name you made up,
+counts as doubt (SKILL.md step 4): ask, with your recommended grouping and name.
 
 A later solo fetch can join an existing group the same way (SKILL.md step 4 routes it there): give
 the newcomer its `## Ticket set` section and refresh every sibling's — membership, roles, order.
 
-Directly after the header, every file in the group gets a `## Ticket set` section, so a
-refine/plan session loading one ticket sees the whole picture:
+Directly after the header, every file in the group gets a `## Ticket set` section — the parent's
+ticket file included when it sits in the directory, with role `parent` and left out of the
+suggested execution order — so a refine/plan session loading one ticket sees the whole picture:
 
 - every member as a local file link with a one-line role (FE/BE, component, what it delivers) —
   mark the current ticket;
