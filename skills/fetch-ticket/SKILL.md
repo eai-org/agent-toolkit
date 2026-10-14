@@ -17,11 +17,11 @@ server — e.g. **Azure DevOps MCP** for ADO work items, **Atlassian MCP** for J
 MCP / `gh`** for GitHub issues. Use whichever equivalent tools are connected; tool name prefixes
 vary by config. Resolve once any handle the MCP needs (e.g. Atlassian `cloudId`, ADO project) and
 reuse it. A bare id that fits several trackers: the one the project's governing docs name, else
-the `Source` host of a ticket file in the planning directory, else the only connected tracker MCP;
-still open → ask, naming your pick. If no matching MCP is connected: a public ticket may be
-scraped from its URL as a fallback (you may still suggest installing the matching MCP when it
-would do the job better); a private one can't — the URL returns a login page, not the ticket — so
-stop and tell the user to install and authenticate the matching MCP server, then re-run.
+the `Source` host all ticket files in the planning directory share, else the only connected
+tracker MCP; still open → ask, naming your pick. If no matching MCP is connected: a public ticket
+may be scraped from its URL as a fallback (you may still suggest installing the matching MCP when
+it would do the job better); a private one can't — the URL returns a login page, not the ticket —
+so stop and tell the user to install and authenticate the matching MCP server, then re-run.
 
 ## Your task
 

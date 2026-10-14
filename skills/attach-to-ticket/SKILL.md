@@ -22,9 +22,9 @@ documents beyond the entries below and the REQUIREMENTS line of step 6.
    dropped by the user.
 2. **Resolve the ticket.** Named in the argument or already in the session (fetched, read,
    discussed) → proceed. Otherwise guess (branch name, latest planning directory) and confirm
-   before writing; nothing to guess from → ask. No `<id>-*` directory or ticket file under the
-   project's planning directory (the one its governing docs name or already in use, default
-   `.agents/plans/`) → stop and point to fetch-ticket; don't create one.
+   before writing; nothing to guess from → ask. No `<id>-*` directory, ticket file or REQUIREMENTS
+   file under the project's planning directory (the one its governing docs name or already in use,
+   default `.agents/plans/`) → stop and point to fetch-ticket; don't create one.
 3. **Pick the document** — unless the user names one: the ticket file, latest `-vN` (file or
    directory) when re-fetched, the `<id>-` one in a shared directory; the REQUIREMENTS file when no
    ticket file exists. Several candidates left → ask.
