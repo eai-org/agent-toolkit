@@ -58,19 +58,21 @@ command. Fix what this task broke; a failure that predates it or lands outside i
 reported, never fixed silently. A *Done when* or AC only a human can check is handed to the user
 as the exact steps to perform, never run by proxy or claimed.
 
-Done when both pass, or every remaining failure is reported with why it stands.
+Done when both pass or are handed to the user, or every remaining failure is reported with why it
+stands.
 
 ## Close
 
 Tick the task `- [ ]` → `- [x]`, plus each acceptance criterion it *Satisfies* whose every
 satisfying task is now ticked — the plan's only edits, made once verification passed or every
 remaining failure is reported as predating the task or outside its scope; name the ACs still
-partly open. A manual-only AC stays unticked and is listed as pending the user's check, even when
-its tasks are ticked. Then print the files touched, any deviation logged, and the task's *Commit*
-subject (absent → propose one in the repo's style) to commit once the change is reviewed. Finally
-hand off the next unticked task as a single copy-pasteable launch command — session name and prompt
-combined, in the launch syntax of the agent tool in use (vendor-agnostic — `claude` below is only
-the example; `<slug>` is the plan filename without id prefix or extension):
+partly open. A check handed to the user never holds the task's tick back, while a manual-only AC
+stays unticked even when its tasks are ticked; both are listed as pending the user's check. Then
+print the files touched, any deviation logged, and the task's *Commit* subject (absent → propose
+one in the repo's style) to commit once the change is reviewed. Finally hand off the next unticked
+task as a single copy-pasteable launch command — session name and prompt combined, in the launch
+syntax of the agent tool in use (vendor-agnostic — `claude` below is only the example; `<slug>` is
+the plan filename without id prefix or extension):
 
 ```
 claude --name execute-tasks-<slug> "/execute-plan-tasks <plan-path> <next-task-id>"
@@ -87,10 +89,12 @@ OR /clear and run:
 
 When the finished task completes its group, say so first: the group is one PR, so its tasks get
 committed and reviewed before the next group starts. When available, hand off `/self-review`, then
-the next group's first task. When no task is left, say the plan is done instead of handing off.
+the next group's first task. When no task is left, say the plan is done in place of the next-task
+commands.
 
-Done when the touched files, the commit subject, the checks pending the user and either both
-next-task commands or the plan-complete line are printed.
+Done when the touched files, the commit subject, the checks pending the user, the `/self-review`
+hand-off when a group completed and it is available, and either both next-task commands or the
+plan-complete line are printed.
 
 ## Boundaries
 

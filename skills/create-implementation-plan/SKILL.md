@@ -118,8 +118,9 @@ Structure — five parts:
    check of a known fact is fine; open-ended investigation is not.
 4. **Acceptance criteria** — flat `- [ ] AC-n` checklist the implementation must satisfy, copied
    from the requirements' AC section. If unnumbered, number them (`AC-1`, …). Each references the
-   step number(s) that satisfy it (e.g. "AC-3 → steps 4, 7"). Note any AC that needs manual
-   verification only. The execution session uses this as its done-check and ticks these.
+   step number(s) that satisfy it (e.g. "AC-3 → steps 4, 7"). Tag any AC that needs manual
+   verification only `(manual — leave unticked, report as pending)`. The execution session uses
+   this as its done-check and ticks the rest.
 5. **Decisions log** — a standing instruction copied into the plan for the execution session:
    "When a settled decision deviates from or extends this plan, append one line — the decision
    and its why — to `<id>-<slug>.DECISIONS.md` beside this plan, the moment it's settled." Without
