@@ -41,7 +41,7 @@ Snapshot the dirty files, so the final report can name every file the run change
 without `-w` writes nothing):
 
 ```bash
-git ls-files -mo --exclude-standard | while read -r f; do echo "$(git hash-object "$f" 2>/dev/null) $f"; done > "$TMPDIR/nx-checks-before.txt"
+git ls-files -z -mo --exclude-standard | while IFS= read -r -d '' f; do echo "$(git hash-object "$f" 2>/dev/null) $f"; done > "${TMPDIR:-/tmp}/nx-checks-before.txt"
 ```
 
 ### Affected base
@@ -184,8 +184,8 @@ End with:
   projects), or each failing `project:target` with its cause, plus any flaky `project:target`;
 - every file the run changed: hand-fixed (from your own edits — file plus one line on what and
   why) and tool-applied (lint `--fix`, `format:write` — every other file that differs or is new
-  when the Setup snapshot command is re-run into `$TMPDIR/nx-checks-after.txt` and the two files
-  are diffed).
+  when the Setup snapshot command is re-run into `${TMPDIR:-/tmp}/nx-checks-after.txt` and the
+  two files are diffed).
 
 Never report a bare "checks passed": an unlisted failure, skipped target or unmentioned edit reads
 as green and the caller can't act on it.
