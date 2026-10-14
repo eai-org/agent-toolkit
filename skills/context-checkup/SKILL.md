@@ -43,9 +43,9 @@ Mechanics below are one agent's (settings keys, `~/.claude` paths); on another a
 item to its equivalent or ask.
 
 **0. Verify tool search is on first.** Evidence is the session itself: MCP tools listed as deferred
-(names only, searched on demand) means on; full schemas in context means off, and every "names are
-cheap" conclusion flips. Only then read the env var or setting (`ENABLE_TOOL_SEARCH`, incl.
-`auto:N` threshold modes) to explain why.
+(names only, searched on demand) means on, even once a search has pulled some schemas in; full
+schemas loaded from the start means off, and every "names are cheap" conclusion flips. Only then
+read the env var or setting (`ENABLE_TOOL_SEARCH`, incl. `auto:N` threshold modes) to explain why.
 
 **1. Always-on instruction files.** Measure the entry-file chain (`CLAUDE.md`, `.claude/CLAUDE.md`,
 `CLAUDE.local.md`, or `AGENTS.md` and `.claude/AGENTS.md` when read natively) in the project and
