@@ -1,11 +1,11 @@
 ---
 name: check-ticket-implementation
-description: Check how much of a ticket is already implemented — split it into requirement blocks, judge each against the code, and save a human-readable TICKET-STATUS report in the planning dir.
+description: Check how much of a ticket is already implemented and save a per-requirement status report.
 disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.2"
+  version: "1.3"
 ---
 
 # Check ticket implementation
@@ -25,17 +25,22 @@ context. Without subagent support, invoke fetch-ticket inline.
 
 The **ticket text is what gets annotated** — its `.REQUIREMENTS.md` (same dir and `<id>-<slug>`
 base — a shared dir may hold siblings') may be read as context for intent, never annotated in its
-place. Inspect downloaded attachments and design frames when they bear on a requirement being
-judged.
+place. The ticket text stays the contract: when the requirements record an Override that changes a
+block's meaning, the verdict follows the text and the note names the Override and its source.
+Inspect downloaded attachments and design frames when they bear on a requirement being judged.
 
 **Evidence base**: the current working tree, uncommitted changes included — unless the invocation
-names something else (a branch, PR, commit range); then judge against that.
+names something else (a branch, PR, commit range); then judge against that, read without moving
+the working tree.
 
 ## Blocks
 
 Turn every requirement-bearing statement into a block: description, acceptance criteria, and
 comment statements that add or change requirements (attribute those, e.g. "from comment by X").
-Drop metadata, related-ticket lists, and chatty comments — the full text stays in the `.TICKET.md`.
+A later statement that changes an earlier one supersedes it: one block, quoting the latest text,
+with the superseded text and its source in the note. Drop metadata and related-ticket lists; a
+comment set aside as chatty goes to the `## Not judged` appendix — the full text stays in the
+`.TICKET.md`.
 
 - One block = one independently verifiable requirement, quoted **verbatim** under a short generated
   title, preserving ticket order.
@@ -54,6 +59,9 @@ say why, e.g. a manual deploy step).
 - Verify by **reading**: search and read the code paths relevant to each block. When reading alone
   can't settle a verdict, say so in the note instead of guessing. Anything beyond reading —
   executing code, driving the app or a browser — only with the user's ok.
+- Built but contradicting the text (a different rule, value or behavior) is 🟥 NOT DONE, the note
+  opening with what was built instead; 🟡 is reserved for a requirement that is incomplete, never
+  for one that is wrong.
 - Every block gets a 1–2 sentence note and 1–3 `file:line` evidence refs showing where it was
   checked; for 🟡/🟥 the note must state what's missing or remaining.
 
@@ -88,6 +96,9 @@ Needs attention: <titles of the 🟡/🟥 blocks>
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
+
+End the file with a `## Not judged` appendix, opened by a one-liner saying it is tracing only: one
+line per comment set aside, with the reason.
 
 ## Wrap up
 

@@ -102,14 +102,14 @@ Review helpers that check the codebase while assisting with code or ticket revie
   maintainer deciding whether it merges: every prior comment walked, every claim verified, then
   comment, approve or fix the contributor's branch on your go-ahead.
 - **[review-ticket](./skills/review-ticket/SKILL.md)** — triage a ticket or ticket set before
-  anyone picks it up, saving a review with a feature walkthrough and the decisions to raise with
-  the team.
+  anyone picks it up, saving a review with a feature walkthrough and the questions worth raising
+  with the team.
 - **[verify-understanding](./skills/verify-understanding/SKILL.md)** — explain the feature back
-  in your own words before building it: a teach-back conversation over a saved ticket review that
+  in your own words before building it: a teach-back conversation over its ticket review that
   probes and corrects until you are ready to implement.
 - **[check-ticket-implementation](./skills/check-ticket-implementation/SKILL.md)** — check how
-  much of a ticket is already implemented in the code, marking each requirement as done, partial,
-  or not done in a human-readable status report.
+  much of a ticket is already implemented in the code, saving a per-requirement status report
+  (done, partial, not done, or built wrong).
 - **[fresh-eyes-review](./skills/fresh-eyes-review/SKILL.md)** — let an agent with a fresh
   perspective review a changeset and report its findings back to the main session. [Read more about fresh-eyes-review](https://medium.com/engineering-in-the-age-of-ai/more-powerful-ai-reviews-with-fresh-eyes-bfad221748c0)
 - **[self-review](./skills/self-review/SKILL.md)** — get your changeset merge-ready before
@@ -272,9 +272,11 @@ flowchart TD
   maintainer_review --> simple
   check_impl --> simple
   manual --> simple
-  review_ticket --> verify_understanding["verify-understanding"]
-  review_ticket --> refine
-  verify_understanding --> refine
+  review_ticket -. when available .-> verify_understanding["verify-understanding"]
+  review_ticket -. when available .-> refine
+  verify_understanding -. when available .-> refine
+  verify_understanding -. when available .-> review_ticket
+  review_ticket -. when available .-> check_impl
   check_impl["check-ticket-implementation"] --> fetch_ticket
   refine --> manual["create-manual-test-instructions"]
   refine --> plan["create-implementation-plan"]

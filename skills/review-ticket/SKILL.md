@@ -1,11 +1,11 @@
 ---
 name: review-ticket
-description: Triage a ticket or ticket set before work starts — compare it against the codebase and save a review covering verdict, feature walkthrough, and only the high-cost questions worth raising.
+description: Triage a ticket or ticket set before work starts, saving a review with the questions worth raising.
 disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.5"
+  version: "1.6"
 ---
 
 # Review ticket
@@ -23,7 +23,9 @@ asking whoever owns the requirements.
   running [fetch-ticket](../fetch-ticket/SKILL.md) per its
   [delegate.md](../fetch-ticket/delegate.md), so the tickets land on disk without the fetch
   bloating this session's context, then review the local files. No subagents in the harness → run
-  fetch-ticket inline.
+  fetch-ticket inline. A non-empty warn list stops for one question: supply the files now
+  (`/attach-to-ticket` when installed) or review without them; the review then names each missing
+  attachment as unchecked material.
 
 If the input is ambiguous or unrecognized, ask rather than guess.
 
@@ -50,6 +52,13 @@ step. Settle a specific doubt as cheaply as possible, and only to answer it:
 Unsure the extra context is worth it? Ask. Stop once the doubt is answered; never recurse the
 related-ticket graph — except to kill a candidate question (see the question bar). Context never
 widens scope: the review covers only the input tickets, never a parent's other children.
+
+## An earlier review
+
+Look for a `.TICKET-REVIEW.md` of the same ticket or set. Its shipped questions are the first
+candidates: settle each against the ticket text as fetched now (comments included) and its
+Challenge log, then run the normal bar. Never copy its verdict or walkthrough; the ticket files and
+the code win.
 
 ## Compare against the codebase
 
@@ -83,6 +92,11 @@ didn't follow into the challenger prompt.
 thorough. Zero candidates → zero challengers.
 
 ## The challenge
+
+Before the first challenger, resolve every repo the feature spans, as named by the tickets and
+the project's governing docs, the other side of each integration included (a backend ticket's
+frontend, an API's clients). Any that can't be located: one batched ask for their paths; a repo
+the user skips is listed in the prompt as unavailable.
 
 Each surviving candidate gets one challenger — a subagent or equivalent isolated context, fresh
 per question, spawned in parallel, strictly read-only — prompted from the template in
@@ -152,7 +166,7 @@ named only by a stand-in the reader hasn't seen.
    Actually invoke [use-conversational-language](../use-conversational-language/SKILL.md) and
    follow it before writing the questions or handoff messages — reciting its rules from memory
    does not count; runs with neither skip it. Not installed: write plain prose instead, no dashes
-   and no AI tells. When nothing survived, print only the verdict line plus any handoffs.
+   and no AI tells. Nothing survived: this part holds the handoffs only, or is left out.
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -179,9 +193,12 @@ the user sees, bold, in parentheses: "the client area (**klantportaal**)".
 
 Print the review and always save it too:
 
-- **Set mode**: `<id>-<slug>.TICKET-REVIEW.md` in the set directory, named after the feature/set,
-  so it sorts next to the `.TICKET.md` files.
-- **Single ticket**: `<id>-<slug>.TICKET-REVIEW.md` next to its `.TICKET.md`.
+- **Set mode**: `<dir-name>.TICKET-REVIEW.md` in the set directory, named after it (the
+  directory carries the parent id when there is one), so it sorts next to the `.TICKET.md` files.
+- **Single ticket**: `<id>-<slug>.TICKET-REVIEW.md` next to its `.TICKET.md`, under the ticket
+  file's current base (a `-v2` ticket gets a `-v2` review).
+
+An earlier review of the same base is replaced, after saying so.
 
 The file must stand alone: carry relative links to each reviewed ticket file and to the parent
 (its local file when on disk, else its tracker URL), so a later session finds everything from the
@@ -192,8 +209,19 @@ one-liner saying it's tracing only and safe to ignore: each killed question (a r
 part included) with the answer that settled it and its citation, and each cheap detail the
 question bar dropped, with the default assumed.
 
-Close by pointing at `/verify-understanding <review-file>`; with no blockers, also
-`/refine-ticket <ticket-file>` per ticket, in the set's suggested execution order.
+Close by handing off each next phase as a copy-pasteable launch command in the syntax of the agent
+tool in use (`claude` is only the example), session named `<phase>-<slug>`. A line names a skill
+only when that skill is installed; the refine lines only with no blockers, one per ticket in the
+set's suggested execution order:
+
+```
+claude --name verify-<slug> "/verify-understanding <review-file>"
+claude --name refine-<slug> "/refine-ticket <ticket-file>"
+```
+
+Then the alternative: the tool's clear command (`/clear` is only the example) followed by the same
+slash command. When Today already seems to deliver the After, also suggest
+`/check-ticket-implementation <ticket-file>`, only when that skill is installed.
 
 ## Boundaries
 
@@ -201,4 +229,4 @@ Close by pointing at `/verify-understanding <review-file>`; with no blockers, al
   source file. The only files written are fetch-ticket's outputs and the `.TICKET-REVIEW.md`.
 - **Non-interactive on requirements.** The questions are the output: never grill the user to
   resolve them. Ask the user only operational things (an ambiguous input, a fetch that needs
-  input, the set-scope call), never requirement decisions.
+  input, the set-scope call, missing repo paths), never requirement decisions.
