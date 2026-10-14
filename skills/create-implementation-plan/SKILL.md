@@ -3,7 +3,7 @@ name: create-implementation-plan
 description: Turn a refined requirements document into a structured implementation PLAN.md a fresh session can execute. Planning only — decides the "how", not the "what". Invoke manually only.
 license: MIT
 metadata:
-  version: "1.13"
+  version: "1.14"
 ---
 
 # Create Implementation Plan
@@ -27,7 +27,9 @@ user — interviewing relentlessly to resolve anything the code can't settle —
 design, not a separate phase that runs before planning starts.
 
 1. **Read the requirements document** the user references (e.g. a `*.REQUIREMENTS.md`). If the path
-   is ambiguous, ask.
+   is ambiguous, ask. Its Open questions are forks to grill in step 3, each with its tentative
+   answer as the recommendation; none stays open in the plan. Its Overrides carry over into part
+   2's Overrides.
 
 2. **Verify against the actual codebase.** Open the files the requirements cite and confirm the
    prior-art references still hold; note anything that has shifted since the requirements were
@@ -63,13 +65,14 @@ design, not a separate phase that runs before planning starts.
    code, stop and resolve it with the user before continuing — don't guess, and don't defer the
    decision into the plan. Interview relentlessly until you reach shared understanding, walking each
    branch of the decision tree and resolving dependencies between decisions:
-   - One question at a time.
-   - Every question carries your recommended answer, worded via `explain-in-simple-language`
-     when available.
-   - If a question can be answered by exploring the codebase, explore instead of asking.
+   - One question at a time, each with your recommended answer, worded so that "yes" accepts it,
+     via `explain-in-simple-language` when available.
+   - Facts are yours to find (codebase, docs, tool output): look them up, never ask. Decisions are
+     the user's: put each one to them and wait.
    - Cover every gap, ambiguity, or inconsistency surfaced while reading, verifying, and designing.
 
-4. **Write the plan** (below) — once the approach is settled and no open question remains.
+4. **Write the plan** (below) — once the approach is settled, no open question remains, every step
+   serves an AC or a convention, and identifiers and signatures match across steps.
 
 ## Plan file
 
@@ -82,21 +85,24 @@ the plan is the contract, not a diff against the requirements.
 
 Create the file in the **same directory as the requirements document**, named by replacing
 `.REQUIREMENTS` with `.PLAN` (e.g. `FOO.REQUIREMENTS.md` → `FOO.PLAN.md`). If the input doesn't
-follow that convention, append `.PLAN` before `.md`.
+follow that convention, append `.PLAN` before `.md`. `<id>-<slug>` is the plan filename without
+`.PLAN.md` (`123-report-approval`); the id is absent when the task has no ticket.
 
 Structure — five parts:
 
 1. **Summary** — 1–3 sentences: what this plan implements and the overall shape of the change (which
    areas are touched).
 2. **Conventions and overrides** — two distinct kinds of cross-cutting context:
-   - **Conventions**: rules that apply across all steps — naming patterns, user-facing string rules,
+   - **Conventions**: open with the commit the citations were verified at (short hash, dirty-tree
+     note); then rules that apply across all steps — naming patterns, user-facing string rules,
      the testing approach (what to test, following existing test conventions in the codebase). Copy
      from the requirements verbatim where applicable.
    - **Overrides**: one-time corrections where the requirements deliberately diverge from a default
      or prior assumption. Each entry: what was assumed, what the actual requirement is, and why. The
      execution session applies each only where it fits.
 3. **Steps** — ordered implementation steps. Each is concrete enough to act on but doesn't dictate
-   every line. Each step has:
+   every line, and is one change a fresh session finishes with context to spare; a bigger change
+   is several steps. Each step has:
    - **What** — a short imperative.
    - **Where** — concrete file paths and identifiers.
    - **How** — the approach in prose. Reuse decisions go here, with `path:line-range` citations for
@@ -110,13 +116,14 @@ Structure — five parts:
    restating what step 2 did. Step 1 must never be discovery work ("find the field names", "explore
    where this lives") — discovery already happened in the steps above. A small deterministic sanity
    check of a known fact is fine; open-ended investigation is not.
-4. **Acceptance criteria** — flat checklist the implementation must satisfy, copied from the
-   requirements' AC section. If unnumbered, number them (`AC-1`, …). Each references the step
-   number(s) that satisfy it (e.g. "AC-3 → steps 4, 7"). Note any AC that needs manual verification
-   only. The execution session uses this as its done-check.
+4. **Acceptance criteria** — flat `- [ ] AC-n` checklist the implementation must satisfy, copied
+   from the requirements' AC section. If unnumbered, number them (`AC-1`, …). Each references the
+   step number(s) that satisfy it (e.g. "AC-3 → steps 4, 7"). Tag any AC that needs manual
+   verification only `(manual — leave unticked, report as pending)`. The execution session uses
+   this as its done-check and ticks the rest.
 5. **Decisions log** — a standing instruction copied into the plan for the execution session:
    "When a settled decision deviates from or extends this plan, append one line — the decision
-   and its why — to `<slug>.DECISIONS.md` beside this plan, the moment it's settled." Without
+   and its why — to `<id>-<slug>.DECISIONS.md` beside this plan, the moment it's settled." Without
    it, the why behind mid-implementation pivots is lost to later handover and review.
 
 The plan must capture **all the thinking** — every decision needed to implement the feature, so the
@@ -141,11 +148,10 @@ a clean context. Use the agent tool's launch syntax (`claude` below is only the 
 the session after `<slug>`, the plan filename's slug (without id prefix or extension), so the
 phase is recognizable in the session list:
 
-1. **Execute the plan** — reads **only the plan file**, implements it, then runs the project's
-   validation (lint, tests, build):
+1. **Execute the plan** — reads **only the plan file**:
 
    ```
-   claude --name execute-plan-report-approval "Execute the plan .agents/plans/123-report-approval/123-report-approval.PLAN.md"
+   claude --name execute-plan-report-approval "Execute the plan .agents/plans/123-report-approval/123-report-approval.PLAN.md, then run the project's validation (lint, tests, build); report, never commit"
    ```
 
 2. **Split the plan into tasks** first, when `split-plan-tasks` is available, so the work lands in
@@ -168,7 +174,7 @@ tool's clear command):
 OR /clear and run one of:
 
 ```
-Execute the plan .agents/plans/123-report-approval/123-report-approval.PLAN.md
+Execute the plan .agents/plans/123-report-approval/123-report-approval.PLAN.md, then run the project's validation (lint, tests, build); report, never commit
 ```
 
 ```
