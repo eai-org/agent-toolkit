@@ -54,7 +54,7 @@ comment's timestamp, which would skip anything posted while the run was working.
 Then, still on disk, drop bots (the forge's account-type flag, or a `[bot]`-style handle), deleted
 accounts (no author on the comment, or the forge's placeholder such as GitHub's `ghost`), comments
 created after the fetch started (the next refresh takes them) and, on a refresh, comments created
-before the checkpoint (edits of old ones; the doc already holds their evidence); tally comments
+at or before the checkpoint (edits of old ones; the doc already has their evidence); tally comments
 per author and split the file into one per author, oldest first, keeping per comment only what
 extraction needs (id, URL, created date, path, body, author) — hunks and link blobs go, so an
 author's file stays small. Nothing left to process → print step 6's counts, leave the doc
