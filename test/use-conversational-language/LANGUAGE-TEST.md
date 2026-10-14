@@ -17,12 +17,12 @@ human-written, and training the skill on what fails. Repo-internal: `test/` is n
   Generator prompt: "Read `skills/use-conversational-language/SKILL.md` and follow it. \<brief\>.
   Return only the text itself — no preamble, no explanation."
 - **Judges** — per text, one blind headless call per panel model. Default panel, overridable per
-  run: `claude-fable-*`, `claude-opus-*`, `claude-sonnet-*` (replace `*` with latest version).
-  Each runs from a fresh temp dir with
+  run: the aliases `fable opus sonnet`, each resolving to its family's current model. Each runs
+  from a fresh temp dir with
   `--setting-sources ""` (verified: loads no user/project CLAUDE.md, no memory):
 
   ```sh
-  cd "$(mktemp -d)" && claude -p --model <model-id> --setting-sources "" "<judge prompt>"
+  cd "$(mktemp -d)" && claude -p --model <model> --setting-sources "" "<judge prompt>"
   ```
 
   Judge prompt (fixed; `{context}` from the scenario, `{text}` the generated text):
@@ -75,7 +75,7 @@ session's scratch space. Per run, max 3 iterations:
    compact-skill-creator). **Auto-apply exception**: for these runs the skill owner pre-authorizes
    applying without per-edit approval — self-improve's confirm-first rule is waived here, and only
    here. Never commit; the owner reviews the accumulated diff. On a run's first edit, bump the
-   skill's version once.
+   version per `docs/authoring-conventions.md` (not when the branch already raised it).
 6. Next iteration: regenerate every selected scenario with the updated skill (an edit for one
    genre can regress another), fresh generator, fresh judges.
 
@@ -84,10 +84,11 @@ After 3 iterations without a full pass: stop and report what still fails and why
 ## Run log
 
 Write `runs/<YYYY-MM-DD-HHmm>.md` (gitignored) via `./assemble-log.sh <run-dir> <log>`. It
-stitches, in order: `header.md` (skill version under test, panel, selected genres, per-iteration
-pass counts), the scenario set, per iteration and scenario the generated text and the verdicts
-with tells cited, `triage-iter<N>.md` (triage decision, any applied edit old → new), and
-`outcome.md` — all written by the orchestrator into the run dir.
+stitches, in order: `header.md` (skill version under test, panel with the id each alias resolved
+to at run start, one probe call per alias with the prompt "Reply with exactly your model id",
+selected genres, per-iteration pass counts), the scenario set, per iteration and scenario the
+generated text and the verdicts with tells cited, `triage-iter<N>.md` (triage decision, any
+applied edit old → new), and `outcome.md` — all written by the orchestrator into the run dir.
 
 ## Scenarios
 
@@ -116,3 +117,6 @@ Genre palette — id, judge-prompt `{context}`:
 - `standup` — "a written standup update in team chat"
 - `maintainer-reply` — "an open-source maintainer's reply to a bug report from an unknown user"
 - `approval-summary` — "an approving review summary on a colleague's pull request"
+- `report-back` — "a chat reply to a teammate who asked you to check something"; the brief has
+  a peer asking "is this a bug?" and the answer is "expected behaviour" with a one-sentence
+  mechanism
