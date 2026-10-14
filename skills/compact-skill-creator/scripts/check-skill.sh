@@ -8,7 +8,8 @@
 #
 # Usage: check-skill.sh <skill-dir>
 #   CHECK_SKILL_AS=<dir>  check a draft folder as if it were <dir> (the skill's real folder: name,
-#                         links and git versions are judged there).
+#                         links and git versions are judged there; a link may also resolve inside
+#                         the draft, for a file the draft adds).
 #   CHECK_DOC=<path>      check-doc.sh to use; default: ../../compact-docs-writer/scripts/check-doc.sh
 #                         relative to this script.
 # One line per failure, `file:line: message`; exit 1 when any was found, 2 on usage errors.
@@ -73,7 +74,7 @@ if [ "$flag" = "true" ] && [ "$(fm_value type)" != "flow" ]; then
 fi
 
 # Version at HEAD, at the merge base with the default branch, and in the working tree.
-version_of() { awk -v end="$fm_end" 'NR > 1 && NR < end && /^[[:space:]]+version:/ { v = $0; sub(/^[^:]*:[[:space:]]*/, "", v); gsub(/"/, "", v); print v; exit }'; }
+version_of() { awk 'NR == 1 { if ($0 != "---") exit; next } $0 == "---" { exit } /^[[:space:]]+version:/ { v = $0; sub(/^[^:]*:[[:space:]]*/, "", v); gsub(/"/, "", v); print v; exit }'; }
 if [ -d "$as" ] && top="$(git -C "$as" rev-parse --show-toplevel 2>/dev/null)"; then
   rel="${as#"$top"/}/SKILL.md"
   base_ref="$(git -C "$as" symbolic-ref -q --short refs/remotes/origin/HEAD 2>/dev/null || true)"

@@ -10,7 +10,10 @@
 # fixture under another name and checks it with CHECK_SKILL_AS pointing at the original;
 # `as-draft-new` and `as-draft-new-cfg` point CHECK_SKILL_AS at a folder that does not exist yet
 # (create mode), the latter proving the .editorconfig walk starts from that folder:
-# fixtures/.editorconfig sets 99, the repo root 100. Output lands in runs/<timestamp>/<case>.log.
+# fixtures/.editorconfig sets 99, the repo root 100. `as-draft-added` adds a linked file only the
+# draft holds. `version-shrunk` commits a skill in a throwaway repo under runs/, then drops
+# frontmatter lines in the working tree, so HEAD's version sits past the draft's closing `---`.
+# Output lands in runs/<timestamp>/<case>.log.
 # Exits non-zero if any case failed.
 
 set -u
@@ -35,7 +38,22 @@ as-draft|0|
 as-draft-new|0|
 as-draft-new-cfg|1|draft-new-cfg/SKILL.md:11: line is 100 characters, max 99
 brace-list|1|brace-list/SKILL.md:11: line is 70 characters, max 60
+md-off|0|
+double-backtick|0|
+as-draft-added|0|
+version-shrunk|0|version HEAD=1.0 merge-base(;)=1.0 working-tree=1.1
 '
+
+version_shrunk() {
+  local repo="$RUNS/version-repo" skill="$RUNS/version-repo/version-shrunk"
+  mkdir -p "$skill" || return 1
+  git -C "$repo" init -q --template= || return 1
+  [ "$(git -C "$repo" rev-parse --show-toplevel)" = "$(cd "$repo" && pwd -P)" ] || return 1
+  printf -- '---\nname: version-shrunk\ndescription: A fixture skill.\nlicense: MIT\ntype: flow\nmetadata:\n  version: "1.0"\n---\n\n# Version shrunk\n' >"$skill/SKILL.md"
+  git -C "$repo" add -A && git -C "$repo" -c user.name=t -c user.email=t@t commit -qm init || return 1
+  printf -- '---\nname: version-shrunk\ndescription: A fixture skill.\nmetadata:\n  version: "1.1"\n---\n\n# Version shrunk\n' >"$skill/SKILL.md"
+  bash "$CHECK_SKILL" "$skill"
+}
 
 failed=0
 run_case() {
@@ -49,6 +67,13 @@ run_case() {
   elif [ "$name" = "as-draft-new-cfg" ]; then
     cp -R "$FIXTURES/long-line" "$RUNS/draft-new-cfg"
     CHECK_SKILL_AS="$FIXTURES/not-created-yet/long-line" bash "$CHECK_SKILL" "$RUNS/draft-new-cfg" >"$log" 2>&1
+  elif [ "$name" = "as-draft-added" ]; then
+    cp -R "$FIXTURES/clean" "$RUNS/draft-added"
+    printf '# Added\n' >"$RUNS/draft-added/added.md"
+    printf '\nSee [added.md](added.md).\n' >>"$RUNS/draft-added/SKILL.md"
+    CHECK_SKILL_AS="$FIXTURES/clean" bash "$CHECK_SKILL" "$RUNS/draft-added" >"$log" 2>&1
+  elif [ "$name" = "version-shrunk" ]; then
+    version_shrunk >"$log" 2>&1
   else
     bash "$CHECK_SKILL" "$FIXTURES/$name" >"$log" 2>&1
   fi

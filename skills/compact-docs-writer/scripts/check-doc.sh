@@ -10,7 +10,8 @@
 #
 # Usage: check-doc.sh <file.md> [...]
 #   CHECK_DOC_AS=<path>  check a single file as if it lived at <path> (a draft in a scratch dir:
-#                        .editorconfig lookup and link resolution use <path>'s directory).
+#                        .editorconfig lookup uses <path>'s directory; a link resolves beside
+#                        <path> or beside the draft, so a file new in the draft counts).
 # One line per failure, `file:line: message`; exit 1 when any was found, 2 on usage errors.
 
 set -u
@@ -32,7 +33,8 @@ if [ "${#probe}" -ne 1 ]; then
 fi
 
 # Prints the max_line_length that applies to .md files, from the nearest .editorconfig upward
-# (sections [*], [*.md] or a brace list naming md); stops at a file declaring root = true.
+# (sections [*], [*.md] or a brace list naming md); stops at a file declaring root = true, and
+# at a value of `off`, which prints nothing.
 max_line_length() {
   local dir="$1" cfg out
   while :; do
@@ -45,12 +47,12 @@ max_line_length() {
         }
         tolower($0) ~ /^[[:space:]]*root[[:space:]]*=[[:space:]]*true/ { root = 1 }
         on && tolower($0) ~ /^[[:space:]]*max_line_length[[:space:]]*=/ {
-          v = $0; sub(/^[^=]*=[[:space:]]*/, "", v); sub(/[[:space:]]*$/, "", v); val = v
+          v = $0; sub(/^[^=]*=[[:space:]]*/, "", v); sub(/[[:space:]]*$/, "", v); val = tolower(v)
         }
-        END { if (val != "" && val != "off") print val; if (root) print "root" }
+        END { if (val != "") print val; if (root) print "root" }
       ' "$cfg")"
       case "$out" in
-        root) return ;;
+        root|off|off*root) return ;;
         *root) printf '%s\n' "${out%root}"; return ;;
         "") ;;
         *) printf '%s\n' "$out"; return ;;
@@ -61,17 +63,44 @@ max_line_length() {
   done
 }
 
+# Sets `masked` to $1 with every code span, delimiters included, replaced by \x01 characters of
+# equal count. A span closes on a backtick run of the same length as its opener; a run left
+# unclosed is literal text.
+mask_spans() {
+  local s="$1" len="${#1}" i=0 j k run pad
+  masked=""
+  case "$s" in *\`*) ;; *) masked="$s"; return ;; esac
+  while [ "$i" -lt "$len" ]; do
+    if [ "${s:i:1}" != '`' ]; then masked+="${s:i:1}"; i=$((i + 1)); continue; fi
+    run=0; while [ "${s:i+run:1}" = '`' ]; do run=$((run + 1)); done
+    j=$((i + run))
+    while [ "$j" -lt "$len" ]; do
+      if [ "${s:j:1}" != '`' ]; then j=$((j + 1)); continue; fi
+      k=0; while [ "${s:j+k:1}" = '`' ]; do k=$((k + 1)); done
+      [ "$k" -eq "$run" ] && break
+      j=$((j + k))
+    done
+    if [ "$j" -lt "$len" ]; then
+      printf -v pad '%*s' $((j + run - i)) ''
+      masked+="${pad// /$'\x01'}"; i=$((j + run))
+    else
+      masked+="${s:i:run}"; i=$((i + run))
+    fi
+  done
+}
+
 fail=0
 report() { printf '%s:%s: %s\n' "$1" "$2" "$3"; fail=1; }
 
 check_file() {
-  local f="$1" as="${CHECK_DOC_AS:-$1}" dir cfgdir max line n=0 fence_re="" in_fm=0 rest target prefix ticks
+  local f="$1" as="${CHECK_DOC_AS:-$1}" dir draftdir cfgdir max line n=0 fence_re="" in_fm=0 rest target masked
   [ -f "$f" ] || { echo "check-doc: no such file: $f" >&2; fail=1; return; }
   # A target folder that does not exist yet (a draft for a new skill) still names where the
-  # .editorconfig lookup starts; links then resolve beside the draft itself.
+  # .editorconfig lookup starts.
   cfgdir="$(dirname "$as")"
   case "$cfgdir" in /*) ;; *) cfgdir="$PWD/$cfgdir" ;; esac
-  dir="$(cd "$cfgdir" 2>/dev/null && pwd -P)" || dir="$(cd "$(dirname "$f")" && pwd -P)"
+  draftdir="$(cd "$(dirname "$f")" && pwd -P)"
+  dir="$(cd "$cfgdir" 2>/dev/null && pwd -P)" || dir="$draftdir"
   max="$(max_line_length "$cfgdir")"
   while IFS= read -r line || [ -n "$line" ]; do
     n=$((n + 1))
@@ -86,14 +115,14 @@ check_file() {
       continue
     fi
 
-    rest="$line"
-    while [[ "$rest" =~ \`[^\`]*\` ]]; do rest="${rest/"${BASH_REMATCH[0]}"/}"; done
+    mask_spans "$line"
+    rest="$masked"
     while [[ "$rest" =~ \]\(([^\)[:space:]]+)\) ]]; do
       target="${BASH_REMATCH[1]}"
       rest="${rest#*"${BASH_REMATCH[0]}"}"
       case "$target" in *://*|mailto:*|\#*) continue ;; esac
       target="${target%%#*}"
-      [ -e "$dir/$target" ] || report "$f" "$n" "dangling link: $target"
+      [ -e "$dir/$target" ] || [ -e "$draftdir/$target" ] || report "$f" "$n" "dangling link: $target"
     done
 
     [ -n "$max" ] && [ "${#line}" -gt "$max" ] || continue
@@ -101,9 +130,7 @@ check_file() {
       *://*|*']('*) continue ;;
     esac
     [[ "$line" =~ ^[[:space:]]*\| ]] && continue
-    prefix="${line:0:$max}"
-    ticks="${prefix//[^\`]/}"
-    [ $(( ${#ticks} % 2 )) -eq 1 ] && continue
+    [ "${masked:$max:1}" = $'\x01' ] && continue
     report "$f" "$n" "line is ${#line} characters, max $max"
   done < "$f"
 }
