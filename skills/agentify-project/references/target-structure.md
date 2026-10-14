@@ -25,19 +25,18 @@ markdown links never import; to mention an `@path` literally, wrap it in backtic
 
 Claude Code v2.1.277+ reads AGENTS.md itself (root and `.claude/AGENTS.md` at start, a
 subdirectory's when it opens a file there), so the default is **no CLAUDE.md**. Any `CLAUDE.md`,
-`.claude/CLAUDE.md` or `CLAUDE.local.md` in the working directory or above makes Claude read
-those **instead** — every AGENTS.md, nested ones included (`~/.claude/CLAUDE.md` and
-`.claude/rules/` load alongside either). Keep or create a CLAUDE.md holding `@AGENTS.md` only
-when genuinely Claude-only instructions must live below the import (official pattern — preserve
-them there instead of force-moving), some sessions cannot load AGENTS.md (Claude Code < 2.1.281
-on Bedrock, Vertex AI, a gateway or with telemetry off, the built-in `agents-md` plugin
-(`cc-plugin-agents-md@builtin` from v2.1.285) disabled, **Project instructions** set to
-`claude-md`), or a CLAUDE.md above the repo stays and would shadow AGENTS.md; the import never
-loads AGENTS.md twice. A root CLAUDE.md kept for either reason
-shadows nested AGENTS.md files too, so every nested entry file then keeps its own `@AGENTS.md`
-pointer. A CLAUDE.md that only says in words to read AGENTS.md becomes the import or is deleted. A
-CLAUDE.md→AGENTS.md symlink also works but needs Developer Mode on Windows and forbids
-Claude-specific additions. `CLAUDE.local.md` is gitignored (per matrix) yet still shadows
+`.claude/CLAUDE.md` or `CLAUDE.local.md` in the working directory or above makes Claude read those
+**instead** — every AGENTS.md, nested ones included (`~/.claude/CLAUDE.md` and `.claude/rules/` load
+alongside either). Keep or create a CLAUDE.md holding `@AGENTS.md` only when genuinely Claude-only
+instructions must live below the import (official pattern — preserve them there instead of
+force-moving), some sessions cannot load AGENTS.md (Claude Code < 2.1.281 on Bedrock, Vertex AI, a
+gateway or with telemetry off, the built-in `agents-md` plugin (`cc-plugin-agents-md@builtin` from
+v2.1.285) disabled, **Project instructions** set to `claude-md`), or a CLAUDE.md above the repo
+stays and would shadow AGENTS.md; the import never loads AGENTS.md twice. A root CLAUDE.md kept for
+any of these reasons shadows nested AGENTS.md files too, so every nested entry file then keeps its
+own `@AGENTS.md` pointer. A CLAUDE.md that only says in words to read AGENTS.md becomes the import
+or is deleted. A CLAUDE.md→AGENTS.md symlink also works but needs Developer Mode on Windows and
+forbids Claude-specific additions. `CLAUDE.local.md` is gitignored (per matrix) yet still shadows
 AGENTS.md: the onboarding doc (§8) tells developers to open theirs with `@AGENTS.md`, or to set
 **Project instructions** to `claude-md-and-agents-md`.
 

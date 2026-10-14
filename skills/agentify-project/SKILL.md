@@ -43,8 +43,8 @@ Invocation: `/agentify-project [audit] [path]`
   the restructure reviewable as an isolated diff.
 - Detect nested entry files (monorepo packages).
 - Report any `CLAUDE.md`, `.claude/CLAUDE.md` or `CLAUDE.local.md` in a parent directory of the
-  repo: with no CLAUDE.md pointer in the repo it makes Claude Code skip AGENTS.md
-  (target-structure §2), so the pointer becomes a menu item.
+  repo, except the user-level `~/.claude/CLAUDE.md`: with no CLAUDE.md pointer in the repo it
+  makes Claude Code skip AGENTS.md (target-structure §2), so the pointer becomes a menu item.
 - Diff duplicated entry files (agents without include syntax) against AGENTS.md; divergence
   becomes a re-sync menu item — the one artifact class guaranteed to drift.
 - Check every path and link in the entry files and index resolves; a dead one is a menu item (fix
@@ -84,12 +84,11 @@ Common case (CLAUDE.md exists, no AGENTS.md): rename it to AGENTS.md with a plai
 (no `git mv`; git detects the rename at commit time) and recreate CLAUDE.md as `@AGENTS.md` only
 when §2 calls for one (a genuinely Claude-specific remainder, sessions that cannot load AGENTS.md,
 or a parent-directory CLAUDE.md that stays); otherwise it stays deleted. AGENTS.md-only and
-third-party-only repos: same
-invariant — pointers only for the third-party agents detected, never a bare CLAUDE.md; seed
-AGENTS.md from whatever entry-file content exists. Greenfield (no entry file of any agent):
-minimal seed from cheap reconnaissance (README, package manifest / build files) — one-liner,
-**verified** build/test/run commands, planning-dir convention; deep doc generation is out of
-scope, the structure grows later via `/self-improve` and `/memory-doctor`.
+third-party-only repos: same invariant — pointers only for the third-party agents detected, never
+a bare CLAUDE.md; seed AGENTS.md from whatever entry-file content exists. Greenfield (no entry
+file of any agent): minimal seed from cheap reconnaissance (README, package manifest / build
+files) — one-liner, **verified** build/test/run commands, planning-dir convention; deep doc
+generation is out of scope, the structure grows later via `/self-improve` and `/memory-doctor`.
 
 **Slimming (mapping-first).** Draft one full mapping: each block → stays / moves to existing doc
 X / new doc Y, applying the keep-vs-extract test (target-structure §1); where a block's relevance

@@ -48,10 +48,14 @@ cheap" conclusion flips. Only then read the env var or setting (`ENABLE_TOOL_SEA
 `auto:N` threshold modes) to explain why.
 
 **1. Always-on instruction files.** Measure the entry-file chain (`CLAUDE.md`, `.claude/CLAUDE.md`,
-`CLAUDE.local.md`, or `AGENTS.md` when read natively) in the project and **every parent dir up to
-root**, the user-level entry file (`~/.claude/CLAUDE.md`), and every rules file in the project and
-user rules dirs (`.claude/rules/`, `~/.claude/rules/`) that is not path-scoped. Expand `@import`
-lines (recursive). `wc -w` each; an `AGENTS.md` counts once, whether read natively or imported.
+`CLAUDE.local.md`, or `AGENTS.md` and `.claude/AGENTS.md` when read natively) in the project and
+**every parent dir up to root**, the user-level entry file (`~/.claude/CLAUDE.md`), the
+managed-policy one (a file such as `/Library/Application Support/ClaudeCode/CLAUDE.md` or
+`/etc/claude-code/CLAUDE.md`, or the managed `claudeMd` setting), and every rules file,
+subdirectories and symlinks included (a symlink leading outside the project only once external
+imports are approved), in the project and user rules dirs (`.claude/rules/`, `~/.claude/rules/`)
+that is not path-scoped. Expand `@import` lines (recursive). `wc -w` each; an `AGENTS.md` or the
+user-level file counts once, whether read natively, imported or met on the parent walk.
 
 **2. Descriptions (often the largest unexamined chunk).** Skim the in-session lists of **skills,
 subagent types, and slash commands** — their descriptions are always loaded, except
@@ -66,8 +70,9 @@ server; note any server with long **instructions**. Flag servers irrelevant to t
 `.claude/settings.json`, `.claude/settings.local.json`. Check `enableAllProjectMcpServers`,
 `enabledMcpjsonServers`, `enabledPlugins`. Precedence: managed > local > project > user. Each
 plugin can pull in MCP servers, skills, agents, hooks. Measure `SessionStart` hook output (from
-its script, or a run the user approves) as a startup cost, and per-prompt `UserPromptSubmit` or
-`additionalContext` output as a cost per turn; tool-hook stdout does not enter the context.
+its script, or a run the user approves) as a startup cost, and per-prompt `UserPromptSubmit`
+output as a cost per turn. Tool hooks' plain stdout stays out of the context, but their
+`additionalContext` enters it, a cost per matching tool call.
 
 **5. Memory.** Lines of the memory index up to the agent's load cap (e.g. the first 200 lines or
 25KB of `MEMORY.md`, whichever comes first); topic files load on demand and are not a startup
@@ -78,17 +83,17 @@ cost.
 A short sizes table (source → ≈ tokens → auto-loaded? → relevant to user's work?), then a
 prioritized action list. For each action give the exact setting/file edit, the rough savings, and
 how to reverse it (prefer per-session toggles). Skip anything under ~a few hundred tokens unless
-asked to be exhaustive. Each action names the skill that performs it when the in-session skills
-list has it: a fat entry file → `/agentify-project` (slimming into docs); a fat memory index →
-`/memory-doctor`. Then ask before editing.
+asked to be exhaustive. Each action names the skill that performs it when installed (manual-only
+skills are missing from the in-session list): a fat entry file → `/agentify-project` (slimming
+into docs); a fat memory index → `/memory-doctor`. Then ask before editing.
 
 ## Useful probes
 
 ```bash
-# always-on instruction files: entry-file chain up to /, user-level entry file, unscoped rules
-d=$PWD; while :; do for f in AGENTS.md CLAUDE.md .claude/CLAUDE.md CLAUDE.local.md; do [ -f "$d/$f" ] && wc -w "$d/$f"; done; [ "$d" = / ] && break; d=$(dirname "$d"); done
-[ -f ~/.claude/CLAUDE.md ] && wc -w ~/.claude/CLAUDE.md
-grep -L '^paths:' .claude/rules/*.md ~/.claude/rules/*.md 2>/dev/null | xargs wc -w
+# always-on instruction files: entry-file chain up to /, user-level and managed entry files, unscoped rules
+d=$PWD; while :; do for f in AGENTS.md .claude/AGENTS.md CLAUDE.md .claude/CLAUDE.md CLAUDE.local.md; do [ "$d/$f" = "$HOME/.claude/CLAUDE.md" ] || { [ -f "$d/$f" ] && wc -w "$d/$f"; }; done; [ "$d" = / ] && break; d=$(dirname "$d"); done
+wc -w ~/.claude/CLAUDE.md "/Library/Application Support/ClaudeCode/CLAUDE.md" /etc/claude-code/CLAUDE.md 2>/dev/null
+find -L .claude/rules ~/.claude/rules -name '*.md' -exec grep -L '^paths:' {} + 2>/dev/null | tr '\n' '\0' | xargs -0 -r wc -w
 # enabled MCP + settings
 cat .mcp.json; cat .claude/settings.json .claude/settings.local.json ~/.claude/settings.json 2>/dev/null
 ```

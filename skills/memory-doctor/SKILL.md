@@ -28,15 +28,17 @@ recommended verdict, never a pruned subset.
 ## Locate the memory
 
 Find the memory store for the current project. Its location is agent-specific — other agents store
-it elsewhere, or not at all. **Claude Code** example: first check the settings for a relocated
-memory dir (`autoMemoryDirectory` in any scope, or the `CLAUDE_CODE_PROJECT_DIR_NAME` env var).
-Otherwise slugify the main worktree root — the parent of
+it elsewhere, or not at all. **Claude Code** example: the store sits under
+`${CLAUDE_CONFIG_DIR:-~/.claude}/projects/`, the `<root>` below. First check the settings for a
+relocated memory dir (`autoMemoryDirectory` in any scope), then the `CLAUDE_CODE_PROJECT_DIR_NAME`
+env var, which names the `<slug>` directory outright but is honored only with `CLAUDE_CONFIG_DIR`
+set. Otherwise slugify the main worktree root — the parent of
 `git rev-parse --path-format=absolute --git-common-dir` (not `--show-toplevel`, which in a linked
 worktree returns the worktree's own path), else the cwd — by replacing every non-alphanumeric
 character with `-` (e.g. `/Users/me/my.app` → `-Users-me-my-app`), then look for
-`~/.claude/projects/<slug>/memory/MEMORY.md`; no exact match → list `~/.claude/projects/` and pick
-the entry matching the repo root. If that fails too, or the user runs a different agent, **ask the
-user for the memory path**. Only discovery is agent-specific; everything below is agent-agnostic.
+`<root>/<slug>/memory/MEMORY.md`; no exact match → list `<root>` and pick the entry matching the
+repo root. If that fails too, or the user runs a different agent, **ask the user for the memory
+path**. Only discovery is agent-specific; everything below is agent-agnostic.
 
 **Block** = the smallest self-contained memory unit — typically one memory file plus its `MEMORY.md`
 index line, generally one fact each, though a store may group differently. If the memory is a single
