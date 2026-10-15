@@ -34,10 +34,12 @@ Read these, skipping what doesn't exist:
    first; fetch from the tracker only when a relation has no local file and looks load-bearing
    for a why — in doubt whether to fetch, ask.
 3. **The session**, when it produced the change: decisions, pivots, constraints.
-4. **The diff** from the merge base with the target, plus commit subjects. Target: the one a
-   prior review or handover round records, else the open PR's base, else ask; state it and
+4. **The diff** from the merge base with the target to `HEAD`, plus commit subjects. Target: the
+   one a prior review or handover round records, else the open PR's base, else ask; state it and
    `git fetch` its remote (local-only target → nothing to fetch; a failed fetch → ask, never diff
-   stale refs). Uncommitted changes are named and the author asked whether they belong.
+   stale refs); no merge base → ask, never diff against the target itself. Before diffing, name
+   uncommitted changes, untracked included, and ask which belong: the author commits those first;
+   the rest stays out.
 5. **PR conventions** — the repo's PR template, wherever the forge looks for one (e.g. root,
    `.github/`, `docs/`; several → ask the author which), and any project skill for PR descriptions.
 
@@ -65,9 +67,10 @@ decides what you may write, and never appears in the text. When not sure, always
 
 `<id>-<slug>.HANDOVER.md` in the planning home, same base as the task's other artifacts; already
 taken → `<id>-<slug>.HANDOVER-2.md`, `-3`, … — never overwrite. No planning home →
-`.agents/plans/<id>-<slug>/`, stating the choice. The file's first line is the PR title in the
-repo's commit convention (`# <title>`); the body follows, paste-ready as the PR description, and
-stands alone:
+`<id>-<slug>/` in the project's planning directory (none evident → `.agents/plans/`), id and slug
+derived from branch name and changes, stating the choice. The file's first line is the PR title
+in the repo's commit convention (`# <title>`); the body follows, paste-ready as the PR
+description, and stands alone:
 
 - **Mention only what the reviewer can open** — a tracker URL, or a file you verified is committed
   on the branch. Everything else — planning docs, decisions log, session, commit hashes — is
