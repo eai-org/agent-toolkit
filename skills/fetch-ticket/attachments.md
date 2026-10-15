@@ -6,8 +6,8 @@ Identify every attachment **and** every inline image referenced in the descripti
 `attachment-<N>.<ext>` in order of first appearance, keeping the original extension. `<N>` runs
 across both combined. In a directory shared with other tickets, prefix each ticket's files with its
 id (`<id>-attachment-<N>.<ext>`, linked-doc saves included) so siblings never overwrite each other;
-a re-fetch beside an earlier version carries its suffix in the prefix (`<id>-v2-attachment-<N>.<ext>`,
-design previews likewise). Never overwrite an existing file.
+a flat re-fetch there carries its suffix in the prefix (`<id>-v2-attachment-<N>.<ext>`, design
+previews likewise). Never overwrite an existing file.
 
 **Always try to fetch — across every connected MCP.** Beyond tracker-hosted attachments, the ticket
 may link external assets (e.g. a Confluence/ADO resource — for design-tool links such as Figma or

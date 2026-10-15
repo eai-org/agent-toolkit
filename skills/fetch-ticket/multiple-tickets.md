@@ -6,11 +6,11 @@ feature, one ticket citing another's id). Group only the related ones — unrela
 their own `<id>-<slug>/` directories; say which. A related group shares one directory:
 `<parent-id>-<shared-slug>/` when the group hangs off one parent, else a sensible
 shared name; each file keeps its own `<id>-<slug>.TICKET.md` name on the shared slug base plus a
-differentiator (`…-widget`, `…-approvals`). Grouping on content alone, or under a name you made up,
-counts as doubt (SKILL.md step 4): ask, with your recommended grouping and name.
+differentiator (`…-widget`, `…-approvals`). Grouping on content alone, or with no parent to name the
+directory, counts as doubt (SKILL.md step 4): ask, with your recommended grouping and name.
 
 A later solo fetch can join an existing group the same way (SKILL.md step 4 routes it there): give
-the newcomer its `## Ticket set` section and refresh every sibling's — membership, roles, order.
+the newcomer its `## Ticket set` section and refresh the others' — membership, roles, order.
 
 Directly after the header, every file in the group gets a `## Ticket set` section — the parent's
 ticket file included when it sits in the directory, with role `parent` and left out of the

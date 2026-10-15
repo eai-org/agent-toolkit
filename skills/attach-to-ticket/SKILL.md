@@ -37,11 +37,12 @@ documents beyond the entries below and the REQUIREMENTS line of step 6.
 5. **Save to disk** — see Sources; never route bytes through the model (output caps truncate base64
    silently). Filling an entry → its filename when that is a bare name (no `/`, `\`, `..`, `:`),
    else ask; else the next `attachment-<N>.<ext>` after the highest N in the document or on disk
-   (`<id>-attachment-<N>` in a shared directory). Either way the extension follows the actual file
-   type; a symlink at the target, dangling included → ask; never overwrite a valid file. Verify:
-   non-empty; type trailer present where the format has one (PNG `IEND`, JPEG `FFD9`, PDF `%%EOF`),
-   else detected type matches the extension (e.g. `file '<path>'`); images and PDFs also viewed to
-   confirm they are the asset given.
+   under the same prefix (`<id>-attachment-<N>` in a shared directory, `<id>-vN-attachment-<N>` for
+   a flat `-vN` document there). Either way the extension follows the actual file type; a symlink
+   at the target, dangling included → ask; never overwrite a valid file. Verify: non-empty; type
+   trailer present where the format has one (PNG `IEND`, JPEG `FFD9`, PDF `%%EOF`), else detected
+   type matches the extension (e.g. `file '<path>'`); images and PDFs also viewed to confirm they
+   are the asset given.
 6. **Write the entries.** Filling an entry: keep it, drop any not-downloaded note, add or rewrite
    its reference to match the saved file (image → embed, else link; its extension), add the
    template's caption line — one entry per file, never a second.
@@ -62,7 +63,7 @@ documents beyond the entries below and the REQUIREMENTS line of step 6.
    embed or link, its path relative to the REQUIREMENTS file when that sits in another directory,
    plus the caption — at the end of its **Context** part; no new section, nothing else changed.
 7. **Report** project-relative paths: the document, the REQUIREMENTS file when it got a line — its
-   requirements predate the asset; re-running `/refine-ticket` on the ticket, when installed,
+   requirements predate the asset; re-running `/refine-ticket` on that file, when installed,
    updates them in place — then one line per asset with its caption. When the document is a
    ticket file with no REQUIREMENTS file yet and `/refine-ticket` is installed, hand off with one
    copy-pasteable launch command in the agent tool's syntax (e.g.
@@ -75,8 +76,9 @@ Escape paths and URLs from user or ticket text in every command for the shell ru
 `'` → `'\''`, PowerShell `'` → `''`), and again for a nested language (AppleScript, PowerShell).
 
 - **Pasted image** — the path the agent tool reports for the paste; else its per-session paste
-  cache when it keeps one (e.g. Claude Code's `~/.claude/image-cache/$CLAUDE_CODE_SESSION_ID/<N>.png`,
-  `<N>` the image's number in the session); else the OS clipboard, see [clipboard.md](clipboard.md).
+  cache when it keeps one (e.g. Claude Code's
+  `~/.claude/image-cache/$CLAUDE_CODE_SESSION_ID/<N>.png`, `<N>` the image's number in the session);
+  else the OS clipboard, see [clipboard.md](clipboard.md).
   None works → ask the user to save the image and paste its path.
 - **Local path** — copy the file.
 - **URL** — HTTP(S) only, redirects included (`curl.exe` on Windows):

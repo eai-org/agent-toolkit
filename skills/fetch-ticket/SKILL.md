@@ -135,7 +135,7 @@ entry templates — lives in [attachments.md](attachments.md). Three rules alway
 - **Do not** modify the ticket in its tracker — fetching is **read-only** (no comments, transitions,
   edits, worklogs).
 - The only files you create: the `.TICKET.md`, its attachments, and any linked docs you fetched;
-  the only edits to existing files are sibling `## Ticket set` sections.
+  the only edits to existing files are group members' `## Ticket set` sections.
 
 ## Next step
 
