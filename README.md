@@ -51,7 +51,7 @@ execute them one at a time and consolidate the changes.
   attachment the fetch could not download.
 - **[grill-me](./skills/grill-me/SKILL.md)** — get interviewed relentlessly about a plan, design
   or idea, one question at a time, each with a recommended answer, until every branch of the
-  decision tree is resolved. Adapted from
+  decision tree is resolved; ends with a paste-ready list of the settled decisions. Adapted from
   [Matt Pocock's grill-me](https://github.com/mattpocock/skills) (MIT, copyright 2026 Matt Pocock).
 - **[refine-ticket](./skills/refine-ticket/SKILL.md)** — define the "what" of a task: validate the
   ticket — or a raw idea you want to brainstorm — against the codebase, settle open decisions
@@ -276,8 +276,8 @@ flowchart TD
   review_ticket --> refine
   verify_understanding --> refine
   check_impl["check-ticket-implementation"] --> fetch_ticket
-  refine --> manual["create-manual-test-instructions"]
-  refine --> plan["create-implementation-plan"]
+  refine -. when available .-> manual["create-manual-test-instructions"]
+  refine -. when available .-> plan["create-implementation-plan"]
   plan --> split["split-plan-tasks"]
   split --> execute["execute-plan-tasks"]
   plan --> handover["handover"]

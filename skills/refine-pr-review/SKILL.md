@@ -3,7 +3,7 @@ name: refine-pr-review
 description: Triage a fetched PR review with the user, comment by comment, drafting each reply and producing a REQUIREMENTS file for the accepted code changes. Takes the PR-REVIEW file produced by fetch-pr-review, or a PR URL. Invoke manually only.
 license: MIT
 metadata:
-  version: "1.6"
+  version: "1.7"
 ---
 
 # Refine PR review
@@ -18,6 +18,9 @@ A PR URL instead: when the harness has subagents and fetch-pr-review is installe
 [delegate.md](../fetch-pr-review/delegate.md) and the file it returns is the input. Not installed
 → say so and ask for the fetched file; installed but no subagents → hand off
 `/fetch-pr-review <url>` to a fresh session and stop.
+
+Its own `.PR-REVIEW.REQUIREMENTS.md` instead, once a blocking answer is in: Phase 1 and Lessons
+stand as its `.PR-REVIEW.ANSWERS.md` records them; run only Phase 2 on that file, then Next step.
 
 ## Verdicts
 
@@ -75,7 +78,7 @@ written, with these overrides:
   (`1234-task.PR-REVIEW.md` → `1234-task.PR-REVIEW.REQUIREMENTS.md`); later review rounds carry
   their suffix through (`…PR-REVIEW-2.REQUIREMENTS.md`).
 - Nothing about replies or verdicts enters the REQUIREMENTS file.
-- Ignore its closing hand-off instructions — this skill owns the hand-off.
+- Ignore its hand-off commands, the blocking-question one included — this skill owns the hand-off.
 
 When every verdict is push back, skip this phase: no REQUIREMENTS file, nothing to plan or execute.
 
@@ -119,9 +122,11 @@ none → no section.
 ## Next step
 
 State the output paths (project-relative). Remind the user the ANSWERS file is theirs to post
-manually once the fixes land. Then hand off by the size of the accepted change set, leading with
-your recommendation but giving both options as single copy-pasteable launch commands
-(vendor-agnostic — `claude` below is only the example):
+manually once the fixes land. While the REQUIREMENTS file holds a **blocking** Open questions
+entry, print no execute or plan command, only who must answer it and the command for once the
+answer is in: `/refine-pr-review <path>.PR-REVIEW.REQUIREMENTS.md`. Otherwise hand off by the size
+of the accepted change set, leading with your recommendation but giving both options as single
+copy-pasteable launch commands (vendor-agnostic — `claude` below is only the example):
 
 Small, mechanical change set — execute directly:
 
