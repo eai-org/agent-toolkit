@@ -76,7 +76,8 @@ fi
 # Version at HEAD, at the merge base with the default branch, and in the working tree.
 version_of() { awk 'NR == 1 { if ($0 != "---") exit; next } $0 == "---" { exit } /^[[:space:]]+version:/ { v = $0; sub(/^[^:]*:[[:space:]]*/, "", v); gsub(/"/, "", v); print v; exit }'; }
 if [ -d "$as" ] && top="$(git -C "$as" rev-parse --show-toplevel 2>/dev/null)"; then
-  rel="${as#"$top"/}/SKILL.md"
+  rel="SKILL.md"
+  [ "$as" = "$top" ] || rel="${as#"$top"/}/SKILL.md"
   base_ref="$(git -C "$as" symbolic-ref -q --short refs/remotes/origin/HEAD 2>/dev/null || true)"
   if [ -z "$base_ref" ]; then
     for cand in origin/main origin/master main master; do

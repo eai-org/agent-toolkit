@@ -302,7 +302,7 @@ flowchart TD
   self --> compact_docs["compact-docs-writer"]
   compact --> compact_docs
   memory_doctor["memory-doctor"] --> self
-  refine_pr --> self
+  refine_pr -. when available .-> self
   compact_gov["compact-governing-docs rule"] --> compact
   compact_gov --> compact_docs
 

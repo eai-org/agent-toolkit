@@ -128,9 +128,10 @@ disclosed doc).
    Scale depth to complexity (complex skill → more questions; simple → few). The only limit: never
    interview for its own sake.
 3. **Metadata.** Frontmatter always carries `name` and `description`, plus every field the
-   project's sibling skills or conventions carry (e.g. a license, `metadata.version`, tool
-   grants); never hardcode values. Creating: infer defaults from context (sibling `SKILL.md`
-   files, `git config user.name`, repo `LICENSE`), ask the user to confirm or override. The first
+   project's conventions or all its sibling skills carry (e.g. a license, `metadata.version`);
+   per-skill ones (tool grants, invocation flags) follow from the skill's own needs, never copied.
+   Never hardcode values. Creating: infer defaults from context (sibling `SKILL.md` files,
+   `git config user.name`, repo `LICENSE`), ask the user to confirm or override. The first
    version follows the project's stated convention; none stated → ask `"1.0"` or a `"0.x"` trial.
    Improving: preserve existing fields, and flag any missing one.
 4. **Draft** (create) or **improve** (existing): get the skill's content right — the rules it
@@ -160,9 +161,10 @@ disclosed doc).
      what it reports back (paths written, verdicts, blockers, edits made, what it did not check),
      and that it hands nothing off itself.
    - Creating: hand a fresh agent (a subagent when the tool offers one, else a prompt the user
-     runs in a clean session) only the draft and one realistic input; have it narrate step by step
-     and list each point where the text is ambiguous, contradictory or silent. Each point loops
-     back to draft; done when the run reports none. Improving: offer the run, never require it.
+     runs in a clean session) only the draft and one realistic input; have it walk the draft dry,
+     writing, committing and posting nothing, narrating step by step and listing each point where
+     the text is ambiguous, contradictory or silent. Each point loops back to draft; done when the
+     run reports none. Improving: offer the run, never require it.
    - No new or grown inline chunk meets the split test (progressive disclosure)?
    - Steps end on checkable, exhaustive completion criteria?
    - [scripts/check-skill.sh](scripts/check-skill.sh) `<skill-dir>` passes? While the draft sits

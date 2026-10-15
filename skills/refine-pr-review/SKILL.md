@@ -135,8 +135,8 @@ Substantial change set (cross-file rework, design decisions) — plan first:
 claude --name create-plan-<slug> "/create-implementation-plan <path>.PR-REVIEW.REQUIREMENTS.md"
 ```
 
-Lessons written and `/self-improve` installed — persist them; a mechanical lesson may edit a lint
-config or CI job, so run it after the execute session when the lessons are mechanical:
+Lessons written and `/self-improve` available — persist them after the execute session, since a
+mechanical lesson may edit a lint config or CI job it also touches:
 
 ```
 claude --name self-improve-<slug> "/self-improve Persist the lessons listed under Lessons in <path>.PR-REVIEW.ANSWERS.md"
