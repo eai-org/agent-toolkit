@@ -96,8 +96,9 @@ Review helpers that check the codebase while assisting with code or ticket revie
   your reviewers actually enforce out of every PR review comment in a repo, saved as a per-reviewer
   rules doc the review skills read as a checklist; later runs resume from a checkpoint and read
   only the new comments.
-- **[review-code-assistant](./skills/review-code-assistant/SKILL.md)** — assist you in reviewing a
-  PR or branch.
+- **[review-code-assistant](./skills/review-code-assistant/SKILL.md)** — prepare a review of a PR
+  or branch with you: the diff the platform shows, the project's conventions run as a checklist,
+  and candidate comments in diff order, read-only and never posted.
 - **[maintainer-review](./skills/maintainer-review/SKILL.md)** — review someone else's PR as the
   maintainer deciding whether it merges: every prior comment walked, every claim verified, then
   comment, approve or fix the contributor's branch on your go-ahead.
