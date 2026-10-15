@@ -133,8 +133,9 @@ Wording for what the agent writes to people, whether the user in the session or 
 
 ### Code checks
 
-- **[run-nx-checks](./skills/run-nx-checks/SKILL.md)** — run format, lint, test, and build on the
-  affected projects of an Nx workspace and fix unambiguous failures.
+- **[run-nx-checks](./skills/run-nx-checks/SKILL.md)** — run format, lint, typecheck, test, and
+  build on the affected projects of an Nx workspace and fix unambiguous failures, reporting every
+  edit it made.
 
 ### How to install the skills
 
