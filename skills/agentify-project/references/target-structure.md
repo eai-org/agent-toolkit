@@ -6,12 +6,14 @@ each area's state; the menu offers the gaps.
 ## 1. AGENTS.md — canonical lean index
 
 At repo root (plural, per the agents.md convention). Maximally lean — only the irreducible
-minimum: project one-liner, universal build/test/run commands, hard structural constraints
-(layout, module boundaries), the linked docs index, and the planning-dir convention.
-Keep-vs-extract test per block: *part of that minimum?* Everything else — even generic categories
-nearly every session reads (testing, conventions, architecture, …) — gets its own governing doc:
-often-loaded linked docs are fine, a fat entry file is not. Reference docs as **plain markdown
-links with a one-line "read when…" hook each**. Guiding reference for leanness:
+minimum: project one-liner, universal build/test/run commands, hard constraints the code cannot
+reveal (e.g. module boundaries, what must never import what — never a directory tree or
+architecture overview, which the agent derives and which go stale), the linked docs index, and the
+planning-dir convention. Keep-vs-extract test per block: *part of that minimum?* Everything else —
+even generic categories nearly every session reads (testing, conventions, architecture, …) — gets
+its own governing doc: often-loaded linked docs are fine, a fat entry file is not. Reference docs
+as **plain markdown links with a one-line "read when…" hook each**; the onboarding doc's (§8) is
+"read when adding a doc, skill or rule". Guiding reference for leanness:
 https://www.aihero.dev/a-complete-guide-to-agents-md
 
 Never reference docs with `@import` syntax: some agents load `@` imports at launch, recursively,
@@ -23,18 +25,18 @@ markdown links never import; to mention an `@path` literally, wrap it in backtic
 
 Claude Code v2.1.277+ reads AGENTS.md itself (root and `.claude/AGENTS.md` at start, a
 subdirectory's when it opens a file there), so the default is **no CLAUDE.md**. Any `CLAUDE.md`,
-`.claude/CLAUDE.md` or `CLAUDE.local.md` in the working directory or above makes Claude read
-those **instead** — every AGENTS.md, nested ones included (`~/.claude/CLAUDE.md` and
-`.claude/rules/` load alongside either). Keep or create a CLAUDE.md holding `@AGENTS.md` only
-when genuinely Claude-only instructions must live below the import (official pattern — preserve
-them there instead of force-moving) or some sessions cannot load AGENTS.md (Claude Code < 2.1.281
-on Bedrock, Vertex AI, a gateway or with telemetry off, the built-in `agents-md` plugin
-(`cc-plugin-agents-md@builtin` from v2.1.285) disabled, **Project instructions** set to
-`claude-md`); the import never loads AGENTS.md twice. A root CLAUDE.md kept for either reason
-shadows nested AGENTS.md files too, so every nested entry file then keeps its own `@AGENTS.md`
-pointer. A CLAUDE.md that only says in words to read AGENTS.md becomes the import or is deleted. A
-CLAUDE.md→AGENTS.md symlink also works but needs Developer Mode on Windows and forbids
-Claude-specific additions. `CLAUDE.local.md` is gitignored (per matrix) yet still shadows
+`.claude/CLAUDE.md` or `CLAUDE.local.md` in the working directory or above makes Claude read those
+**instead** — every AGENTS.md, nested ones included (`~/.claude/CLAUDE.md` and `.claude/rules/` load
+alongside either). Keep or create a CLAUDE.md holding `@AGENTS.md` only when genuinely Claude-only
+instructions must live below the import (official pattern — preserve them there instead of
+force-moving), some sessions cannot load AGENTS.md (Claude Code < 2.1.281 on Bedrock, Vertex AI, a
+gateway or with telemetry off, the built-in `agents-md` plugin (`cc-plugin-agents-md@builtin` from
+v2.1.285) disabled, **Project instructions** set to `claude-md`), or a CLAUDE.md above the repo
+stays and would shadow AGENTS.md; the import never loads AGENTS.md twice. A root CLAUDE.md kept for
+any of these reasons shadows nested AGENTS.md files too, so every nested entry file then keeps its
+own `@AGENTS.md` pointer. A CLAUDE.md that only says in words to read AGENTS.md becomes the import
+or is deleted. A CLAUDE.md→AGENTS.md symlink also works but needs Developer Mode on Windows and
+forbids Claude-specific additions. `CLAUDE.local.md` is gitignored (per matrix) yet still shadows
 AGENTS.md: the onboarding doc (§8) tells developers to open theirs with `@AGENTS.md`, or to set
 **Project instructions** to `claude-md-and-agents-md`.
 
@@ -89,8 +91,10 @@ In the governing-docs dir: the layout explained; hookup recipes for the agents w
 (accumulated from the skill's runtime research); a generic recipe for any other agent — point it
 at AGENTS.md via its entry-file mechanism, or re-run `/agentify-project` to research and wire it —
 which keeps detect-only from becoming a chicken-and-egg trap for agents with no repo traces yet;
-the `CLAUDE.local.md` shadowing hazard and its two remedies (§2); and the Windows symlink caveat
-(git `core.symlinks` + Developer Mode).
+the `CLAUDE.local.md` shadowing hazard and its two remedies (§2); the Windows symlink caveat (git
+`core.symlinks` + Developer Mode); and the hook test — after a slimming, give a fresh session a
+task that needs one extracted doc and check it opens it; a miss means a weak hook, fixed via
+`/self-improve`.
 
 ## 9. README pointer
 
