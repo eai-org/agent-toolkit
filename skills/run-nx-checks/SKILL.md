@@ -48,9 +48,10 @@ git ls-files -z -mo --exclude-standard | while IFS= read -r -d '' f; do echo "$(
 
 `nx affected` and `format:write` diff against the *local* default branch, which is often stale or
 missing. `$projectName` replaces only the `affected` commands, so resolve the base in both modes.
-`NX_BASE` set: skip this section; Nx reads it and a deliberate env setting wins. Otherwise resolve
-the remote-tracking ref once and substitute the printed ref for `$base` in every `affected`,
-`format:write` and `show projects --affected` command below:
+`NX_BASE` set: skip this section and omit `--base` from every command below; Nx reads it and a
+deliberate env setting wins. Otherwise resolve the remote-tracking ref once and substitute the
+printed ref for `$base` in every `affected`, `format:write` and `show projects --affected` command
+below:
 
 ```bash
 base=$(node -p 'const j=require("./nx.json"); j.defaultBase ?? j.affected?.defaultBase ?? "main"' 2>/dev/null || echo main)
@@ -92,11 +93,13 @@ graph-only `npx nx show projects --affected --base=$base` (fast, no build):
   them for nothing. Tell-tale: run `git status`; it prints `<path>/.env: Operation not permitted`
   for exactly those projects. Fix: add `--exclude=<their project names>` to every `affected`
   command (`format:write` takes none) and list them as excluded in the final report, naming any
-  real edits they hold; the user can re-run outside the sandbox to include them.
+  real edits they hold. Never re-run them outside the sandbox yourself; the user can, to include
+  them.
 - **Large fan-out.** Large = more than half of `npx nx show projects | wc -l` or more than 20
-  projects, whichever is lower (e.g. a widely-shared lib change rippling across the workspace).
-  Don't build the world unprompted: skip steps 3–5 and report the project count and list in the
-  final report so the user can re-run with `$projectName`.
+  projects, whichever is lower, counting affected projects after the `.env` exclusions (e.g. a
+  widely-shared lib change rippling across the workspace). Don't build the world unprompted: skip
+  steps 3–5 and report the project count and list in the final report so the user can re-run with
+  `$projectName`.
 
 ## Steps
 
@@ -178,7 +181,8 @@ treat it as real under the Fix rule.
 This skill runs in a forked context, so its final message is the only channel back to the caller.
 End with:
 
-- the affected base used (or omitted / possibly stale);
+- the affected base used: the resolved ref, `NX_BASE` and its value, or omitted because the ref is
+  missing; flag a failed fetch as possibly stale;
 - per target (lint / format / typecheck / test / build): clean, n/a, skipped (with the reason —
   for large fan-out, the project count and list; for `.env` false positives, the excluded
   projects), or each failing `project:target` with its cause, plus any flaky `project:target`;
