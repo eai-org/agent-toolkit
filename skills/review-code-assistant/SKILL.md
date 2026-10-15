@@ -33,20 +33,28 @@ matches exactly what the platform shows as the PR with no noise from commits tha
 after the fork. No common ancestor: usually a shallow clone or a wrong target. Deepen with
 `git fetch --unshallow` and retry, else ask; never diff two-dot against the target.
 
-**Branch freshness:** always `git fetch` first — never `git pull`: the diff needs no checkout or
-working-tree update. Then diff each branch's freshest ref, stating which you used and its SHA: the
-remote-tracking ref when the branch is on a remote and the local ref isn't ahead of it; the local
-ref when the branch exists only locally or carries unpushed commits (never silently review a stale
-pushed state); for a fork PR's source, absent from `origin`, the fork remote or the platform's PR
-ref (e.g. `git fetch origin pull/<N>/head` on GitHub). If a fetch fails or a ref can't be found,
-say so and ask how to proceed rather than review stale or wrong refs.
+**Branch freshness:** always `git fetch` the target's and the source's remotes first — never
+`git pull`: the diff needs no checkout or working-tree update. Then diff each branch's freshest
+ref, stating which you used and its SHA:
+- target: its remote-tracking ref, `upstream`'s before `origin`'s (for a PR link, the remote of
+  the PR's base repo); the local ref only when the branch exists only locally;
+- source: the remote-tracking ref (for a PR link, on the remote of the PR's head repo, else
+  `upstream`'s before `origin`'s) when the local ref isn't ahead of it; the local ref when the
+  branch exists only locally or carries unpushed commits (never silently review a stale pushed
+  state); for a fork PR with no fork remote, the platform's PR ref on the base repo's remote (e.g.
+  `git fetch <remote> pull/<N>/head` on GitHub), its SHA read from `FETCH_HEAD` before the next
+  fetch overwrites it.
+
+If a fetch fails or a ref can't be found, say so and ask how to proceed rather than review stale
+or wrong refs.
 
 **Target auto-detection** (when not supplied and not from a PR link), in order:
 1. The default branch of the `upstream` remote when one exists (fork workflow), else of `origin`,
    via `git ls-remote --symref <remote> HEAD`, never the often-absent local
    `refs/remotes/<remote>/HEAD`.
-2. That failing (e.g. offline), check which usual candidates exist (`main`, `master`,
-   `develop`/`development`); exactly one match wins.
+2. That failing (e.g. offline), the sole existing candidate among `main`, `master`,
+   `develop`/`development` (preferring `upstream`'s remote-tracking ref, then `origin`'s, then the
+   local branch).
 3. Multiple matches or any ambiguity → ask, never guess.
 
 A PR link always overrides auto-detection (its target comes from the PR metadata; PRs are not always
@@ -55,9 +63,9 @@ against the main branch). Always state which target was chosen so the user can c
 ## Enrich from the PR link
 
 When a URL is given, identify the platform from its host and fetch through whatever is connected
-(a GitHub tool, an Azure DevOps tool, etc.) — use the intent, not a fixed tool. No link given and
-no tool: review the local diff and say the PR context was not read. A link given but no tool to
-read it: ask for the branches rather than guess them.
+(a GitHub tool, an Azure DevOps tool, etc.) — use the intent, not a fixed tool. No link given:
+review the local diff and say the PR context was not read. A link given but no tool to read it:
+ask for the branches rather than guess them.
 
 - Use the title and description to understand intent.
 - Follow linked issues and PRs: a linked issue's description is part of the intent, and a linked
