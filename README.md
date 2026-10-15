@@ -109,7 +109,7 @@ Review helpers that check the codebase while assisting with code or ticket revie
   probes and corrects until you are ready to implement.
 - **[check-ticket-implementation](./skills/check-ticket-implementation/SKILL.md)** — check how
   much of a ticket is already implemented in the code, saving a per-requirement status report
-  (done, partial, not done, or built wrong).
+  (done, partial, not done, or not verifiable).
 - **[fresh-eyes-review](./skills/fresh-eyes-review/SKILL.md)** — let an agent with a fresh
   perspective review a changeset and report its findings back to the main session. [Read more about fresh-eyes-review](https://medium.com/engineering-in-the-age-of-ai/more-powerful-ai-reviews-with-fresh-eyes-bfad221748c0)
 - **[self-review](./skills/self-review/SKILL.md)** — get your changeset merge-ready before
@@ -277,6 +277,7 @@ flowchart TD
   verify_understanding -. when available .-> refine
   verify_understanding -. when available .-> review_ticket
   review_ticket -. when available .-> check_impl
+  review_ticket -. when available .-> attach
   check_impl["check-ticket-implementation"] --> fetch_ticket
   refine --> manual["create-manual-test-instructions"]
   refine --> plan["create-implementation-plan"]

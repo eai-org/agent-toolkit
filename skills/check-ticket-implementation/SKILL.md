@@ -24,9 +24,10 @@ Run the fetch in a **subagent** when the runtime supports one, per fetch-ticket'
 context. Without subagent support, invoke fetch-ticket inline.
 
 The **ticket text is what gets annotated** — its `.REQUIREMENTS.md` (same dir and `<id>-<slug>`
-base — a shared dir may hold siblings') may be read as context for intent, never annotated in its
-place. The ticket text stays the contract: when the requirements record an Override that changes a
-block's meaning, the verdict follows the text and the note names the Override and its source.
+base — a shared dir may hold siblings'; none: the ticket's latest across `-vN` versions) may be
+read as context for intent, never annotated in its place. The ticket text stays the contract: when
+the requirements record an Override that changes a block's meaning, the verdict follows the text
+and the note names the Override and its source.
 Inspect downloaded attachments and design frames when they bear on a requirement being judged.
 
 **Evidence base**: the current working tree, uncommitted changes included — unless the invocation

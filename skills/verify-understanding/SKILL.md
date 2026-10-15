@@ -25,8 +25,9 @@ with a newer `-vN` fetch beside the one the review read has likely overtaken it:
 newest ticket files, and treat the review's open questions as possibly answered there. The
 `.REQUIREMENTS.md` of the newest ticket file's base (none: the ticket's latest across `-vN`
 versions) is read for its Overrides, which win over the ticket text.
-Given a ticket file and no review, ask whether to run `/review-ticket` first when it is installed;
-never improvise the review.
+Given a ticket file and no review, never improvise one: say a review is needed and stop, handing
+off `/review-ticket <ticket-file>` as a launch command named `review-<slug>` (format at the close)
+when review-ticket is installed.
 
 ## The conversation
 

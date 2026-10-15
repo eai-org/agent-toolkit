@@ -57,10 +57,10 @@ widens scope: the review covers only the input tickets, never a parent's other c
 
 ## An earlier review
 
-Look for a `.TICKET-REVIEW.md` of the same ticket or set. Its shipped questions are the first
-candidates: settle each against the ticket text as fetched now (comments included) and its
-Challenge log, then run the normal bar. Never copy its verdict or walkthrough; the ticket files and
-the code win.
+Look for a `.TICKET-REVIEW.md` of the same ticket or set, beside it or beside an earlier `-vN`
+fetch. Its shipped questions are the first candidates: settle each against the ticket text as
+fetched now (comments included) and its Challenge log, then run the normal bar. Never copy its
+verdict or walkthrough; the ticket files and the code win.
 
 ## Compare against the codebase
 
@@ -231,4 +231,5 @@ slash command. When Today already seems to deliver the After, also suggest
   source file. The only files written are fetch-ticket's outputs and the `.TICKET-REVIEW.md`.
 - **Non-interactive on requirements.** The questions are the output: never grill the user to
   resolve them. Ask the user only operational things (an ambiguous input, a fetch that needs
-  input, the set-scope call, missing repo paths), never requirement decisions.
+  input, the set-scope call, whether extra context is worth fetching, missing repo paths, missing
+  attachments, whether to spend a re-challenge), never requirement decisions.
