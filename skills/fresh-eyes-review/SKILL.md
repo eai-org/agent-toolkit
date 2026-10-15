@@ -20,8 +20,9 @@ artifacts.
    diff range, a draft vs its original. Given none, infer it from the session — usually the work
    just finished, committed or not; no VCS required. With no session context to draw on, fall back
    to git: the working tree against HEAD (`git diff HEAD` plus untracked files) and the branch
-   against the default branch of its tracking remote (`git ls-remote --symref <remote> HEAD`).
-   One non-empty → take it; both → ask which; neither, or no target found → ask what to review.
+   against its merge base with the fetched default branch of its tracking remote (`git ls-remote
+   --symref <remote> HEAD`). One non-empty → take it; both → offer both in step 2's proposal;
+   neither, or no target found → ask what to review.
    Pin the changeset as concretely as the environment allows — a diff or commit range where one
    exists, otherwise the touched files, with their prior state when reconstructable. Alongside it,
    a short statement of what the change is supposed to achieve, when one exists (the task as
@@ -70,8 +71,9 @@ artifacts.
    isolate a context, fall back to an adversarial pass over the same inputs in the main session.
    Done when an isolated reviewer has returned its findings, or the fallback pass ran and its result
    is flagged as same-context (weaker) — and each repo or directory the reviewer may run in,
-   compared against that baseline, holds nothing the review wrote: created files removed, modified
-   and deleted ones reported.
+   compared against that baseline, holds nothing the review wrote: created files removed, or
+   reported when something else may have written them (another session, a watcher); modified and
+   deleted ones reported.
 4. **Report back.** Relay every finding intact — location and failure scenario included — plus
    whatever else the reviewer was instructed to return; add the session's own assessment when
    useful, but never silently drop or soften a finding. What to do with the findings is the

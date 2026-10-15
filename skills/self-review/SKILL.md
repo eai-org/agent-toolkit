@@ -281,5 +281,6 @@ Done when all are printed.
 
 ## Boundaries
 
-- Files written: the report, and the fixes the author approved during the walk — nothing else.
+- Files written, scratch aside: the report, and the fixes the author approved during the walk —
+  nothing else.
 - Read-only git plus `git fetch`; no commit, push, or PR operation — publishing is the author's.

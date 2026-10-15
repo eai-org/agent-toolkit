@@ -143,7 +143,7 @@ Done when a stop condition has ended the rounds.
 ## Wrap up
 
 Before printing, write each source left unchecked that a claim of the artifact rests on into the
-artifact, as the author's text under Decide's edit rules and with no round for it, when a
+artifact, as the author's own text with no trace of the review and no round for it, when a
 reasonable default exists: in requirements a non-blocking Open questions entry with its tentative
 answer; in a plan a note in the How of the step relying on it. Without one it blocks: an ask, the
 artifact not ready while it is unanswered.
@@ -181,6 +181,6 @@ Done when all are printed.
 
 ## Boundaries
 
-- Files written: the artifact, plus its upstream requirements or derived plan when a fix reaches
-  them — no review file, no source code.
+- Files written, scratch aside: the artifact, plus its upstream requirements or derived plan when
+  a fix reaches them — no review file, no source code.
 - Read-only on the tracker, the repos and git.
