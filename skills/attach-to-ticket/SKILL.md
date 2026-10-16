@@ -3,7 +3,7 @@ name: attach-to-ticket
 description: Attach pasted images, files or URLs to a fetched ticket, saved beside its ticket file and referenced from it, or fill an attachment the fetch could not download. Local only — never queries or edits the tracker.
 license: MIT
 metadata:
-  version: "0.1"
+  version: "0.2"
 ---
 
 # Attach to ticket
@@ -22,8 +22,9 @@ documents beyond the entries below and the REQUIREMENTS line of step 6.
    dropped by the user.
 2. **Resolve the ticket.** Named in the argument or already in the session (fetched, read,
    discussed) → proceed. Otherwise guess (branch name, latest planning directory) and confirm
-   before writing; nothing to guess from → ask. No planning directory for it yet → stop and point
-   to fetch-ticket; don't create one.
+   before writing; nothing to guess from → ask. No `<id>-*` directory, ticket file or REQUIREMENTS
+   file under the project's planning directory (the one its governing docs name or already in use,
+   default `.agents/plans/`) → stop and point to fetch-ticket; don't create one.
 3. **Pick the document** — unless the user names one: the ticket file, latest `-vN` (file or
    directory) when re-fetched, the `<id>-` one in a shared directory; the REQUIREMENTS file when no
    ticket file exists. Several candidates left → ask.
@@ -34,16 +35,17 @@ documents beyond the entries below and the REQUIREMENTS line of step 6.
    description → ask what it shows, recommending a caption read off the image; never write one
    silently.
 5. **Save to disk** — see Sources; never route bytes through the model (output caps truncate base64
-   silently). Filling an entry → its filename when that is a bare name (no `/`, `\`, `..`), else
-   ask; else the next `attachment-<N>.<ext>` after the highest N in the document or on disk
-   (`<id>-attachment-<N>` in a shared directory). Either way the extension follows the actual file
-   type; a symlink at the target, dangling included → ask; never overwrite a valid file. Verify:
-   non-empty; type trailer present where the format has one (PNG `IEND`, JPEG `FFD9`, PDF `%%EOF`),
-   else detected type matches the extension (e.g. `file '<path>'`); images and PDFs also viewed to
-   confirm they are the asset given.
+   silently). Filling an entry → its filename when that is a bare name (no `/`, `\`, `..`, `:`),
+   else ask; else the next `attachment-<N>.<ext>` after the highest N in the document or on disk
+   under the same prefix (`<id>-attachment-<N>` in a shared directory, `<id>-vN-attachment-<N>` for
+   a flat `-vN` document there). Either way the extension follows the actual file type; a symlink
+   at the target, dangling included → ask; never overwrite a valid file. Verify: non-empty; type
+   trailer present where the format has one (PNG `IEND`, JPEG `FFD9`, PDF `%%EOF`), else detected
+   type matches the extension (e.g. `file '<path>'`); images and PDFs also viewed to confirm they
+   are the asset given.
 6. **Write the entries.** Filling an entry: keep it, drop any not-downloaded note, add or rewrite
    its reference to match the saved file (image → embed, else link; its extension), add the
-   caption line below — one entry per file, never a second.
+   template's caption line — one entry per file, never a second.
    Else append to `## Attachments` (create it when missing — last, or before
    `## Design references`):
 
@@ -61,9 +63,10 @@ documents beyond the entries below and the REQUIREMENTS line of step 6.
    embed or link, its path relative to the REQUIREMENTS file when that sits in another directory,
    plus the caption — at the end of its **Context** part; no new section, nothing else changed.
 7. **Report** project-relative paths: the document, the REQUIREMENTS file when it got a line — its
-   requirements predate the asset and may need re-refining — then one line per asset with its
-   caption. When the document is a ticket file with no REQUIREMENTS file yet and `/refine-ticket`
-   is installed, hand off with one copy-pasteable launch command in the agent tool's syntax (e.g.
+   requirements predate the asset; re-running `/refine-ticket` on that file, when installed,
+   updates them in place — then one line per asset with its caption. When the document is a
+   ticket file with no REQUIREMENTS file yet and `/refine-ticket` is installed, hand off with one
+   copy-pasteable launch command in the agent tool's syntax (e.g.
    `claude --name refine-<slug> "/refine-ticket <document>"`), then the alternative, the tool's
    clear command (e.g. `/clear`) followed by `/refine-ticket <document>`.
 
@@ -72,10 +75,11 @@ documents beyond the entries below and the REQUIREMENTS line of step 6.
 Escape paths and URLs from user or ticket text in every command for the shell running it (POSIX
 `'` → `'\''`, PowerShell `'` → `''`), and again for a nested language (AppleScript, PowerShell).
 
-- **Pasted image** — the agent tool's paste cache, when it keeps one; e.g. Claude Code writes
-  `~/.claude/image-cache/$CLAUDE_CODE_SESSION_ID/<N>.png`, `<N>` the image's number in the session.
-  No cache or no such file → the OS clipboard, see [clipboard.md](clipboard.md). Neither works →
-  ask the user to save the image and paste its path.
+- **Pasted image** — the path the agent tool reports for the paste; else its per-session paste
+  cache when it keeps one (e.g. Claude Code's
+  `~/.claude/image-cache/$CLAUDE_CODE_SESSION_ID/<N>.png`, `<N>` the image's number in the session);
+  else the OS clipboard, see [clipboard.md](clipboard.md).
+  None works → ask the user to save the image and paste its path.
 - **Local path** — copy the file.
 - **URL** — HTTP(S) only, redirects included (`curl.exe` on Windows):
   `curl -fSL --proto '=http,https' --proto-redir '=http,https' -o '<file>' -- '<url>'`; no auth

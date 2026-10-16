@@ -240,8 +240,8 @@ Some skills and rules form a workflow or rely on each other. Hard dependencies a
 ```mermaid
 flowchart TD
   fetch_ticket["fetch-ticket"] --> refine["refine-ticket"]
-  fetch_ticket --> attach["attach-to-ticket"]
-  attach --> refine
+  fetch_ticket -. when available .-> attach["attach-to-ticket"]
+  attach -. when available .-> refine
   fetch_pr["fetch-pr-review"] --> refine_pr["refine-pr-review"]
   refine_pr --> refine
   refine_pr --> plan

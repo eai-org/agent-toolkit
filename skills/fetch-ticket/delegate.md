@@ -5,7 +5,7 @@ How another skill runs fetch-ticket in a subagent, and how the subagent behaves 
 ## Caller
 
 Say in one line what you spawn and for which input, then spawn one subagent briefed with: the
-input, the project's planning directory, every answer settled in an earlier round, and the
+input, the project's planning directory, every answer settled by an earlier relaunch, and the
 instruction to run fetch-ticket — the skill by name, or its `SKILL.md` path when the subagent has
 no skill tool — under this file, passed by path. Nothing else from the session.
 
