@@ -93,9 +93,9 @@ Review helpers that check the codebase while assisting with code or ticket revie
   self-improve persists when installed. Takes the fetched file, or a PR URL a subagent fetches
   first.
 - **[extract-pr-review-rules](./skills/extract-pr-review-rules/SKILL.md)** — mine the conventions
-  your reviewers actually enforce out of every PR review comment in a repo, saved as a per-reviewer
-  rules doc the review skills read as a checklist; later runs resume from a checkpoint and read
-  only the new comments.
+  your reviewers actually enforce out of every PR review comment in a repo, saved as a
+  per-reviewer rules doc indexed from your agent entry file so the review skills run it as a
+  checklist; later runs resume from a checkpoint and read only the new comments.
 - **[review-code-assistant](./skills/review-code-assistant/SKILL.md)** — assist you in reviewing a
   PR or branch.
 - **[maintainer-review](./skills/maintainer-review/SKILL.md)** — review someone else's PR as the
