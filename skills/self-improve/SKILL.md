@@ -1,10 +1,10 @@
 ---
 name: self-improve
 description: Capture durable user feedback into the governing skill, doc or check, or propose creating a new skill when no suitable one exists, so future sessions don't repeat the mistake. Use when the user rejects, reverts, or overrides the agent's output or approach on something a skill, doc or check covers or should cover, and when manually invoked to improve or create guidance.
-allowed-tools: Read, Write, Edit, Glob, Grep
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
-  version: "1.11"
+  version: "1.12"
 ---
 
 # Self-improve
@@ -18,10 +18,11 @@ approves. The skill proposes; the user stays in control of every change. Three w
   governs (or should). Don't silently correct and move on, but don't derail the task either: note
   the lesson, finish what the user asked for, and offer to persist it at the next natural
   breakpoint.
-- **Driven by another skill** — a caller hands over content that is already durable guidance plus an
-  already-chosen target (scope, form, and path — possibly a new file). It resolved both with the
-  user, so skip steps 1-2 (step 2's Mechanical lesson bullet still applies) and run only draft +
-  apply.
+- **Driven by another skill** — a caller (or its launch command, pasted by the user) hands over
+  lessons already phrased as durable guidance, sometimes with a target it settled with the user
+  (scope, form and path — possibly a new file or a merge into an existing one). Skip step 1; skip
+  step 2 only for a lesson whose target the caller settled, run it for the rest — its Mechanical
+  lesson bullet always applies. Then draft + apply.
 
 "Skill/doc" means any standing instruction: a `SKILL.md`, `AGENTS.md`/`CLAUDE.md`, a
 coding-standards or convention doc, a rules file — anything that guides future agents. A "check"
@@ -56,8 +57,11 @@ Whenever unsure whether it generalizes, ask the user.
 
 1. **Capture the lesson.** State, in one line, the general rule the feedback implies — not the
    surface incident ("Mock external HTTP in unit tests," not "the agent mocked the wrong call").
-2. **Locate the target.** Find which skill/doc governs this action (search skills, `AGENTS.md`/
-   `CLAUDE.md`, convention docs); when the repo defines a doc-placement guide (e.g.
+2. **Locate the target.** Settle scope first: would the lesson hold in another project? No → a
+   project doc, rule or wrapper, never a shared generic skill. Yes → the governing skill or doc,
+   shared ones included, edited at its canonical source when the installed copy is a symlink or
+   sync — the proposal says so. Find which skill/doc governs this action (search skills,
+   `AGENTS.md`/`CLAUDE.md`, convention docs); when the repo defines a doc-placement guide (e.g.
    `.agents/docs/README.md`), follow it for locating and creating targets. If one exists, it's the
    target — and if that rule already existed yet failed to steer the agent, the discoverability gap
    *is* the lesson, not a no-op: don't stop at "the rule exists." Diagnose why it didn't fire
@@ -67,9 +71,9 @@ Whenever unsure whether it generalizes, ask the user.
    before drafting: a check for a mechanical lesson (below), a new skill for a recurring workflow,
    a new rule for a standing constraint, or the most fitting doc otherwise. Ask whenever unsure.
    - **Mechanical lesson** (a banned API, an import shape, a file location: any fixed pattern) →
-     propose a deterministic check over prose; no tooling can host it, or the check is declined →
-     write the rule. Read the repo's check scripts and CI first: wire or repair an existing check
-     rather than add one.
+     propose a deterministic check over prose; the check is declined, or no tooling can host it
+     (the proposal says so) → write the rule. Read the repo's check scripts and CI first: wire or
+     repair an existing check rather than add one.
    - **Place by context cost.** Always-loaded docs (`AGENTS.md`/`CLAUDE.md`) hold mostly pointers;
      a rule that matters only when reviewing goes in a review-time doc, not implementation context.
 3. **Draft the edit.** Write the rule into the target as the least text that fully captures it:
@@ -77,7 +81,10 @@ Whenever unsure whether it generalizes, ask the user.
    durable instruction. Prefer tightening or extending an existing rule over appending a new one.
    If the lesson **reverses** an existing rule, surface that explicitly — show the old rule, the
    feedback, and the proposed replacement — and never overwrite it silently; the contradiction may
-   mean the feedback is context-specific, not a true reversal.
+   mean the feedback is context-specific, not a true reversal. A check is drafted outside the
+   repo, with its proof: run it on a reproduction of the mistake (must fail) and on the corrected
+   case (must pass), both results in the proposal; one that cannot run here is labelled untested.
 4. **Apply the edit.** Route the write per the Hard rules — `SKILL.md` → compact-skill-creator, any
    other doc → compact-docs-writer, a check → edited directly — presenting a diff and applying only
-   on approval.
+   on approval. Done when every handed-over or captured lesson is applied, declined by the user,
+   or reported as already covered, each named in the closing message.

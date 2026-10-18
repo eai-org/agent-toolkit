@@ -250,6 +250,7 @@ flowchart TD
   review_code --> simple["explain-in-simple-language"]
   self_review["self-review"] --> fresh_eyes["fresh-eyes-review"]
   self_review -. when available .-> self
+  simple -. when available .-> self
   harden["harden-artifact"] --> fresh_eyes
   harden -. when available .-> plan
   harden -. when available .-> manual
@@ -301,7 +302,7 @@ flowchart TD
   self --> compact_docs["compact-docs-writer"]
   compact --> compact_docs
   memory_doctor["memory-doctor"] --> self
-  refine_pr --> self
+  refine_pr -. when available .-> self
   compact_gov["compact-governing-docs rule"] --> compact
   compact_gov --> compact_docs
 
