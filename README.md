@@ -27,22 +27,21 @@ Tools to create and continuously improve the skills and docs your agents rely on
 Maintenance to run from time to time, keeping your setup tidy and your context sharp.
 
 - **[agentify-project](./skills/agentify-project/SKILL.md)** — make a project agent-ready by
-  converging it toward a canonical agent-neutral structure: a lean AGENTS.md index with
-  progressive disclosure, shared skills, and gitignore hygiene. Re-runnable, and doubles as an
-  audit.
+  converging it toward a canonical agent-neutral structure (a lean AGENTS.md index with
+  progressive disclosure, shared skills, gitignore hygiene). Re-runnable, and doubles as an audit.
 - **[context-checkup](./skills/context-checkup/SKILL.md)** — audit what auto-loads into a
   session's context and spot what can be trimmed to reduce startup tokens.
   [Why this is important](https://medium.com/engineering-in-the-age-of-ai/keep-your-ai-agents-context-window-sharp-7255d83a8949).
-- **[memory-doctor](./skills/memory-doctor/SKILL.md)** — clean up the memory your agents keep
-  auto-accumulating, moving the relevant parts to the right place.
+- **[memory-doctor](./skills/memory-doctor/SKILL.md)** — drain the memory your agents keep
+  auto-accumulating, block by block, moving each entry to the right place or archiving it.
   [More about memory-doctor](https://medium.com/engineering-in-the-age-of-ai/keep-your-ai-agents-memory-clean-and-organized-with-memory-doctor-a79f7174f257).
 
 ### Task workflow
 
 A daily routine for any programming task, following the
 [RPAC workflow](https://medium.com/engineering-in-the-age-of-ai/the-refine-plan-act-pattern-for-agentic-ai-coding-59ee013e4427):
-fetch a ticket, refine it, plan it, split the plan into small tasks, then let a fresh session
-execute them one at a time and consolidate the changes.
+fetch a ticket, refine it, harden it, plan it, harden it again, split the plan into small tasks,
+then let a fresh session execute them one at a time and consolidate the changes.
 
 - **[fetch-ticket](./skills/fetch-ticket/SKILL.md)** — download a ticket from any tracker
   (e.g. GitHub, Jira, Azure DevOps) and save it as a self-contained markdown file.
@@ -51,7 +50,7 @@ execute them one at a time and consolidate the changes.
   attachment the fetch could not download.
 - **[grill-me](./skills/grill-me/SKILL.md)** — get interviewed relentlessly about a plan, design
   or idea, one question at a time, each with a recommended answer, until every branch of the
-  decision tree is resolved. Adapted from
+  decision tree is resolved; ends with a paste-ready list of the settled decisions. Adapted from
   [Matt Pocock's grill-me](https://github.com/mattpocock/skills) (MIT, copyright 2026 Matt Pocock).
 - **[refine-ticket](./skills/refine-ticket/SKILL.md)** — define the "what" of a task: validate the
   ticket — or a raw idea you want to brainstorm — against the codebase, settle open decisions
@@ -64,13 +63,15 @@ execute them one at a time and consolidate the changes.
   before the next phase picks it up: a fresh-context reviewer tests every deviation from the
   ticket and every claim against the code and related tickets, the session challenges each
   finding, and proven mistakes get fixed in the document (say `autoaccept` to skip the asks for
-  those).
+  those). Findings that reveal a durable lesson end in an offer to run self-improve, when
+  installed.
 - **[split-plan-tasks](./skills/split-plan-tasks/SKILL.md)** — break a plan into individually
   reviewable tasks grouped into PR-sized batches, appended to the plan file for a fresh session to
   execute one at a time.
 - **[execute-plan-tasks](./skills/execute-plan-tasks/SKILL.md)** — execute one task of that
   breakdown at a time: implement it, verify it, tick it off in the plan, and hand it back for
-  review before the next.
+  review before the next; when a group is done, hand it to self-review (if installed) before the
+  next group starts.
 - **[create-manual-test-instructions](./skills/create-manual-test-instructions/SKILL.md)** —
   derive manual test steps from a ticket or requirements file, useful for the developer or QA.
 - **[handover](./skills/handover/SKILL.md)** — package a finished change for its reviewers:
@@ -85,31 +86,32 @@ execute them one at a time and consolidate the changes.
 Review helpers that check the codebase while assisting with code or ticket reviews.
 
 - **[fetch-pr-review](./skills/fetch-pr-review/SKILL.md)** — collect the comments left by other
-  reviewers on your PR and save them into a markdown doc, ready to address (or push back on), for
-  example via refine-pr-review.
+  reviewers on your PR and save them into a markdown doc, pinned to the PR head, ready to address
+  (or push back on), for example via refine-pr-review.
 - **[refine-pr-review](./skills/refine-pr-review/SKILL.md)** — go through a fetched PR review
   together, comment by comment — address, partial, or push back — drafting the replies, turning
   the accepted changes into a requirements doc, and recording the durable lessons, which
   self-improve persists when installed. Takes the fetched file, or a PR URL a subagent fetches
   first.
 - **[extract-pr-review-rules](./skills/extract-pr-review-rules/SKILL.md)** — mine the conventions
-  your reviewers actually enforce out of every PR review comment in a repo, saved as a per-reviewer
-  rules doc the review skills read as a checklist; later runs resume from a checkpoint and read
-  only the new comments.
-- **[review-code-assistant](./skills/review-code-assistant/SKILL.md)** — assist you in reviewing a
-  PR or branch.
+  your reviewers actually enforce out of every PR review comment in a repo, saved as a
+  per-reviewer rules doc indexed from your agent entry file so the review skills run it as a
+  checklist; later runs resume from a checkpoint and read only the new comments.
+- **[review-code-assistant](./skills/review-code-assistant/SKILL.md)** — prepare a review of a PR
+  or branch with you: the diff the platform shows, the project's conventions run as a checklist,
+  and candidate comments in diff order, read-only and never posted.
 - **[maintainer-review](./skills/maintainer-review/SKILL.md)** — review someone else's PR as the
   maintainer deciding whether it merges: every prior comment walked, every claim verified, then
   comment, approve or fix the contributor's branch on your go-ahead.
 - **[review-ticket](./skills/review-ticket/SKILL.md)** — triage a ticket or ticket set before
-  anyone picks it up, saving a review with a feature walkthrough and the decisions to raise with
-  the team.
+  anyone picks it up, saving a review with a feature walkthrough and the questions worth raising
+  with the team.
 - **[verify-understanding](./skills/verify-understanding/SKILL.md)** — explain the feature back
-  in your own words before building it: a teach-back conversation over a saved ticket review that
+  in your own words before building it: a teach-back conversation over its ticket review that
   probes and corrects until you are ready to implement.
 - **[check-ticket-implementation](./skills/check-ticket-implementation/SKILL.md)** — check how
-  much of a ticket is already implemented in the code, marking each requirement as done, partial,
-  or not done in a human-readable status report.
+  much of a ticket is already implemented in the code, saving a per-requirement status report
+  (done, partial, not done, or not verifiable).
 - **[fresh-eyes-review](./skills/fresh-eyes-review/SKILL.md)** — let an agent with a fresh
   perspective review a changeset and report its findings back to the main session. [Read more about fresh-eyes-review](https://medium.com/engineering-in-the-age-of-ai/more-powerful-ai-reviews-with-fresh-eyes-bfad221748c0)
 - **[self-review](./skills/self-review/SKILL.md)** — get your changeset merge-ready before
@@ -250,6 +252,7 @@ flowchart TD
   review_code --> simple["explain-in-simple-language"]
   self_review["self-review"] --> fresh_eyes["fresh-eyes-review"]
   self_review -. when available .-> self
+  simple -. when available .-> self
   harden["harden-artifact"] --> fresh_eyes
   harden -. when available .-> plan
   harden -. when available .-> manual
@@ -258,6 +261,7 @@ flowchart TD
   refine -. when available .-> harden
   refine -. when available .-> fetch_ticket
   refine_pr -. when available .-> fetch_pr
+  refine_pr -. when available .-> harden
   plan -. when available .-> harden
   harden -. when available .-> simple
   harden -. when available .-> self
@@ -272,15 +276,19 @@ flowchart TD
   maintainer_review --> simple
   check_impl --> simple
   manual --> simple
-  review_ticket --> verify_understanding["verify-understanding"]
-  review_ticket --> refine
-  verify_understanding --> refine
+  review_ticket -. when available .-> verify_understanding["verify-understanding"]
+  review_ticket -. when available .-> refine
+  verify_understanding -. when available .-> refine
+  verify_understanding -. when available .-> review_ticket
+  review_ticket -. when available .-> check_impl
+  review_ticket -. when available .-> attach
   check_impl["check-ticket-implementation"] --> fetch_ticket
-  refine --> manual["create-manual-test-instructions"]
-  refine --> plan["create-implementation-plan"]
+  refine -. when available .-> manual["create-manual-test-instructions"]
+  refine -. when available .-> plan["create-implementation-plan"]
   plan --> split["split-plan-tasks"]
   split --> execute["execute-plan-tasks"]
-  plan --> handover["handover"]
+  execute -. when available .-> self_review
+  self_review -. when available .-> handover["handover"]
   handover --> express
   simple_rule["write-simple-explanations rule"] --> simple["explain-in-simple-language"]
   refine -. when available .-> simple
@@ -295,13 +303,17 @@ flowchart TD
   grill_me["grill-me"] -. when available .-> simple
   self_review -. when available .-> simple
   agentify -. when available .-> compact_docs
+  agentify -. when available .-> memory_doctor
+  agentify -. when available .-> context_checkup["context-checkup"]
+  context_checkup -. when available .-> agentify
+  context_checkup -. when available .-> memory_doctor
 
   self_rule["self-improve-on-correction rule"] --> self["self-improve"]
   self --> compact["compact-skill-creator"]
   self --> compact_docs["compact-docs-writer"]
   compact --> compact_docs
   memory_doctor["memory-doctor"] --> self
-  refine_pr --> self
+  refine_pr -. when available .-> self
   compact_gov["compact-governing-docs rule"] --> compact
   compact_gov --> compact_docs
 

@@ -20,11 +20,30 @@ from manual invocation.
 Never put a `:` in a skill description — `: ` in the unquoted value breaks strict YAML parsers
 (e.g. Copilot's); avoid the character entirely instead of quoting.
 
+refine-ticket, refine-pr-review, create-implementation-plan and create-manual-test-instructions
+say "Invoke manually only" in the description and carry no `disable-model-invocation` flag on
+purpose: sibling skills and `--name` launches must be able to start them. Do not add the flag.
+
+## Next-phase hand-off
+
+A skill that ends by handing work to another skill prints one copy-pasteable launch command per
+next phase — the syntax of the agent in use, `claude` only the example, session named
+`<phase>-<slug>` — then the alternative of clearing the current session (`/clear`, again only the
+example) and running the next skill in it. A line for an optional sibling says "when available".
+
 ## Markdown
 
 Wrap prose lines at the `max_line_length` in `.editorconfig`. Never break code (fenced blocks or
 inline backtick spans — a command stays on one line even past the limit), tables, URLs, links, or
 YAML frontmatter values to satisfy it.
+
+## Checks
+
+Before shipping a skill, run `skills/compact-skill-creator/scripts/check-skill.sh <skill-dir>`
+(wrap, links, frontmatter, version at HEAD and merge base); any other doc goes through
+`skills/compact-docs-writer/scripts/check-doc.sh <file>`. `test/compact-skill-creator/run.sh` is
+their harness: a behaviour change to either script adds or extends a fixture there in the same
+change.
 
 ## Install scripts
 
