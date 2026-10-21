@@ -1,11 +1,11 @@
 ---
 name: split-plan-tasks
-description: Split a plan into small, individually reviewable tasks grouped into PR-sized batches, appended as a task section at the end of the plan file.
+description: Split a plan into PR-sized groups of small, reviewable tasks appended to the plan file.
 disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "0.4"
+  version: "0.5"
 ---
 
 # Split plan into tasks
@@ -66,7 +66,7 @@ At the end of the plan file — the only edit made:
 - [ ] **1.1 <short imperative>** — steps 2–3
   - *Done when* <what to run or look at to confirm it landed>
   - *Satisfies* AC-1, AC-4
-  - *Commit* `<suggested subject>`
+  - *Commit* `<subject in the repo's commit style>`
 ```
 
 *Try it* goes only on the first group that leaves the app exercisable.
@@ -78,7 +78,7 @@ Done when every task from the approved breakdown is in the file.
 State the plan's project-relative path and the tally (tasks, groups). Then hand off as a single
 copy-pasteable launch command — session name and prompt combined, in the launch syntax of the agent
 tool in use (vendor-agnostic — `claude` below is only the example), naming the session
-`execute-tasks-<slug>` after the plan's slug:
+`execute-tasks-<slug>`, `<slug>` being the plan filename without id prefix or extension:
 
 ```
 claude --name execute-tasks-<slug> "/execute-plan-tasks <plan-path>"
@@ -97,6 +97,6 @@ Done when the path, the tally, and both commands are printed.
 
 ## Boundaries
 
-- The appended section is the only edit: never rewrite the plan's existing content, never touch
-  source files.
+- The task section is the only edit, replaced only when the user chose so in Read the plan; never
+  touch the plan above it, never touch source files.
 - No implementation — the breakdown is the output.

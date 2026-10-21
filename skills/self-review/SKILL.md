@@ -1,11 +1,11 @@
 ---
 name: self-review
-description: Self-review a changeset until merge-ready — a fresh-context reviewer checks it as a maintainer would, the author answers every finding, and a compact report for the PR proves the review happened.
+description: Self-review your changeset until merge-ready, with a fresh-context reviewer and a compact report for the PR.
 disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "0.14"
+  version: "1.0"
 ---
 
 # Self-review
@@ -75,8 +75,10 @@ it runs without its confirmation step — with:
 
 - an intent statement — one or two sentences distilled from the task's ticket or requirements
   when the planning home holds them, never the document itself (it carries the author rationale
-  excluded below), else derived from the branch name and commit subjects; derivation yielding
-  noise (`wip` commits, opaque names) → ask the author for a one-liner, proposing a draft.
+  excluded below); else the open PR's title and description, plus the titles of the issues it
+  links when the forge tooling offers them, distilled the same way; else derived from the branch
+  name and commit subjects; derivation yielding noise (`wip` commits, opaque names) → ask the
+  author for a one-liner, proposing a draft.
   Either way, state the intent used — the author must see what the change is judged against;
 - excluded paths: the planning home and the reports — author rationale and past dispositions must
   never reach the reviewer. Planning files the changeset itself touches ship in the PR, so they
@@ -89,8 +91,7 @@ it runs without its confirmation step — with:
   committed files;
 - the grounded bar: a finding exists only with a nameable concrete failure, violated rule, or
   redundancy — hedged speculation is out, zero findings is a valid outcome;
-- an instruction to the reviewer to report back the harness and model it ran on, and whether it
-  covered every changed file in its scope — naming any it didn't.
+- an instruction to the reviewer to report back the harness and model it ran on.
 
 Done when the reviewer has returned its findings — possibly none — its provenance, and its
 coverage.
@@ -280,5 +281,6 @@ Done when all are printed.
 
 ## Boundaries
 
-- Files written: the report, and the fixes the author approved during the walk — nothing else.
+- Files written, scratch aside: the report, and the fixes the author approved during the walk —
+  nothing else.
 - Read-only git plus `git fetch`; no commit, push, or PR operation — publishing is the author's.
