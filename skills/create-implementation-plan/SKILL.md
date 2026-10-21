@@ -3,7 +3,7 @@ name: create-implementation-plan
 description: Turn a refined requirements document into a structured implementation PLAN.md a fresh session can execute. Planning only — decides the "how", not the "what". Invoke manually only.
 license: MIT
 metadata:
-  version: "1.13"
+  version: "1.14"
 ---
 
 # Create Implementation Plan
@@ -58,6 +58,11 @@ design, not a separate phase that runs before planning starts.
    verbatim" is a decision settled line by line, never by the file's existence. A technical claim
    a step rests on ("X needs exactly Y") is verified against a doc, a compile or a test, never
    read off what the prior art happens to do.
+
+   **Walk every point a run can stop** when steps change live state in stages (a deploy, a
+   migration, a swap): each step, an abort, a timeout, a lost worker, an automatic re-run or
+   restart. At each, settle what the target is left in and what the log, notifications and any
+   manual-fix advice say there. Hazards recorded in related plans' decisions logs are prior art.
 
    **Grill the user along the way.** Whenever the approach hits a fork you can't settle from the
    code, stop and resolve it with the user before continuing — don't guess, and don't defer the

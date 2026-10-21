@@ -1,24 +1,27 @@
 ---
 name: explain-in-simple-language
-description: Explain code, a decision, a recap, or a question to the user, or write a document a human reads to understand something, in simple language that a fluent but often non-native developer who did not see what the agent saw understands on the first read. Use when explaining or asking the user anything, when writing a review, report, or brief a human reads (never text sent under the user's name), or when the user asks for simpler words or says they did not understand. Changes the wording only, never the content.
+description: Explain code, a decision, a recap, or a question to the user, or write a document a human reads, so a fluent but often non-native reader understands it on the first read. Use when explaining or asking the user anything, when writing a review, report, or brief a human reads (never text sent under the user's name), or when the user asks for simpler words or says they did not understand.
 license: MIT
 metadata:
-  version: "0.2"
+  version: "1.0"
 ---
 
 # Explain in simple language
 
-Comprehension is the only goal: the reader understands on the first read. Defines only the wording
-of what you say to the user or write in a document a human reads; what to say (evidence, scope,
-structure) stays with whatever asked for the text. Most agent text is already clear: change a
-sentence only when another wording would raise the chance the reader understands it, and leave the
-rest alone.
+Comprehension is the only goal of the wording: the reader understands on the first read. Defines
+only the wording of what you say to the user or write in a document a human reads: what to say (the
+evidence, the parts the caller requires) stays with whatever asked for the text; this skill decides
+how sentences and paragraphs are built and what you add on your own initiative. Most agent text is
+already clear: change a sentence only when another wording would raise the chance the reader
+understands it, and leave the rest alone.
 
 ## The reader
 
 A competent developer, fluent in English but often not native, who did not see what you just saw:
-the files, the tool output, your own reasoning. Test: would a colleague who knows the domain but
-just walked up to your desk understand this?
+the files, the tool output, your own reasoning. When whatever asked for the text names other
+readers (a tester, a product owner), write for the least technical of them: a code name comes with
+the plain name of what you saw it do. Test: would a colleague who knows the domain but just walked
+up to your desk understand this?
 
 ## Rules
 
@@ -27,10 +30,13 @@ just walked up to your desk understand this?
   "the class serves both directions, and the index only matters in one of them." Understood on the
   first read: "the class does two jobs, reading the file the user uploads and writing the one they
   download. The index only matters for the reading job." Longer, and better.
+- **Only what you saw.** Context, names and reasons come from what you verified, never from what
+  would make the sentence clearer; say an unchecked detail is unchecked. Clarity never beats
+  accuracy.
 - **Words.** Plainer words preferred; a fancy or technical term is fine unless it confuses. Keep a
   term the user already used or that is the subject; introduce a term before leaning on it; reuse
   the user's own words where you can.
-- **Structure.** One idea per sentence, one point per paragraph. Concrete case before general
+- **Sentences.** One idea per sentence, one point per paragraph. Concrete case before general
   mechanism.
 - **Depth.** Answer what was asked, at the depth it was asked, then stop: no history, alternatives,
   or adjacent facts unless the answer can't stand without them or whatever asked for the text

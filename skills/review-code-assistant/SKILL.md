@@ -1,11 +1,11 @@
 ---
 name: review-code-assistant
-description: Assist a human reviewing a pull request or branch locally — diff a source branch against its target (auto-detected or from a PR link) and return concise, human-voice review comments with file and line locations. Read-only, never posts.
+description: Assist a human reviewing a pull request or branch locally, read-only and never posting.
 disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.12"
+  version: "1.13"
 ---
 
 # Review code assistant
@@ -13,7 +13,7 @@ metadata:
 Assist a human's local code-review pass: read the diff, understand the intent, surface the real
 issues. You suggest candidate comments; the human decides what to post.
 Single-pass and lightweight. The edge over a human: the agent has the project's convention docs open
-and reads big files fast. Output is local text only.
+and reads big files fast.
 
 ## Resolve what to review
 
@@ -23,26 +23,38 @@ Accept input flexibly; a PR link is optional:
 2. **One branch** ("review branch xxxx") — diff it against the auto-detected target.
 3. **Two branches** ("review xxxx against yyyy") — explicit source and target.
 4. **Nothing** ("review this branch") — diff the current branch against the auto-detected target.
+   A detached HEAD → ask which branch is under review; an empty diff → probably a wrong target
+   (typical: a fork's default branch already holding the commits), say so and ask.
 
 (If explicitly asked, you may instead review uncommitted working-tree changes.)
 
 **Diff base:** always a three-dot merge-base diff, `git diff <target-ref>...<source-ref>`, so it
 matches exactly what the platform shows as the PR with no noise from commits that landed on target
-after the fork. Fall back to two-dot only when there is no common ancestor. No checkout is needed
-to produce the diff.
+after the fork. No common ancestor: usually a shallow clone or a wrong target. Deepen with
+`git fetch --unshallow` and retry, else ask; never diff two-dot against the target.
 
-**Branch freshness:** always `git fetch` first — never `git pull`: the diff needs no checkout or
-working-tree update. Then diff each branch's freshest ref, stating which you used: the
-remote-tracking ref when the branch is on a remote and the local ref isn't ahead of it; the local
-ref when the branch exists only locally or carries unpushed commits (never silently review a stale
-pushed state); for a fork PR's source, absent from `origin`, the fork remote or the platform's PR
-ref (e.g. `git fetch origin pull/<N>/head` on GitHub). If a fetch fails or a ref can't be found,
-say so and ask how to proceed rather than review stale or wrong refs.
+**Branch freshness:** always `git fetch` the target's and the source's remotes first — never
+`git pull`: the diff needs no checkout or working-tree update. Then diff each branch's freshest
+ref, stating which you used and its SHA:
+- target: its remote-tracking ref, `upstream`'s before `origin`'s (for a PR link, the remote of
+  the PR's base repo); the local ref only when the branch exists only locally;
+- source: the remote-tracking ref (for a PR link, on the remote of the PR's head repo, else
+  `upstream`'s before `origin`'s) when the local ref isn't ahead of it; the local ref when the
+  branch exists only locally or carries unpushed commits (never silently review a stale pushed
+  state); for a fork PR with no fork remote, the platform's PR ref on the base repo's remote (e.g.
+  `git fetch <remote> pull/<N>/head` on GitHub), its SHA read from `FETCH_HEAD` before the next
+  fetch overwrites it.
+
+If a fetch fails or a ref can't be found, say so and ask how to proceed rather than review stale
+or wrong refs.
 
 **Target auto-detection** (when not supplied and not from a PR link), in order:
-1. `git symbolic-ref refs/remotes/origin/HEAD` — the remote default branch.
-2. Else check which usual candidates exist (`main`, `master`, `develop`/`development`); exactly one
-   match wins.
+1. The default branch of the `upstream` remote when one exists (fork workflow), else of `origin`,
+   via `git ls-remote --symref <remote> HEAD`, never the often-absent local
+   `refs/remotes/<remote>/HEAD`.
+2. That failing (e.g. offline), the sole existing candidate among `main`, `master`,
+   `develop`/`development` (preferring `upstream`'s remote-tracking ref, then `origin`'s, then the
+   local branch).
 3. Multiple matches or any ambiguity → ask, never guess.
 
 A PR link always overrides auto-detection (its target comes from the PR metadata; PRs are not always
@@ -51,8 +63,9 @@ against the main branch). Always state which target was chosen so the user can c
 ## Enrich from the PR link
 
 When a URL is given, identify the platform from its host and fetch through whatever is connected
-(a GitHub tool, an Azure DevOps tool, etc.) — use the intent, not a fixed tool. If no matching
-tool is available, or no link was given, degrade gracefully to a local-diff-only review, or ask.
+(a GitHub tool, an Azure DevOps tool, etc.) — use the intent, not a fixed tool. No link given:
+review the local diff and say the PR context was not read. A link given but no tool to read it:
+ask for the branches rather than guess them.
 
 - Use the title and description to understand intent.
 - Follow linked issues and PRs: a linked issue's description is part of the intent, and a linked
@@ -75,15 +88,22 @@ nothing produces no output.
 - **Intent mismatch** — does the diff actually do what the title and description claim; anything
   missing, and a title that oversells or hides a behaviour change.
 - **Still needed** — the target may have gained the same fix since the branch forked; a change
-  that no longer applies is itself a finding.
+  that no longer applies is itself a finding. Check with
+  `git log --oneline <merge-base>..<target-ref> -- <changed paths>` and read any hit that touches
+  the same logic.
 - **Realistic risk** — security or performance footguns that genuinely apply here, not an audit.
 - **Leftovers** — debug prints, commented-out code, stray TODOs, accidentally committed files.
 
-Before reviewing, load the project's own convention docs (CLAUDE.md/AGENTS.md and any relevant
-codestyle/contributing docs), then run them as a checklist, not as background reading, against
-every changed file and the submission itself (title, description, linked issues). A clear
+Before reviewing, load the project's own convention docs (CLAUDE.md/AGENTS.md, any relevant
+codestyle/contributing docs, and the project's PR-review rules doc when one exists, default
+`.agents/docs/pr-review-rules.md`), then run them as a checklist, not as background reading,
+against every changed file and the submission itself (title, description, linked issues). A clear
 violation is a first-class, citable comment and the skill's edge over a human, easiest to miss in
 new test files (test-structure conventions) and on new class members (visibility and naming).
+State which ref's docs the checklist ran against. When the target ref's governing docs differ from
+the checkout's (`git diff <target-ref> -- AGENTS.md CLAUDE.md` and the docs they reference), say so
+and, on a standalone run, use the target's copy via `git show <target-ref>:<path>`; under
+maintainer-review its step 1 rule applies.
 
 ## Grounded, not speculative
 
@@ -119,7 +139,7 @@ from a single file. When a quick trace would settle whether the finding holds, r
 
 Read big and generated files too (lockfiles, generated output) — fast reading is the edge over a
 human — but apply the same bar before flagging anything (an unexpected dependency added, a
-generated or binary file committed by accident). Otherwise skip them silently.
+generated or binary file committed by accident). Nothing to flag there → say nothing about them.
 
 **Zero comments is a valid and common outcome.** Finding few or none is success, not failure. Never
 pad to look thorough. No praise, no restating what the code does, no test-coverage lectures, nothing
@@ -134,10 +154,12 @@ excepted — actually invoke **/explain-in-simple-language** and follow it — r
 memory does not count. Not installed: plain words, one idea per sentence, a short TLDR opening a
 long text, and no "here" or "this call" standing in for something the user hasn't seen.
 
-- Lead with one short sentence recapping what the PR does, to show the change was understood.
+- Lead with one short sentence recapping what the PR does and naming the reviewed SHA, to show the
+  change was understood.
 - Then the comment list, or a one-line `Looks good, no comments.`
 - Say plainly what you verified and what you could not (e.g. behaviour only testable at runtime),
-  inside the finding when it concerns only that one.
+  inside the finding when it concerns only that one, else in one line right after the recap, where
+  any changed file you did not read is also named.
 - Each item: a `###` heading holding its sequential finding number and the clickable `path:line`,
   the explanation beneath it, then the optional suggested comment. Put a full-width heavy rule (a
   row of ~40 `━`) above each finding and one more after the last, so the list is bracketed top and
@@ -210,10 +232,8 @@ long text, and no "here" or "this call" standing in for something the user hasn'
 ## Boundaries
 
 - **Read-only, one exception.** Only read-only git (`diff`, `log`, `show`, `merge-base`,
-  `branch --list`, `symbolic-ref`) and read-only platform fetches, plus `git fetch` (the sole
-  allowed ref update — never `git pull`). Never check out other branches, modify the working tree,
-  post/reply/resolve/vote on the PR, or write files (unless the user explicitly asks to save the
-  output).
-- **Fetch before reviewing.** Always `git fetch` the refs under review first so the diff reflects
-  the latest commits. Nothing more: no checkout of other branches into the working tree, no
-  destructive ref ops, no prune, no clobbering uncommitted work.
+  `branch --list`, `symbolic-ref`, `ls-remote`) and read-only platform fetches, plus `git fetch` of
+  the refs under review, always run first so the diff reflects the latest commits (`--unshallow`
+  included; never `git pull`, never `--prune` or any other destructive ref op). Never check out
+  other branches, modify the working tree or clobber uncommitted work, post/reply/resolve/vote on
+  the PR, or write files unless the user explicitly asks to save the output.
