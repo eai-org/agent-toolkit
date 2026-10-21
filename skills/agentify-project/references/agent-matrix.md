@@ -20,6 +20,9 @@ project's onboarding doc.
 
 ## Verified rows
 
+A row older than six months is re-checked against the agent's official docs before use, like any
+researched agent.
+
 | Agent | Detection traces | Entry file(s) | Include syntax | Project skills dir | Gitignore entries |
 | --- | --- | --- | --- | --- | --- |
 | Claude Code | `CLAUDE.md`, `.claude/` | `AGENTS.md` directly (v2.1.277+) unless a `CLAUDE.md`, `.claude/CLAUDE.md` or `CLAUDE.local.md` exists in the working directory or above — then those only | `@AGENTS.md` import in a kept CLAUDE.md; Claude-specific lines may follow it | `.claude/skills/` | `.claude/plans/**`, `.claude/worktrees/**`, `.claude/settings.local.json`, `.claude/__pycache__`, `CLAUDE.local.md` |

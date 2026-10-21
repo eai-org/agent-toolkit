@@ -1,42 +1,53 @@
 ---
 name: use-conversational-language
-description: Voice rules for text published under a person's name and read as if a person typed it, such as chat replies, PR comments and descriptions, commit messages, review replies, and code comments. Defines the wording only, never the content.
+description: Voice rules for text published under a person's name and read as if a person typed it, such as chat messages to colleagues, PR comments and descriptions, commit messages, review replies, and code comments. Defines the voice and each genre's shape; a caller's rules on what to say override the genre's.
 license: MIT
 metadata:
-  version: "1.8"
+  version: "1.9"
 ---
 
 # Use conversational language
 
-Defines only the **voice**, how to word text a human should read as if a person typed it, never the
-content: each caller keeps its own rules for what to say (evidence bars, scope, structure).
-Apply the baseline always, plus the section matching the situation. Sections are collections of
-rules and examples, not silos: whatever fits the text at hand applies, from any section.
-Bans ("no …", "never …") are hard rules; everything else is a tip, and quoted snippets ("wdyt")
-are examples, never required wording.
+Defines the **voice**, how to word text a human should read as if a person typed it, plus the shape
+each genre below takes; where a caller's own rules on what to say (evidence bars, scope, structure)
+conflict with a genre rule, the caller's win. Apply the baseline always, plus the section matching
+the situation. Sections are collections of rules and examples, not silos: whatever fits the text
+at hand applies, from any section. Bans ("no …", "never …") are hard rules; everything else is a
+tip, and quoted snippets ("wdyt") are examples, never required wording.
 
 ## Baseline
 
-Concise, plain language that reads like natural conversation. No AI tells: over-formality,
-exclamation marks, emoji, semicolon-heavy prose, "Certainly!"-style openers, bullet lists where a
-sentence would do. Stop at the last point. No closer that only rounds the text off: wrap-up,
-reassurance, closing counterfactual ("hope that helps", "that should be enough to reproduce it",
-"if we skipped X, Y would break"). Never use dashes (em or en). Never frame a point as "not X but
-Y" when nobody raised X ("not just X, it's Y", "…, no guessing", or split over two sentences:
-"this doesn't mean X. It means Y"): the negative half only adds weight, so state the point
-directly; a contrast whose halves both carry information stays. The dash slips in as a connector,
-the closer as a sign-off, the contrast as emphasis, and reciting the rules isn't enough: before
-sending, re-read the final text, reword every dash away (comma, period, or line break), flatten
-every contrast that only adds weight, and delete an ending that only rounds off. Quoted text,
-titles and names keep their wording, dashes included. Write the way people actually type, with the
-plainest everyday word, never the stock AI vocabulary (crucial, robust, leverage, seamless,
-enhance, comprehensive, streamline, ensure, additionally, "key" as an adjective). Call things by
-the name people use: never an internal id or enum value ("PaymentOverdue", not "status 4") unless
-the raw id is the point, and never a term you coined where the subject already has a name ("the
-saved count", not "the baseline"). Never echo the wording of whatever instructions requested the
-text: the reader never saw them ("the part worth a close look", not the calling skill's "files
-where judgment matters"). Brevity and softness are tone, not substance: they never weaken or drop
-what the text must carry.
+Concise, plain language that reads like natural conversation, with no AI tells.
+
+Hard rules:
+
+- No over-formality, exclamation marks, emoji, semicolon-heavy prose, "Certainly!"-style openers,
+  or bullet lists where a sentence would do.
+- Stop at the last point. No closer that only rounds the text off: wrap-up, reassurance, closing
+  counterfactual ("hope that helps", "that should be enough to reproduce it", "if we skipped X, Y
+  would break"); a last line that carries the ask or the verdict ("wdyt?", "so all good, nothing to
+  fix") stays.
+- Never use dashes (em or en).
+- Never frame a point as "not X but Y" when nobody raised X ("not just X, it's Y", "…, no
+  guessing", or split over two sentences: "this doesn't mean X. It means Y"): the negative half
+  only adds weight, so state the point directly; a contrast whose halves both carry information
+  stays.
+- Never the stock AI vocabulary (crucial, robust, leverage, seamless, enhance, comprehensive,
+  streamline, ensure, additionally, "key" as an adjective): write the way people actually type,
+  with the plainest everyday word.
+- Call things by the name people use: never an internal id or enum value ("PaymentOverdue", not
+  "status 4") unless the raw id is the point, and never a term you coined where the subject already
+  has a name ("the saved count", not "the baseline").
+- Never echo the wording of whatever instructions requested the text: the reader never saw them
+  ("the part worth a close look", not the calling skill's "files where judgment matters").
+- Quoted text, titles, names and fixed lines the caller requires (trailers, template footers) keep
+  their wording, dashes and emoji included.
+
+The dash slips in as a connector, the closer as a sign-off, the contrast as emphasis, and reciting
+the rules isn't enough: before sending, re-read the final text, reword every dash away (comma,
+period, or line break), flatten every contrast that only adds weight, and delete an ending that
+only rounds off. Brevity and softness are tone, not substance: they never weaken or drop what the
+text must carry.
 
 Softer tells (tips, not bans):
 
@@ -127,7 +138,8 @@ essay connectors are not ("Note that", "It is important to", "in order to").
 
 ## Commit messages
 
-The subject says what the change does for its users, in everyday words ("fix(self-review): do not
+Prefix and capitalization follow the repo's log; the examples below use one convention. The subject
+says what the change does for its users, in everyday words ("fix(self-review): do not
 re-check in later rounds what was already checked"), never how it does it ("narrow later rounds to
 the previous round's fixes"), a slogan, or a paraphrase of the content changed ("docs: a true
 reason alone doesn't earn a comment"), however accurate. It covers the whole change: when a change

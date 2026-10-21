@@ -11,7 +11,7 @@ N="${2:?usage: judge.sh <run-dir> <iteration-number>}"
 TEXTS="$RUN/iter$N/texts"
 OUT="$RUN/iter$N/verdicts"
 SCEN="$RUN/scenarios.tsv"
-PANEL="${PANEL:-claude-fable-5 claude-opus-4-8 claude-sonnet-5}"
+PANEL="${PANEL:-fable opus sonnet}"
 
 shopt -s nullglob
 texts=("$TEXTS"/*.txt)
