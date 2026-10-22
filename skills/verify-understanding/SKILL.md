@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.2"
+  version: "1.3"
 ---
 
 # Verify understanding
@@ -22,12 +22,15 @@ state kept between runs.
 A `.TICKET-REVIEW.md`. Read it and the ticket files and parent it links. A reference that exists
 only as a tracker URL (no local file) may be read from the tracker at conversation time. A ticket
 with a newer `-vN` fetch beside the one the review read has likely overtaken it: say so, read the
-newest ticket files, and treat the review's open questions as possibly answered there. The
-`.REQUIREMENTS.md` of the newest ticket file's base (none: the ticket's latest across `-vN`
-versions) is read for its Overrides, which win over the ticket text.
+newest ticket files, and treat the review's open questions as possibly answered there. Then look
+for a `.TICKET-REVIEW.md` under the newest ticket file's base, flat beside it or inside its `-vN/`
+directory: one that exists and is not the input → say so and run the conversation from it, the
+given review at most context; none → the overtaken handling stands. The `.REQUIREMENTS.md` of the
+newest ticket file's base (none: the ticket's latest across `-vN` versions) is read for its
+Overrides, which win over the ticket text.
 Given a ticket file and no review, never improvise one: say a review is needed and stop, handing
 off `/review-ticket <ticket-file>` as a launch command named `review-<slug>` (format at the close)
-when review-ticket is installed.
+when review-ticket is available.
 
 ## The conversation
 
@@ -47,7 +50,7 @@ element with its user-facing term in parentheses — "the client area (klantport
 
 Done when the user has correctly produced — corrections absorbed — the journey, why the feature
 exists, and every input ticket's contribution: enough to start implementing. Close with a short
-wrap-up naming anything that stayed shaky, then, only when refine-ticket is installed, hand off
+wrap-up naming anything that stayed shaky, then, only when refine-ticket is available, hand off
 one copy-pasteable launch command per ticket in the set's suggested execution order, in the syntax
 of the agent tool in use (`claude` is only the example):
 `claude --name refine-<slug> "/refine-ticket <ticket-file>"`; then the alternative, the tool's

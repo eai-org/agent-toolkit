@@ -4,7 +4,7 @@ description: Author or refine a skill for maximum token economy without losing i
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
-  version: "1.23"
+  version: "1.24"
 ---
 
 # Compact skill creator
@@ -176,7 +176,12 @@ disclosed doc).
    component, unless the author names a value — never a question put to the user. Skip it only
    when the version was already raised, uncommitted or on the branch against its target, verified
    from git (version at HEAD and at the merge base vs working tree), never from session memory:
-   the repo may have moved concurrently. Done when the skill and every place the project catalogs
+   the repo may have moved concurrently. A version line saying `base unknown` or `no merge base`
+   never reads as "not bumped": resolve the target as self-review does — the `upstream` remote's
+   default branch when one exists, else `origin`'s, via `git ls-remote --symref <remote> HEAD`;
+   offline, the sole existing candidate among `main`, `master`, `develop`/`development` — and
+   rerun the script with `CHECK_SKILL_BASE=<ref>`; still unknown → ask the user only which branch
+   is the target, never whether to bump. Done when the skill and every place the project catalogs
    its skills (a README entry, a manifest or dependency list, a relationship graph) carry the
    change, including any hard dependency a new cross-reference adds; find them by searching the
    repo for a sibling skill's name.

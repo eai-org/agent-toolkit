@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.6"
+  version: "1.7"
 ---
 
 # Review ticket
@@ -26,8 +26,9 @@ asking whoever owns the requirements.
   fetch-ticket inline.
 
 Missing attachments (a non-empty warn list, or a ticket file marking one `not downloaded`) stop for
-one question: supply the files now (`/attach-to-ticket` when installed) or review without them;
-the review then names each missing attachment as unchecked material.
+one question: supply the files now (`/attach-to-ticket` when available) or review without them.
+An `/attach-to-ticket` run in answer resumes the review with the files it saved; each attachment
+still missing is named as unchecked material.
 
 If the input is ambiguous or unrecognized, ask rather than guess.
 
@@ -213,7 +214,7 @@ question bar dropped, with the default assumed.
 
 Close by handing off each next phase as a copy-pasteable launch command in the syntax of the agent
 tool in use (`claude` is only the example), session named `<phase>-<slug>`. A line names a skill
-only when that skill is installed; the refine lines only with no blockers, one per ticket in the
+only when that skill is available; the refine lines only with no blockers, one per ticket in the
 set's suggested execution order:
 
 ```
@@ -223,12 +224,15 @@ claude --name refine-<slug> "/refine-ticket <ticket-file>"
 
 Then the alternative: the tool's clear command (`/clear` is only the example) followed by the same
 slash command. When Today already seems to deliver the After, also suggest
-`/check-ticket-implementation <ticket-file>`, only when that skill is installed.
+`/check-ticket-implementation <ticket-file>`, only when that skill is available.
 
 ## Boundaries
 
 - **Read-only on tracker and code.** Never modify the tracker (comments, transitions, edits) or any
-  source file. The only files written are fetch-ticket's outputs and the `.TICKET-REVIEW.md`.
+  source file. The only files written are fetch-ticket's outputs, the `.TICKET-REVIEW.md`, and
+  what an `/attach-to-ticket` run in answer to the attachments question writes (assets beside the
+  ticket, the ticket's attachment entries, the appended Context line of an existing same-ticket
+  REQUIREMENTS).
 - **Non-interactive on requirements.** The questions are the output: never grill the user to
   resolve them. Ask the user only operational things (an ambiguous input, a fetch that needs
   input, the set-scope call, whether extra context is worth fetching, missing repo paths, missing

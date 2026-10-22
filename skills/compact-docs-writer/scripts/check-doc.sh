@@ -6,7 +6,7 @@
 # inside backtick spans are templates, not checked). Skipped for the length check:
 # YAML frontmatter, fenced code, table rows, lines holding a URL or a link, and a line whose
 # overflow starts inside a backtick span (a command stays on one line). No max_line_length
-# applies → the length check is skipped.
+# applies → the length check is skipped. A CRLF file is checked as its LF form.
 #
 # Usage: check-doc.sh <file.md> [...]
 #   CHECK_DOC_AS=<path>  check a single file as if it lived at <path> (a draft in a scratch dir:
@@ -104,6 +104,7 @@ check_file() {
   max="$(max_line_length "$cfgdir")"
   while IFS= read -r line || [ -n "$line" ]; do
     n=$((n + 1))
+    line="${line%$'\r'}"
     if [ "$n" -eq 1 ] && [ "$line" = "---" ]; then in_fm=1; continue; fi
     if [ "$in_fm" -eq 1 ]; then [ "$line" = "---" ] && in_fm=0; continue; fi
     if [ -n "$fence_re" ]; then

@@ -237,17 +237,18 @@ Other adapters, selecting individual pieces, and the OpenPack manifest are cover
 
 ## Artifact relationships
 
-Some skills and rules form a workflow or rely on each other. Hard dependencies are encoded in
-[`openpack.json`](openpack.json); suggested next steps live in the skill text.
+Solid arrows are the `requires` pairs declared in [`openpack.json`](openpack.json); dotted "when
+available" arrows are optional siblings a skill uses when present, as a next-phase hand-off or an
+in-run call; dotted "informs" arrows are rules shaping a skill's output.
 
 ```mermaid
 flowchart TD
-  fetch_ticket["fetch-ticket"] --> refine["refine-ticket"]
+  fetch_ticket["fetch-ticket"] -. when available .-> refine["refine-ticket"]
   fetch_ticket -. when available .-> attach["attach-to-ticket"]
   attach -. when available .-> refine
-  fetch_pr["fetch-pr-review"] --> refine_pr["refine-pr-review"]
+  fetch_pr["fetch-pr-review"] -. when available .-> refine_pr["refine-pr-review"]
   refine_pr --> refine
-  refine_pr --> plan
+  refine_pr -. when available .-> plan
   refine_pr --> express["use-conversational-language"]
   review_code["review-code-assistant"] --> express
   review_code --> simple["explain-in-simple-language"]
@@ -286,7 +287,9 @@ flowchart TD
   check_impl["check-ticket-implementation"] --> fetch_ticket
   refine -. when available .-> manual["create-manual-test-instructions"]
   refine -. when available .-> plan["create-implementation-plan"]
-  plan --> split["split-plan-tasks"]
+  refine -. when available .-> express
+  refine -. when available .-> attach
+  plan -. when available .-> split["split-plan-tasks"]
   split --> execute["execute-plan-tasks"]
   execute -. when available .-> self_review
   self_review -. when available .-> handover["handover"]
@@ -301,6 +304,7 @@ flowchart TD
   compact -. when available .-> simple
   memory_doctor -. when available .-> simple
   agentify["agentify-project"] -. when available .-> simple
+  agentify -. when available .-> self
   grill_me["grill-me"] -. when available .-> simple
   self_review -. when available .-> simple
   agentify -. when available .-> compact_docs

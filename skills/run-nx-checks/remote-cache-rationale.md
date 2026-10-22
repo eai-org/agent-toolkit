@@ -4,12 +4,12 @@ Local affected runs gain little from a remote read-through cache, and inside the
 side effects of the cloud backends are actively harmful. Since we can't always tell from outside
 which backend (if any) is in use, the skill disables them all, always, with three env vars:
 
-- `NX_SKIP_REMOTE_CACHE=true` — Nx 20+ reads it before loading any remote-cache plugin
+- `NX_SKIP_REMOTE_CACHE=true` — Nx 20.4 and later read it before loading any remote-cache plugin
   (`tasks-runner/cache.ts`), so it covers Powerpack (`@nx/azure-cache`, `@nx/s3-cache`,
   `@nx/gcs-cache`), `@nx/shared-fs-cache` and the self-hosted HTTP cache alike.
 - `NX_NO_CLOUD=true` — gates Nx Cloud (the SaaS read-through cache) on every Nx version.
 - `NX_POWERPACK_CACHE_MODE=no-cache` — the Powerpack backends' own switch (shared
-  `powerpack-utils`), needed on Nx 19, which does not know `NX_SKIP_REMOTE_CACHE`. It
+  `powerpack-utils`), needed before Nx 20.4, which introduced `NX_SKIP_REMOTE_CACHE`. It
   short-circuits both reads and writes, so the cloud SDK's credential chain never starts.
 
 Unknown vars are no-ops, so the full prefix is safe on any version and backend.

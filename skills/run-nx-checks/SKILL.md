@@ -5,7 +5,7 @@ context: fork
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 license: MIT
 metadata:
-  version: "1.9"
+  version: "1.10"
 ---
 
 # Run Nx Checks
@@ -21,8 +21,8 @@ into the remote cache by dropping the remote-cache-off prefix. Default `cpuCount
 (min 1); count cores with `node -p 'os.cpus().length'`.
 Default project scope = affected. Default remote-cache state = off (see Steps).
 
-`$base`, `$cpuCount` and `$projectName` in the commands below are placeholders: substitute their
-values (a fresh shell per Bash tool call holds none of them).
+`$base`, `$cpuCount`, `$projectName` and `$snap` in the commands below are placeholders:
+substitute their values (a fresh shell per Bash tool call holds none of them).
 
 ## Workspace
 
@@ -38,10 +38,10 @@ NX_DAEMON=true npx nx daemon --start >/dev/null 2>&1 || true
 ```
 
 Snapshot the dirty files, so the final report can name every file the run changes (`hash-object`
-without `-w` writes nothing):
+without `-w` writes nothing); substitute the printed path for `$snap` there:
 
 ```bash
-git ls-files -z -mo --exclude-standard | while IFS= read -r -d '' f; do echo "$(git hash-object "$f" 2>/dev/null) $f"; done > "${TMPDIR:-/tmp}/nx-checks-before.txt"
+snap=$(mktemp -d "${TMPDIR:-/tmp}/nx-checks.XXXXXX") && git ls-files -z -mo --exclude-standard | while IFS= read -r -d '' f; do echo "$(git hash-object "$f" 2>/dev/null) $f"; done > "$snap/before.txt" && echo "snap=$snap"
 ```
 
 ### Affected base
@@ -114,17 +114,18 @@ lib).
 Always prefix each task-running nx command (steps 1–5 and the flaky retry; `daemon` and
 `show projects` run no tasks) with the remote-cache-off env vars inline:
 `NX_SKIP_REMOTE_CACHE=true NX_NO_CLOUD=true NX_POWERPACK_CACHE_MODE=no-cache`.
-`NX_SKIP_REMOTE_CACHE` turns off every remote cache on Nx 20+; the other two cover Nx 19 and
-Powerpack. Unknown vars are no-ops, so the prefix is safe whatever remote-cache backend (if any)
-the repo uses.
+`NX_SKIP_REMOTE_CACHE` turns off every remote cache on Nx 20.4 and later; the other two cover
+earlier versions and Powerpack. Unknown vars are no-ops, so the prefix is safe whatever
+remote-cache backend (if any) the repo uses.
 
 The invariant: **remote cache always off (unless the user passed `--remote-cache`), local cache
 always on** — always disable, never autodetect (a passing shell-side auth check doesn't predict
 the in-process credential chain). Why: [remote-cache-rationale.md](remote-cache-rationale.md).
 
 If the user explicitly passed `--remote-cache`, drop the prefix. Expect pipeline hits on `build`
-only: `--fix` and `--maxWorkers=1` are hashed overrides, so lint and test entries never match a
-pipeline run without them — keep the flags regardless.
+(same `--configuration`) and `typecheck`; on `test` only in the single-project form and the flaky
+retry (the affected run's `--maxWorkers=1` is a hashed override); never on `lint` (`--fix`) — keep
+the flags regardless.
 
 **Always keep the local cache on.** The env vars above disable only the _remote_ read-through
 cache; the local Nx cache must stay enabled so unchanged targets are replayed instead of re-run.
@@ -145,7 +146,7 @@ as assignments).
 2. Format — `NX_SKIP_REMOTE_CACHE=true NX_NO_CLOUD=true NX_POWERPACK_CACHE_MODE=no-cache npx nx format:write --base=$base`
    (both modes).
 3. Typecheck — `NX_SKIP_REMOTE_CACHE=true NX_NO_CLOUD=true NX_POWERPACK_CACHE_MODE=no-cache npx nx affected -t typecheck --base=$base --parallel=$cpuCount`
-   (or `NX_SKIP_REMOTE_CACHE=true NX_NO_CLOUD=true NX_POWERPACK_CACHE_MODE=no-cache npx nx typecheck $projectName`).
+   (or `NX_SKIP_REMOTE_CACHE=true NX_NO_CLOUD=true NX_POWERPACK_CACHE_MODE=no-cache npx nx typecheck $projectName --parallel=$cpuCount`).
    Without the target, `affected` runs nothing and exits 0 and the single-project form errors with
    "cannot find configuration": report typecheck as n/a, never as failing.
 4. Test — `NX_SKIP_REMOTE_CACHE=true NX_NO_CLOUD=true NX_POWERPACK_CACHE_MODE=no-cache npx nx affected -t test --base=$base --parallel=$cpuCount --maxWorkers=1`
@@ -164,9 +165,10 @@ Why `--configuration=production` and `--maxWorkers=1`: [flags-rationale.md](flag
   fails as an unknown option.
 - **Affected/run-many only, not single-project.** With one project there's no project-level
   fan-out, so capping to one worker just serializes it — let a single project use all cores.
-- Same reason, `--parallel` is dropped from single-project **lint**, **typecheck** and **test**
-  (one task each — no fan-out). It stays on single-project **build**, because `build` has
-  `dependsOn: ["^build"]`, so building one project fans out across its whole dependency chain.
+- Same reason, `--parallel` is dropped from single-project **lint** and **test** (one task each —
+  no fan-out). It stays on single-project **typecheck** and **build**, because both fan out across
+  the whole dependency chain: `build` has `dependsOn: ["^build"]` and the inferred `typecheck`
+  `dependsOn: ["^typecheck"]`.
 
 ## Flaky tests — retry once to classify
 
@@ -188,8 +190,9 @@ End with:
   projects), or each failing `project:target` with its cause, plus any flaky `project:target`;
 - every file the run changed: hand-fixed (from your own edits — file plus one line on what and
   why) and tool-applied (lint `--fix`, `format:write` — every other file that differs or is new
-  when the Setup snapshot command is re-run into `${TMPDIR:-/tmp}/nx-checks-after.txt` and the
-  two files are diffed).
+  when the Setup snapshot's `git ls-files` pipeline, not its `mktemp`, is re-run into
+  `$snap/after.txt` and the two files are diffed; then `rm -rf "$snap"`: a finished run leaves
+  nothing in TMPDIR).
 
 Never report a bare "checks passed": an unlisted failure, skipped target or unmentioned edit reads
 as green and the caller can't act on it.

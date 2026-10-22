@@ -4,7 +4,7 @@ description: Turn a ticket or requirements document into a concise QA manual-tes
 context: fork
 license: MIT
 metadata:
-  version: "1.6"
+  version: "1.7"
 ---
 
 # Create manual test instructions
@@ -28,8 +28,9 @@ parts:
 3. **Before vs after** — how the area behaved before, how it should behave now.
 4. **What to verify** — checklist of behaviors to confirm, including edge cases (empty values,
    multiple items, boundaries) where relevant. A behaviour resting on an Open question of the
-   input (a blocking one included) goes under a closing **Not settled yet** line with its
-   tentative answer, never as a plain check.
+   input goes under a closing **Not settled yet** line, never as a plain check: on a non-blocking
+   question, with its tentative answer; on a blocking one, listed as undecided, naming who decides
+   when the input names them, with no expected value — never invented.
 
 Before writing, actually invoke [explain-in-simple-language](../explain-in-simple-language/SKILL.md)
 and follow it — reciting its rules from memory does not count. Not installed: plain words, one idea

@@ -3,7 +3,7 @@ name: attach-to-ticket
 description: Attach pasted images, files or URLs to a fetched ticket, saved beside its ticket file and referenced from it, or fill an attachment the fetch could not download. Local only — never queries or edits the tracker.
 license: MIT
 metadata:
-  version: "0.2"
+  version: "0.3"
 ---
 
 # Attach to ticket
@@ -24,7 +24,8 @@ documents beyond the entries below and the REQUIREMENTS line of step 6.
    discussed) → proceed. Otherwise guess (branch name, latest planning directory) and confirm
    before writing; nothing to guess from → ask. No `<id>-*` directory, ticket file or REQUIREMENTS
    file under the project's planning directory (the one its governing docs name or already in use,
-   default `.agents/plans/`) → stop and point to fetch-ticket; don't create one.
+   default `.agents/plans/`) → stop and say the ticket must be fetched first (fetch-ticket when
+   available); don't create one.
 3. **Pick the document** — unless the user names one: the ticket file, latest `-vN` (file or
    directory) when re-fetched, the `<id>-` one in a shared directory; the REQUIREMENTS file when no
    ticket file exists. Several candidates left → ask.
@@ -63,10 +64,12 @@ documents beyond the entries below and the REQUIREMENTS line of step 6.
    embed or link, its path relative to the REQUIREMENTS file when that sits in another directory,
    plus the caption — at the end of its **Context** part; no new section, nothing else changed.
 7. **Report** project-relative paths: the document, the REQUIREMENTS file when it got a line — its
-   requirements predate the asset; re-running `/refine-ticket` on that file, when installed,
-   updates them in place — then one line per asset with its caption. When the document is a
-   ticket file with no REQUIREMENTS file yet and `/refine-ticket` is installed, hand off with one
-   copy-pasteable launch command in the agent tool's syntax (e.g.
+   requirements predate the asset; re-running `/refine-ticket` on that file, when available,
+   updates them in place — then one line per asset with its caption. Run in answer to a caller's
+   missing-attachments question (review-ticket's or refine-ticket's): report only that, no launch
+   or clear command; the caller resumes. Standalone, when the document is a ticket file with no
+   REQUIREMENTS file yet and `/refine-ticket` is available, hand off with one copy-pasteable launch
+   command in the agent tool's syntax (e.g.
    `claude --name refine-<slug> "/refine-ticket <document>"`), then the alternative, the tool's
    clear command (e.g. `/clear`) followed by `/refine-ticket <document>`.
 

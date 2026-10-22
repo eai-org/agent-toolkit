@@ -20,5 +20,6 @@ computes.
 - **Cache keys.** A task hash is project + target + configuration + sorted overrides + inputs.
   `--base`/`--head` only select projects and never enter the hash — a fresher base shrinks the
   set, it doesn't raise hits. Overrides do enter it: `--fix` and `--maxWorkers=1` make lint and
-  test hashes differ from a pipeline's plain run, so only `build` (with the same
-  `--configuration`) can share remote entries.
+  the affected test run hash differently from a pipeline's plain run; `build` (with the same
+  `--configuration`), `typecheck`, and the single-project and retry `test` runs can share remote
+  entries.

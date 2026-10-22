@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "0.4"
+  version: "0.5"
 ---
 
 # Execute plan tasks
@@ -89,13 +89,25 @@ OR /clear and run:
 ```
 
 When the finished task completes its group, say so first: the group is one PR, so its tasks get
-committed and reviewed before the next group starts. When available, hand off `/self-review`, then
-the next group's first task. When no task is left, say in place of the next-task commands that
-the plan is done, or, while an AC is pending the user's check, that its tasks are done and
-acceptance is pending.
+committed and reviewed before the next group starts. With `/self-review` available, print its
+command pair — the step before the next group — ahead of the next-task commands, also when the
+no-task-left line replaces them (same `<slug>`):
 
-Done when the touched files, the commit subject, the checks pending the user, the `/self-review`
-hand-off when a group completed and it is available, and either both next-task commands or the
+```
+claude --name self-review-<slug> "/self-review"
+```
+
+OR /clear and run:
+
+```
+/self-review
+```
+
+When no task is left, say in place of the next-task commands that the plan is done, or, while an
+AC is pending the user's check, that its tasks are done and acceptance is pending.
+
+Done when the touched files, the commit subject, the checks pending the user, both `/self-review`
+forms when a group completed and it is available, and either both next-task commands or the
 no-task-left line are printed.
 
 ## Boundaries

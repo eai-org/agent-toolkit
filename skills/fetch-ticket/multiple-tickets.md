@@ -27,4 +27,6 @@ suggested execution order — so a refine/plan session loading one ticket sees t
   note the answer as confirmed outside the tracker.
 
 In Related tickets, members also link their local file. The next-step block emits one launch
-command per ticket, in the suggested execution order (shared directory in the path).
+command per ticket, in the suggested execution order (shared directory in the path), each in the
+variant SKILL.md's Next step gives that ticket — a re-fetched member with earlier requirements
+hands off those.

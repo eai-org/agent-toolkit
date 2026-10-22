@@ -4,7 +4,7 @@ description: Draft, rewrite, or refine a doc for maximum token economy without l
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
-  version: "1.7"
+  version: "1.8"
 ---
 
 # Compact docs writer

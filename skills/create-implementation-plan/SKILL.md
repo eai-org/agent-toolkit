@@ -3,7 +3,7 @@ name: create-implementation-plan
 description: Turn a refined requirements document into a structured implementation PLAN.md a fresh session can execute. Planning only — decides the "how", not the "what". Invoke manually only.
 license: MIT
 metadata:
-  version: "1.15"
+  version: "1.16"
 ---
 
 # Create Implementation Plan
@@ -153,10 +153,12 @@ a clean context. Use the agent tool's launch syntax (`claude` below is only the 
 the session after `<slug>`, the plan filename's slug (without id prefix or extension), so the
 phase is recognizable in the session list:
 
-1. **Execute the plan** — reads **only the plan file**:
+1. **Execute the plan** — reads **only the plan file**. `<validation>` is the project's own
+   checks: the commands its governing docs name, else the toolchain's (lint, tests, build — only
+   those that exist); nothing runnable → drop the clause:
 
    ```
-   claude --name execute-plan-report-approval "Execute the plan .agents/plans/123-report-approval/123-report-approval.PLAN.md, then run the project's validation (lint, tests, build); report, never commit"
+   claude --name execute-plan-report-approval "Execute the plan .agents/plans/123-report-approval/123-report-approval.PLAN.md, then run <validation>; report, never commit"
    ```
 
 2. **Split the plan into tasks** first, when `split-plan-tasks` is available, so the work lands in
@@ -179,7 +181,7 @@ tool's clear command):
 OR /clear and run one of:
 
 ```
-Execute the plan .agents/plans/123-report-approval/123-report-approval.PLAN.md, then run the project's validation (lint, tests, build); report, never commit
+Execute the plan .agents/plans/123-report-approval/123-report-approval.PLAN.md, then run <validation>; report, never commit
 ```
 
 ```

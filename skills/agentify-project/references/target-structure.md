@@ -32,11 +32,13 @@ instructions must live below the import (official pattern — preserve them ther
 force-moving), some sessions cannot load AGENTS.md (Claude Code < 2.1.281 on Bedrock, Vertex AI, a
 gateway or with telemetry off, the built-in `agents-md` plugin (`cc-plugin-agents-md@builtin` from
 v2.1.285) disabled, **Project instructions** set to `claude-md`), or a CLAUDE.md above the repo
-stays and would shadow AGENTS.md; the import never loads AGENTS.md twice. A root CLAUDE.md kept for
-any of these reasons shadows nested AGENTS.md files too, so every nested entry file then keeps its
-own `@AGENTS.md` pointer. A CLAUDE.md that only says in words to read AGENTS.md becomes the import
-or is deleted. A CLAUDE.md→AGENTS.md symlink also works but needs Developer Mode on Windows and
-forbids Claude-specific additions. `CLAUDE.local.md` is gitignored (per matrix) yet still shadows
+stays and would shadow AGENTS.md; the import never loads AGENTS.md twice. In a linked worktree the
+main checkout's root entry files are the repo's own (tracked ones at the main checkout's branch
+state), not a parent that stays. A root CLAUDE.md kept for any of these reasons shadows nested
+AGENTS.md files too, so every nested entry file then keeps its own `@AGENTS.md` pointer. A
+CLAUDE.md that only says in words to read AGENTS.md becomes the import or is deleted. A
+CLAUDE.md→AGENTS.md symlink also works but needs Developer Mode on Windows and forbids
+Claude-specific additions. `CLAUDE.local.md` is gitignored (per matrix) yet still shadows
 AGENTS.md: the onboarding doc (§8) tells developers to open theirs with `@AGENTS.md`, or to set
 **Project instructions** to `claude-md-and-agents-md`.
 

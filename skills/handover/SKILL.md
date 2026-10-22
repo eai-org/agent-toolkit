@@ -3,7 +3,7 @@ name: handover
 description: Use when handing finished work over to code review — writing a PR description or packaging a change for review by a human, an agent, or both.
 license: MIT
 metadata:
-  version: "0.9"
+  version: "0.10"
 ---
 
 # Handover
@@ -35,11 +35,16 @@ Read these, skipping what doesn't exist:
    for a why — in doubt whether to fetch, ask.
 3. **The session**, when it produced the change: decisions, pivots, constraints.
 4. **The diff** from the merge base with the target to `HEAD`, plus commit subjects. Target: the
-   one a prior review or handover round records, else the open PR's base, else ask; state it and
-   `git fetch` its remote (local-only target → nothing to fetch; a failed fetch → ask, never diff
-   stale refs); no merge base → ask, never diff against the target itself. Before diffing, name
-   uncommitted changes, untracked included, and ask which belong: the author commits those first;
-   the rest stays out.
+   one a prior review or handover round records, else the open PR's base, else the auto-detected
+   default branch — of the `upstream` remote when one exists, else of `origin`, via
+   `git ls-remote --symref <remote> HEAD`; that failing (e.g. offline), the sole existing
+   candidate among `main`, `master`, `develop`/`development`, preferring `upstream`'s
+   remote-tracking ref, then `origin`'s, then the local branch; none or ambiguous → ask. State it
+   and `git fetch` its remote (local-only target → nothing to fetch; a failed fetch → ask, never
+   diff stale refs). No merge base → `git fetch --unshallow` and retry, else ask — never diff
+   against the target itself. An empty diff from the merge base → probably a wrong target: say so
+   and ask, never match planned items against it. Before diffing, name uncommitted changes,
+   untracked included, and ask which belong: the author commits those first; the rest stays out.
 5. **PR conventions** — the repo's PR template, wherever the forge looks for one (e.g. root,
    `.github/`, `docs/`; several → ask the author which), and any project skill for PR descriptions.
 
@@ -52,7 +57,7 @@ changed what is the diff's job, not yours.
 
 Then match the plan's steps and acceptance criteria against the diff both ways — planned but
 absent, present but unplanned. Done when every source is read or confirmed absent and every planned
-item is matched.
+item is matched against a non-empty diff.
 
 ## Source every claim
 

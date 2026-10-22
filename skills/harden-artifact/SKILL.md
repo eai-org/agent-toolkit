@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "0.3"
+  version: "0.4"
 ---
 
 # Harden artifact
@@ -26,12 +26,19 @@ before continuing.
   hardening belongs → say so and ask before going on.
 - **Ticket** — the document the artifact was refined from, found by file name: the artifact's
   suffix replaced by `.TICKET` (`FOO.PLAN.md` → `FOO.TICKET.md`), or, when the stem names another
-  source, that file (`FOO.PR-REVIEW.REQUIREMENTS.md` → `FOO.PR-REVIEW.md`). A source with
-  decisions recorded beside it (a PR review's `.ANSWERS.md`) is read with them: only what they
-  accept (verdict `address`, `partial`, `bot: included` or `bot: partial`) is the ticket — the
-  rest is out of scope, never a deviation, never recorded in the artifact. Ambiguous → ask; no
-  file → ask whether the ticket lives elsewhere (a tracker id, pasted text) before treating it as
-  none.
+  source, that file (`FOO.PR-REVIEW.REQUIREMENTS.md` → `FOO.PR-REVIEW.md`). A `.TICKET.md` is
+  taken at its latest version: with `<base>` the artifact's base stripped of any trailing `-vN`,
+  the highest `-vN` among flat `<base>-vN.TICKET.md` in the artifact's directory and the
+  `.TICKET.md` inside the highest `<base>-vN/` directory beside it, whatever that file's own name;
+  none → `<base>.TICKET.md`. A choice other than `<base>.TICKET.md` is named before the review.
+  A source with decisions recorded beside it (a PR review's `.ANSWERS.md`) is read with them: only
+  what they accept (verdict `address`, `partial`, `bot: included` or `bot: partial`) is the
+  ticket, a row whose Notes say `kept from round K, row M` excluded whatever its verdict — the
+  rest is out of scope, never a deviation, never recorded in the artifact. A row whose Notes say
+  `joined from round K` is judged by its verdict like any other, its comment text read from round
+  K's PR-REVIEW file (`FOO.PR-REVIEW.md` for K = 1, `FOO.PR-REVIEW-K.md` otherwise).
+  Ambiguous → ask; no file → ask whether the ticket lives elsewhere (a tracker id, pasted text)
+  before treating it as none.
   None (e.g. requirements brainstormed from an idea) → say so: a plan is compared with its
   upstream instead; with neither, the review runs without the Deviations lens.
 - **Upstream** (a plan only) — its name with `.PLAN` replaced by `.REQUIREMENTS`, when that
@@ -177,7 +184,18 @@ claude --name split-plan-tasks-<slug> "/split-plan-tasks <path>.PLAN.md"        
 claude --name execute-tasks-<slug> "/execute-plan-tasks <path>.PLAN.md"                             # after a split plan no fix reached
 ```
 
-Done when all are printed.
+Then offer the alternative — clearing the current session (`/clear` is only the example) and
+running the same prompts, under the same rules:
+
+```
+/create-implementation-plan <path>.REQUIREMENTS.md       # after requirements
+/create-manual-test-instructions <path>.REQUIREMENTS.md  # after requirements
+Execute the plan <path>.PLAN.md, then run the project's validation (lint, tests, build); report, never commit   # after an unsplit plan
+/split-plan-tasks <path>.PLAN.md                         # after an unsplit plan, or a split one a fix reached (replace)
+/execute-plan-tasks <path>.PLAN.md                       # after a split plan no fix reached
+```
+
+Done when all are printed, in both forms.
 
 ## Boundaries
 

@@ -3,7 +3,7 @@ name: refine-pr-review
 description: Triage a fetched PR review with the user, comment by comment, drafting each reply and producing a REQUIREMENTS file for the accepted code changes. Takes the PR-REVIEW file produced by fetch-pr-review, or a PR URL. Invoke manually only.
 license: MIT
 metadata:
-  version: "1.8"
+  version: "1.9"
 ---
 
 # Refine PR review
@@ -13,14 +13,24 @@ the path is ambiguous) into user-settled per-comment verdicts, drafted replies, 
 file covering the accepted code changes. Triage and replies are settled here; the plan and execute
 phases see only code changes.
 
-A PR URL instead: when the harness has subagents and fetch-pr-review is installed
+A PR URL instead: when the harness has subagents and fetch-pr-review is available
 (`../fetch-pr-review/SKILL.md` beside this skill), a subagent fetches it first per its
-[delegate.md](../fetch-pr-review/delegate.md) and the file it returns is the input. Not installed
-→ say so and ask for the fetched file; installed but no subagents → hand off
+[delegate.md](../fetch-pr-review/delegate.md) and the file it returns is the input. Not available
+→ say so and ask for the fetched file; available but no subagents → hand off
 `/fetch-pr-review <url>` to a fresh session and stop.
 
-Its own `.PR-REVIEW.REQUIREMENTS.md` instead, once a blocking answer is in: Phase 1 and Lessons
-stand as its `.PR-REVIEW.ANSWERS.md` records them; run only Phase 2 on that file, then Next step.
+A trailing `head=<sha>` token (fetch-pr-review's refresh hand-off) is the head a refresh just
+confirmed: Phase 1's moved-head check uses it in place of the file's `Head` line.
+
+Its own `.PR-REVIEW.REQUIREMENTS.md` instead, once a blocking answer is in: run Phase 1's checkout
+and remote-head check first — a checkout differing from the ANSWERS `Head`, or a dirty tree, is
+reported and the user decides, never a branch switch; a moved PR head is reported with the
+re-fetch offer and the user decides whether to finish this round first. Verdicts, replies and
+Lessons stand as its `.PR-REVIEW.ANSWERS.md` records them. Apply the answer: every reply whose
+described change it alters is re-drafted under Phase 1's voice rule, confirmed, and updated in
+place; a verdict changes only as an explicit, user-confirmed exception to Phase 2's "Scope is
+settled in Phase 1"; a lesson whose source rows are no longer all accepted is put to the user; no
+row affected → the ANSWERS file is not rewritten. Then Phase 2 on that file, then Next step.
 
 ## Verdicts
 
@@ -30,7 +40,8 @@ stand as its `.PR-REVIEW.ANSWERS.md` records them; run only Phase 2 on that file
   was done and what was kept and why.
 - **push back**: no code change; the reply carries the reason.
 - **no action**: no code change; a reply is optional (a question answered, an outdated concern the
-  current code settles, an approval with no ask, the author's own comment).
+  current code settles, an approval with no ask, the author's own comment) — when written, it is
+  drafted and shown like any other.
 
 Bot findings take `bot: included`, `bot: partial` (Notes say which part) or `bot: ignored`.
 
@@ -45,28 +56,42 @@ on the page. Only the ANSWERS table's own row numbers stay, for in-file cross-re
 
 Before the first code check, compare the checkout with the PR-REVIEW head: a different commit or
 branch, or a dirty tree, is reported and the user decides; never switch branches yourself. A PR
-head that moved since the fetch (check the remote) → offer a re-fetch before triage; a refresh
-(no new activity) keeps the file, the checkout then compared with the current head, and a refresh
-the URL path's fetch just reported needs no re-fetch. The URL path gets the same check — the
-subagent's fetch is seconds old, the checkout is still the user's. On a `-N` file, read the earlier
-rounds' ANSWERS first: a comment re-raising one already triaged keeps its verdict and reply unless
-it brings evidence the earlier one lacked, and its Notes say `kept from round K, row M`; a kept
-row's work and lessons stay with round K, never counted as accepted below. An earlier round without
-ANSWERS was never triaged: its comments join this triage. This round's ANSWERS file already
-exists → ask before triage to update it in place (declined → stop).
+head that moved since the fetch (the remote compared with the file's `Head`, or with the
+`head=<sha>` token when given) → offer a re-fetch before triage; a refresh (no new activity) keeps
+the file, the checkout still compared with the current head, and a refresh the URL path's fetch
+just reported needs no re-fetch. The URL path gets the same check — the subagent's fetch is seconds
+old, the checkout is still the user's.
+
+On a `-N` file, read the earlier rounds' ANSWERS first: a comment re-raising one already triaged
+keeps its verdict and reply unless it brings evidence the earlier one lacked, and its Notes say
+`kept from round K, row M`; a kept row's work and lessons stay with round K, never counted as
+accepted below. An earlier round without ANSWERS was never triaged: its comments join this triage,
+each row's Notes saying `joined from round K`, its status read from the latest `## Since round`
+block listing it. A `-N` file with no touched thread (a Since block only) → say there is nothing
+to triage, list the status changes, write no ANSWERS or REQUIREMENTS file, print no launch command,
+stop. This round's ANSWERS file or REQUIREMENTS file already exists (and the REQUIREMENTS file is
+not the input) → one question before triage, covering both: **update in place** (recommended —
+existing rows stand, their verdicts and replies kept unless the user changes them or a comment
+brings new evidence; only new or changed comments are triaged) or **start over** (every comment
+re-triaged, both files replaced at write time). Never a second ANSWERS sheet; nothing overwritten
+without this answer.
 
 Read the code behind each comment first: verify its premise against the checkout, never judging
-from the quoted hunk alone. Then form a recommendation — verdict, reasoning, and (for partial and
-push back) a draft reply. Before the first draft, actually invoke `use-conversational-language`
-(Developer conversations, author replies) and follow it; reciting its rules from memory does not
-count. Not installed: plain prose, no dashes and no AI tells. Nothing is decided silently, and
-every question to the user is worded via `explain-in-simple-language` when available, the draft
-reply it carries excepted:
+from the quoted hunk alone. Then form a recommendation — verdict, reasoning, and a draft reply for
+every verdict but address: partial, push back, and a `no action` reply that answers or explains, a
+courtesy reply on an outdated thread included. Before the first such draft in a round (even one
+with no partial or push-back row), actually invoke `use-conversational-language` (Developer
+conversations, author replies) and follow it; reciting its rules from memory does not count.
+Not installed: plain prose, no dashes and no AI tells. Every reply other than address's canned
+one-liner is shown to the user before it is written. Nothing is decided silently, and every
+question to the user is worded via `explain-in-simple-language` when available, the draft reply it
+carries excepted:
 
 - **Contentious ones one at a time**: every comment recommended partial or push back, or
   uncertain, is its own question carrying recommendation, reasoning, and draft reply.
-- **Obvious ones as one batch**: then list the comments recommended address or no action for a
-  single confirmation; the user can pull any item out for individual discussion.
+- **Obvious ones as one batch**: then list the comments recommended address or no action, each
+  `no action` item with its draft reply, for a single confirmation; the user can pull any item out
+  for individual discussion.
 
 Per comment type:
 
@@ -98,6 +123,8 @@ naming — all as written, with these overrides:
 - The PR-REVIEW file is the local input, so the output lands next to it per its naming rule
   (`1234-task.PR-REVIEW.md` → `1234-task.PR-REVIEW.REQUIREMENTS.md`); later review rounds carry
   their suffix through (`…PR-REVIEW-2.REQUIREMENTS.md`).
+- The existing-file question was asked before triage: never ask again at write time; update in
+  place or replace as answered.
 - A requirement's source tag is the comment's opening words and its `path:line` (threadless: its
   Location label), e.g. `("Validate both new option arguments", install.sh:88)` — never a row
   number.
@@ -155,7 +182,9 @@ the self-improve line below when Lessons were written). While the REQUIREMENTS f
 **blocking** Open questions entry, print no execute or plan command, only who must answer it and
 the command for once the answer is in: `/refine-pr-review <requirements-file>`. Otherwise hand off
 by the size of the accepted change set, leading with your recommendation but giving the options
-as single copy-pasteable launch commands (vendor-agnostic — `claude` below is only the example):
+as single copy-pasteable launch commands (vendor-agnostic — `claude` below is only the example).
+The recommendation names only options printed below: without create-implementation-plan, a
+substantial change set is recommended to harden first (when available), else to execute directly.
 
 Small, mechanical change set — execute directly:
 
@@ -163,13 +192,14 @@ Small, mechanical change set — execute directly:
 claude --name execute-review-<slug> "Apply <requirements-file>, then run the project's validation (lint, tests, build)"
 ```
 
-Substantial change set (cross-file rework, design decisions) — plan first:
+`/create-implementation-plan` available — substantial change set (cross-file rework, design
+decisions), plan first:
 
 ```
 claude --name create-plan-<slug> "/create-implementation-plan <requirements-file>"
 ```
 
-`/harden-artifact` installed — harden the requirements first, recommended for a substantial change
+`/harden-artifact` available — harden the requirements first, recommended for a substantial change
 set:
 
 ```
@@ -184,4 +214,4 @@ claude --name self-improve-<slug> "/self-improve Persist the lessons listed unde
 ```
 
 Then offer the alternative — clearing the current session (vendor-agnostic — `/clear` is only the
-example) and running the chosen prompt directly.
+example) and running the chosen prompt directly; the same gates apply to the bare prompts.

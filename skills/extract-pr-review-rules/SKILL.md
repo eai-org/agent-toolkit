@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "0.2"
+  version: "0.3"
 ---
 
 # Extract PR review rules
@@ -148,7 +148,9 @@ Done when every rule from steps 3–4 is in the file and the checkpoint line car
 Unless the project's agent entry file (`AGENTS.md`/`CLAUDE.md`) already links the doc, propose a
 one-line index entry with a read-when hook and add it on approval:
 `- [PR review rules](<doc path>) — read when reviewing a change`
-Declined → say the review skills reach the doc only through such a line.
+Declined → say a doc at the default `.agents/docs/pr-review-rules.md` is still loaded by
+review-code-assistant (and maintainer-review through it); reviews that only follow governing docs
+(e.g. self-review), and a doc at another path, are not guaranteed to see it.
 
 Close with the doc's project-relative path; the counts: fetched, dropped (bots, deleted accounts,
 edits of old comments, comments posted mid-fetch), processed (fetched minus dropped), rules added,

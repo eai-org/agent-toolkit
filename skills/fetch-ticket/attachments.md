@@ -60,7 +60,7 @@ _Original filename: image.png_
 
 For a file that couldn't be downloaded, append its source so the user can fetch it manually:
 `— not downloaded; get it from <url> and save here as <filename>`, adding
-`, or paste it (or its saved path) and run /attach-to-ticket` when that skill is installed.
+`, or paste it (or its saved path) and run /attach-to-ticket` when that skill is available.
 
 ## Design references
 

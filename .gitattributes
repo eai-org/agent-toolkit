@@ -1,2 +1,3 @@
+* text=auto eol=lf
 # Shell scripts must use LF line endings regardless of platform
 *.sh text eol=lf

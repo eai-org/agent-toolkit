@@ -41,9 +41,12 @@ YAML frontmatter values to satisfy it.
 
 Before shipping a skill, run `skills/compact-skill-creator/scripts/check-skill.sh <skill-dir>`
 (wrap, links, frontmatter, version at HEAD and merge base); any other doc goes through
-`skills/compact-docs-writer/scripts/check-doc.sh <file>`. `test/compact-skill-creator/run.sh` is
-their harness: a behaviour change to either script adds or extends a fixture there in the same
-change.
+`skills/compact-docs-writer/scripts/check-doc.sh <file>`. The merge-base version is taken against
+a base ref resolved offline — `CHECK_SKILL_BASE`, else the remote-HEAD symref of `upstream` then
+`origin`, else the sole candidate among main, master, develop, development — and the version line
+names the ref it used; `base unknown` means set the override. Both scripts judge a CRLF file as
+its LF form. `test/compact-skill-creator/run.sh` is their harness: a behaviour change to either
+script adds or extends a fixture there in the same change.
 
 ## Install scripts
 

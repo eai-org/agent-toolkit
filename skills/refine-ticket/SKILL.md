@@ -3,7 +3,7 @@ name: refine-ticket
 description: Refine a development ticket — or brainstorm a raw idea — into a validated, self-contained REQUIREMENTS document — the "what", verified against the codebase. Invoke manually only.
 license: MIT
 metadata:
-  version: "1.18"
+  version: "1.19"
 ---
 
 # Refine ticket
@@ -19,12 +19,13 @@ implementation.
 ## Input
 
 A `.TICKET.md` path, a ticket URL or bare id, or an idea in words. When the harness has subagents
-and fetch-ticket is installed (`../fetch-ticket/SKILL.md` beside this skill), a URL or id is
+and fetch-ticket is available (`../fetch-ticket/SKILL.md` beside this skill), a URL or id is
 fetched first by a subagent per fetch-ticket's [delegate.md](../fetch-ticket/delegate.md) — one
 ticket per run; several → point at a fetch session instead, which handles sets. A non-empty warn
-list stops for one question: supply the files now (`/attach-to-ticket` when installed) or refine
-without them. The fetched file is then the local ticket file. No subagents, or fetch-ticket not
-installed → read the ticket from its tracker and refine with no local ticket file.
+list stops for one question: supply the files now (`/attach-to-ticket` when available; answered
+by running it → resume with the supplied files once it reports) or refine without them. The
+fetched file is then the local ticket file. No subagents, or fetch-ticket not available → read
+the ticket from its tracker and refine with no local ticket file.
 
 An existing `.REQUIREMENTS.md` (a re-run, e.g. once a blocking answer is in): read it and its
 ticket file (`.REQUIREMENTS` → `.TICKET`, or its latest `-vN` re-fetch, file or directory) first
@@ -90,6 +91,23 @@ are decisions to close here — grilled or recorded as Open questions, never ado
 Handoffs are out-of-scope dependencies; verdict and walkthrough are context only. The ticket file
 and the code always win; a review older than the ticket file has likely been overtaken — say so.
 
+## Existing requirements
+
+Before the first grill question, look for this ticket's requirements: the `.REQUIREMENTS.md` at
+the target path (Location below) or, for a ticket with `-vN` versions and none under its own base,
+the highest earlier version's (down to the unsuffixed base). A tracker ticket with no local file
+has its slug and target path confirmed before the first grill question, so the check runs there;
+an idea in words has them confirmed once its goal and scope are shaped, before the branch
+grilling, and the check runs then, at that path only. Found and not the input → say so, name the
+`.PLAN`/`.MANUAL-TEST` of that base that would go stale, and ask once:
+
+- **Update in place** (recommended): read that file and the highest `-vN` ticket first, grill only
+  on what changed, keep settled decisions, update the same file.
+- **Start over**: same base → replace it at write time; an earlier version → fresh requirements
+  under this ticket's base, old file untouched.
+
+Never a `-vN` REQUIREMENTS copy beside a ticket of another base; never asked again at write time.
+
 ## Grill to resolve every branch
 
 After gathering and code-verifying, **grill** the user — interview relentlessly, never guessing
@@ -136,11 +154,10 @@ Location:
 - If there is **no local ticket file** (a tracker URL/ID read without a fetch, pasted text),
   follow the project's/user's convention for where planning documents live (default:
   `.agents/plans/`). Propose a kebab-case `<slug>` (prefix the tracker id when the ticket is bound
-  to one) and the target path, **confirm both with the user**, then write
-  `<slug>/<slug>.REQUIREMENTS.md` there.
-- A REQUIREMENTS input is its own target. An existing target is updated in place, after the user
-  confirms unless it was the input (declined → write nothing); say which `.PLAN` or `.MANUAL-TEST`
-  of the same base goes stale.
+  to one) and the target path, **confirm both with the user** (timing under Existing
+  requirements), then write `<slug>/<slug>.REQUIREMENTS.md` there.
+- A REQUIREMENTS input is its own target. An existing target is updated or replaced as settled
+  under Existing requirements — never asked again here.
 
 Six parts (Verified codebase facts, Overrides, and Open questions may be empty — don't pad):
 
@@ -176,13 +193,14 @@ Each requirement is self-contained; user-facing strings that must stay in a give
 quoted verbatim.
 
 Done when the six parts are present and
-`grep -nE "as discussed|we agreed|see ticket|as mentioned"` on the file returns nothing.
+`grep -niE "as discussed|we agreed|see ticket|as mentioned"` on the file returns nothing.
 
 ## Boundaries
 
 - Do **not** write an implementation plan or describe "how".
-- Do **not** modify any source files. The only file you write is the REQUIREMENTS document; the
-  ticket file comes from a delegated fetch-ticket.
+- Do **not** modify any source files. The only files written are the REQUIREMENTS document, the
+  ticket file a delegated fetch-ticket writes, and the assets and ticket entries an
+  `/attach-to-ticket` run in answer to the attachments question writes.
 
 When done, state — in **project-relative paths** — that the requirements file is ready, then hand
 off each next phase as a **single copy-pasteable launch command** — phase-prefixed session name and

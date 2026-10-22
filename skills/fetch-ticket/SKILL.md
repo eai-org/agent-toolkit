@@ -3,7 +3,7 @@ name: fetch-ticket
 description: Fetch one or more tickets/issues from their tracker (Azure DevOps, Jira, GitHub, …) and save each as a self-contained markdown ticket file. Fetch only — no analysis or planning.
 license: MIT
 metadata:
-  version: "1.14"
+  version: "1.15"
 ---
 
 # Ticket Fetcher
@@ -37,8 +37,9 @@ so stop and tell the user to install and authenticate the matching MCP server, t
    its governing docs name or already in use, default `.agents/plans/`. Inside it, first match
    wins:
    1. **Re-fetch** — the ticket already has a plan directory or flat `.TICKET.md`: write to the
-      next `<id>-<slug>-v2`, `-v3`, … name beside it (directory or filename alike) and say so in
-      the result — **never overwrite**; history per re-fetch is kept on purpose.
+      next `<id>-<slug>-v2`, `-v3`, … name beside it, the file named like its directory
+      (`<id>-<slug>-vN/<id>-<slug>-vN.TICKET.md`, or flat `<id>-<slug>-vN.TICKET.md`), and say
+      so in the result — **never overwrite**; history per re-fetch is kept on purpose.
    2. **Existing family** — an ancestor (parent/epic, nearest first) has a plan directory
       (`<ancestor-id>-*`, hyphen included; confirm via its `.TICKET.md` that it's really that
       ancestor's; latest `-vN` when several), or a group directory's `## Ticket set` lists this
@@ -48,7 +49,8 @@ so stop and tell the user to install and authenticate the matching MCP server, t
 
    In doubt at any point (unsure a directory is really the family's, …): ask the user, proposing
    the answer you would pick. **Never guess** — better one extra question than a potential mistake.
-5. **Write the ticket file** at `<output-dir>/<id>-<slug>.TICKET.md`.
+5. **Write the ticket file** at `<output-dir>/<id>-<slug>.TICKET.md`, `<id>-<slug>-vN.TICKET.md`
+   on a re-fetch.
 6. **Download attachments** — if the ticket carries attachments, inline images, external linked
    assets, or design-tool links, read [attachments.md](attachments.md) first, then download into
    the output directory; warn on any that fail.
@@ -143,10 +145,11 @@ State clearly when done, using **project-relative paths** (never absolute): the 
 the ticket file, and any attachments. If any attachment or design preview could not be
 downloaded, **first emit a clear warning** listing each missing file's name and its source URL,
 instructing the user to download it and save it under that exact name so the embeds resolve — or,
-with `/attach-to-ticket` installed, to paste it (or its saved path) and run that skill. Then hand
-off the next phase as a **single copy-pasteable launch command** — session name and prompt
-combined, so one paste starts the session. Use the launch syntax of the agent tool in use
-(vendor-agnostic — `claude` below is only the example), naming the session `refine-<slug>`:
+with `/attach-to-ticket` available, to paste it (or its saved path) and run that skill. Without
+refine-ticket available the result ends there; with it, hand off the next phase as a **single
+copy-pasteable launch command** — session name and prompt combined, so one paste starts the
+session. Use the launch syntax of the agent tool in use (vendor-agnostic — `claude` below is only
+the example), naming the session `refine-<slug>`:
 
 ```
 claude --name refine-<slug> "/refine-ticket <output-dir>/<id>-<slug>.TICKET.md"
@@ -160,3 +163,9 @@ OR /clear and run:
 ```
 /refine-ticket <output-dir>/<id>-<slug>.TICKET.md
 ```
+
+On a re-fetch, when the highest earlier version (`-v(N-1)` … down to the unsuffixed
+`<id>-<slug>`) already has a `.REQUIREMENTS.md`: say those requirements predate the re-fetch and
+put that `.REQUIREMENTS.md` in both commands in place of the new ticket file (session still
+`refine-<slug>`), noting that refining from scratch means running refine-ticket on the new
+`.TICKET.md` instead.

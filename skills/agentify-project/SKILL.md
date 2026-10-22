@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "0.4"
+  version: "0.5"
 ---
 
 # Agentify project
@@ -43,8 +43,13 @@ Invocation: `/agentify-project [audit] [path]`
   the restructure reviewable as an isolated diff.
 - Detect nested entry files (monorepo packages).
 - Report any `CLAUDE.md`, `.claude/CLAUDE.md` or `CLAUDE.local.md` in a parent directory of the
-  repo, except the user-level `~/.claude/CLAUDE.md`: with no CLAUDE.md pointer in the repo it
-  makes Claude Code skip AGENTS.md (target-structure §2), so the pointer becomes a menu item.
+  main checkout, except the user-level `~/.claude/CLAUDE.md`: with no CLAUDE.md pointer in the
+  repo it makes Claude Code skip AGENTS.md (target-structure §2), so the pointer becomes a menu
+  item. The main checkout is the parent of `git rev-parse --path-format=absolute --git-common-dir`,
+  not `--show-toplevel`, which in a linked worktree (agents often create one inside the repo, e.g.
+  `<repo>/.claude/worktrees/<name>/`) returns the worktree. The main checkout's own root
+  `CLAUDE.md`, `.claude/CLAUDE.md` and `CLAUDE.local.md` are the repo's files, never a
+  parent-directory CLAUDE.md that stays, and never alone keep or recreate a pointer.
 - Diff duplicated entry files (agents without include syntax) against AGENTS.md; divergence
   becomes a re-sync menu item — the one artifact class guaranteed to drift.
 - Check every path and link in the entry files and index resolves; a dead one is a menu item (fix
@@ -83,12 +88,16 @@ duplicated content, per matrix); CLAUDE.md ends absent or as a pointer, per targ
 Common case (CLAUDE.md exists, no AGENTS.md): rename it to AGENTS.md with a plain filesystem move
 (no `git mv`; git detects the rename at commit time) and recreate CLAUDE.md as `@AGENTS.md` only
 when §2 calls for one (a genuinely Claude-specific remainder, sessions that cannot load AGENTS.md,
-or a parent-directory CLAUDE.md that stays); otherwise it stays deleted. AGENTS.md-only and
-third-party-only repos: same invariant — pointers only for the third-party agents detected, never
-a bare CLAUDE.md; seed AGENTS.md from whatever entry-file content exists. Greenfield (no entry
-file of any agent): minimal seed from cheap reconnaissance (README, package manifest / build
-files) — one-liner, **verified** build/test/run commands, planning-dir convention; deep doc
-generation is out of scope, the structure grows later via `/self-improve` and `/memory-doctor`.
+or a parent-directory CLAUDE.md that stays); otherwise it stays deleted. Run from a linked
+worktree: a tracked entry file the branch renames or replaces gets a report note that worktree
+sessions keep loading the main checkout's copy until the branch reaches it; an untracked one (the
+gitignored `CLAUDE.local.md`) gets target-structure §2's `CLAUDE.local.md` remedy, with no such
+note. AGENTS.md-only and third-party-only repos: same invariant — pointers only for the third-party
+agents detected, never a bare CLAUDE.md; seed AGENTS.md from whatever entry-file content exists.
+Greenfield (no entry file of any agent): minimal seed from cheap reconnaissance (README, package
+manifest / build files) — one-liner, **verified** build/test/run commands, planning-dir
+convention; deep doc generation is out of scope, the structure grows later via `/self-improve` and
+`/memory-doctor`.
 
 **Slimming (mapping-first).** Draft one full mapping: each block → stays / moves to existing doc
 X / new doc Y, applying the keep-vs-extract test (target-structure §1); where a block's relevance
@@ -96,7 +105,7 @@ is verifiable from the codebase, check the code instead of asking. Present the m
 obvious calls pre-decided; walk **only doubtful blocks** as individual questions, each with a
 recommendation, worded via `explain-in-simple-language` when available; one approval gate before
 any edit. Offer a compaction pass on blocks that stay; write extracted docs compact from birth —
-via `compact-docs-writer` when installed, else inline with its core principle (least text, zero
+via `compact-docs-writer` when available, else inline with its core principle (least text, zero
 information loss). Each extracted doc gets a plain-link index entry in AGENTS.md with its "read
 when…" hook.
 
@@ -114,14 +123,18 @@ Done when every selected area is applied or explicitly skipped by the user.
 
 Every AGENTS.md reference resolves; symlinks point at real dirs; `git check-ignore` confirms each
 ignore entry; no `CLAUDE.md`, `.claude/CLAUDE.md` or `CLAUDE.local.md` shadows AGENTS.md (each
-absent, or an `@AGENTS.md` pointer) and, when the root keeps a CLAUDE.md, every nested AGENTS.md
-has its pointer too (target-structure §2); duplicated entry files match AGENTS.md. Close with a
-short converged-state report of what changed; after a slimming, point at the hook test in the
-onboarding doc (target-structure §8).
+absent, or an `@AGENTS.md` pointer — a tracked file the branch replaces in the main checkout is
+not reported; a real file above the main checkout or an untracked shadowing file still is) and,
+when the root keeps a CLAUDE.md, every nested AGENTS.md has its pointer too (target-structure §2);
+duplicated entry files match AGENTS.md. Close with a short converged-state report of what
+changed; after a slimming, state the hook test: give a fresh session a task that needs one
+extracted doc and check it opens it; a miss means a weak "read when…" hook, fixed via
+`/self-improve` when available (gated as in §5). Point at the onboarding doc's copy
+(target-structure §8) only when that doc exists at the end of the run.
 
 ## 5. Close
 
-Suggest, each only when installed (look in the agent's skills and plugin dirs, as manual-only
+Suggest, each only when available (look in the agent's skills and plugin dirs, as manual-only
 skills are missing from the in-session list) and applicable, with this skill's own namespace prefix
 if any — skip silently otherwise:
 

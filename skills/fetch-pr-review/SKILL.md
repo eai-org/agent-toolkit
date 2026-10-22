@@ -3,7 +3,7 @@ name: fetch-pr-review
 description: Fetch all reviewer comments left on your own pull request (GitHub, Azure DevOps, …) and save them as a self-contained markdown PR-REVIEW file in the task's planning directory. Fetch only — no fixing or replying.
 license: MIT
 metadata:
-  version: "1.9"
+  version: "1.10"
 ---
 
 # PR review fetcher
@@ -11,7 +11,7 @@ metadata:
 **Fetch only** — capture the review feedback left on a pull request; never fix code, reply, or
 judge the comments. Output is a self-contained `.PR-REVIEW.md` a fresh session can pick up and act
 on (e.g. via `/refine-pr-review`). Someone else's PR to review is not this skill's job: use
-`review-code-assistant` or `maintainer-review` when installed.
+`review-code-assistant` or `maintainer-review` when available.
 
 ## Source & access
 
@@ -60,11 +60,13 @@ an answer.
 
 ## Later rounds
 
-A review round is new reviewer activity (a review, a thread, a reply, a reopened thread) since the
-previous PR-REVIEW file was fetched. The `-N` file holds only that activity, each touched thread
-whole, plus a `## Since round N-1` block: head then and now, and a then/now status table for every
-earlier thread whose status changed. No new activity is a refresh, not a round, even when the head
-moved: write nothing, report it with the current head, and hand off the latest existing file.
+A review round is new reviewer activity since the latest PR-REVIEW file: a review, a thread, a
+reply, a reopened thread, a thread resolved or marked won't fix. A thread merely becoming outdated
+after a push is not activity. The `-N` file holds only that activity, each touched thread whole,
+plus a `## Since round N-1` block: head then and now, and a then/now status table for every earlier
+thread whose status changed — so a resolution-only round still gets its file. No activity is a
+refresh, not a round, even when the head moved: write nothing, say so with the current head
+without asking, and hand off the latest existing file (see Next step).
 
 ## Status flags
 
@@ -124,10 +126,10 @@ strings **verbatim** — never alter or translate them.
 ## Next step
 
 State clearly when done, using **project-relative paths**. List any thread whose status needed a
-user decision and how it was marked. Then hand off the next phase as a
-**single copy-pasteable launch command** — session name and prompt combined, so one paste starts the
-session. Use the launch syntax of the agent tool in use (vendor-agnostic — `claude` below is only
-the example), naming the session `refine-pr-<slug>`:
+user decision and how it was marked. Then, when refine-pr-review is available, hand off the next
+phase as a **single copy-pasteable launch command** — session name and prompt combined, so one
+paste starts the session. Use the launch syntax of the agent tool in use (vendor-agnostic — `claude`
+below is only the example), naming the session `refine-pr-<slug>`:
 
 ```
 claude --name refine-pr-<slug> "/refine-pr-review <pr-review-file>"
@@ -141,3 +143,7 @@ OR /clear and run:
 ```
 /refine-pr-review <pr-review-file>
 ```
+
+A refresh hands off the latest existing file with ` head=<sha>` — the head it confirmed — appended
+to both forms: `/refine-pr-review <pr-review-file> head=<sha>`. Without refine-pr-review, report
+the written file, or for a refresh the latest file and the current head.
