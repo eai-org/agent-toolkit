@@ -1,0 +1,197 @@
+test/self-review/fixtures/small-defects/base/orders/pricing.py
+  s_0ae4d94c2cc7ca::t_6fc303629231e8 1-28
+test/self-review/fixtures/small-clean/intent.txt
+  s_0ae4d94c2cc7ca::t_c034d76c559376 1
+test/self-review/gen-incident.py
+  s_d28a1b5cc1d12a::t_adfcae5ee25c25 2551-2553,2559-2560
+  s_d28a1b5cc1d12a::t_eb3f1ad63a95d9 1-2550,2554-2558,2561-2915
+test/self-review/make-fixture.sh
+  s_0ae4d94c2cc7ca::t_73dc2e23e22345 8-9,53,56
+  s_0ae4d94c2cc7ca::t_d5ca2352c9d154 1-7,10-12,17-52,57-64,77-79
+  s_0ae4d94c2cc7ca::t_33f6b76fb11b69 13-16,65-76
+  s_0ae4d94c2cc7ca::t_2216e611e58847 54-55
+test/self-review/fixtures/small-defects/base/.gitignore
+  s_0ae4d94c2cc7ca::t_6fc303629231e8 1-3
+.gitignore
+  s_a62dbe0033c0db::t_f0b1d1395d677f 17
+test/self-review/fixtures/small-defects/base/AGENTS.md
+  s_0ae4d94c2cc7ca::t_6fc303629231e8 1-10
+test/self-review/fixtures/small-clean/base/.gitignore
+  s_0ae4d94c2cc7ca::t_c034d76c559376 1-3
+test/self-review/fixtures/small-defects/defects.tsv
+  s_0ae4d94c2cc7ca::t_73dc2e23e22345 11
+  s_0ae4d94c2cc7ca::t_c034d76c559376 1-10
+test/self-review/fixtures/small-clean/base/orders/repository.py
+  s_0ae4d94c2cc7ca::t_c034d76c559376 1-47
+test/self-review/fixtures/small-clean/base/orders/service.py
+  s_0ae4d94c2cc7ca::t_c034d76c559376 1-55
+test/self-review/fixtures/small-defects/base/orders/log.py
+  s_0ae4d94c2cc7ca::t_6fc303629231e8 1-12
+test/self-review/fixtures/small-clean/base/tests/test_service.py
+  s_0ae4d94c2cc7ca::t_c034d76c559376 1-31
+test/self-review/fixtures/small-clean/base/tests/test_pricing.py
+  s_0ae4d94c2cc7ca::t_c034d76c559376 1-22
+test/self-review/fixtures/small-clean/base/AGENTS.md
+  s_0ae4d94c2cc7ca::t_c034d76c559376 1-10
+test/self-review/fixtures/small-defects/base/orders/__init__.py
+  s_0ae4d94c2cc7ca::t_6fc303629231e8 1
+test/self-review/fixtures/small-clean/base/README.md
+  s_0ae4d94c2cc7ca::t_c034d76c559376 1-6
+test/self-review/fixtures/small-defects/base/orders/models.py
+  s_0ae4d94c2cc7ca::t_6fc303629231e8 1-28
+test/self-review/fixtures/small-clean/defects.tsv
+  s_0ae4d94c2cc7ca::t_c034d76c559376 1
+test/self-review/SELF-REVIEW-TEST.md
+  s_d28a1b5cc1d12a::t_70365c5befb656 92-93,111
+  s_0ae4d94c2cc7ca::t_33f6b76fb11b69 101-103,107-108,114
+  s_0ae4d94c2cc7ca::t_38e06135c8186d 1-10,15-16,19,21,25-31,33,36-39,51-53,65-70,74,79-84,94-96,115-116,122-124
+  s_0ae4d94c2cc7ca::t_ad71b007eacd8d 11-12
+  s_d28a1b5cc1d12a::t_2fa1145e7f6af2 13-14,17-18,20,22-24,32,34-35,41-50,54-64,71,77-78,85-91,104-106,109-110,112-113,117-121
+  s_0ae4d94c2cc7ca::t_20f0e0f22ce998 40
+  s_0ae4d94c2cc7ca::t_d4a272e5b356de 72-73,75-76,97-100
+test/self-review/fixtures/small-defects/change/orders/models.py
+  s_0ae4d94c2cc7ca::t_f79b89305f3d76 1-37
+skills/fresh-eyes-review/SKILL.md
+  s_d28a1b5cc1d12a::t_24bb94aed4605a 76-79
+  s_d28a1b5cc1d12a::t_4001b320285b79 49-56
+  s_d28a1b5cc1d12a::t_76063b5874b4a0 80-81
+  s_d28a1b5cc1d12a::t_80431abb8f5b44 8
+test/self-review/fixtures/small-clean/change/orders/service.py
+  s_0ae4d94c2cc7ca::t_c034d76c559376 1-59
+test/self-review/compare.py
+  s_0ae4d94c2cc7ca::t_3025a20e8fb2a2 13-14
+  s_0ae4d94c2cc7ca::t_33f6b76fb11b69 1-12,15-66
+test/self-review/fixtures/small-defects/change/orders/coupons.py
+  s_0ae4d94c2cc7ca::t_f79b89305f3d76 1-19
+test/self-review/fixtures/small-clean/base/orders/__init__.py
+  s_0ae4d94c2cc7ca::t_c034d76c559376 1
+test/self-review/fixtures/small-clean/base/orders/pricing.py
+  s_0ae4d94c2cc7ca::t_c034d76c559376 1-28
+test/self-review/fixtures/small-defects/base/orders/service.py
+  s_0ae4d94c2cc7ca::t_6fc303629231e8 1-55
+test/self-review/fixtures/small-defects/base/tests/test_service.py
+  s_0ae4d94c2cc7ca::t_6fc303629231e8 1-31
+test/self-review/fixtures/small-defects/traps.tsv
+  s_0ae4d94c2cc7ca::t_c034d76c559376 1-3
+test/self-review/gen-big-pr.py
+  s_d28a1b5cc1d12a::t_82bf80102bb675 7,9
+  s_0ae4d94c2cc7ca::t_804a61697db838 293-294
+  s_0ae4d94c2cc7ca::t_876ec859d5a88e 153,165,171
+  s_0ae4d94c2cc7ca::t_07044d32f91b04 1-6,8,10-152,154-164,166-170,172-292,295-384,387-390,392-395
+  s_0ae4d94c2cc7ca::t_20f0e0f22ce998 385-386,391
+test/self-review/fixtures/small-clean/change/README.md
+  s_0ae4d94c2cc7ca::t_c034d76c559376 1-7
+test/self-review/score.py
+  s_d28a1b5cc1d12a::t_64d13b555f1c73 122-130,132-133,143-144,161,179
+  s_0ae4d94c2cc7ca::t_1738ad776ca90c 185-194
+  s_d28a1b5cc1d12a::t_b4952948e72fe0 207,209-213
+  s_d28a1b5cc1d12a::t_42b628b1e5a6d9 6,317,333
+  s_d28a1b5cc1d12a::t_f0011e6bf23064 30-31,96,103-104,136-137,139-140
+  s_0ae4d94c2cc7ca::t_ad71b007eacd8d 88,157,163,166,371-372
+  s_d28a1b5cc1d12a::t_22973be32ffe5e 26-29
+  s_d28a1b5cc1d12a::t_6718564d63680c 196,199-206,208,214-221,225,227-233
+  s_0ae4d94c2cc7ca::t_9b0301b11cff42 68,320-322
+  s_0ae4d94c2cc7ca::t_bfaa083a70711c 95,97-102
+  s_d28a1b5cc1d12a::t_a6ddeaa5b7f28a 115-121,131,138,142,145-147,151,181
+  s_0ae4d94c2cc7ca::t_e81cfc3a03739c 1-5,7-25,32-67,69-81,83,86-87,89-94,105-107,111-114,134-135,141,148-150,152-156,158-160,162,164-165,167-171,178,180,182-184,195,197-198,222-224,226,234-285,287-316,318-319,323-332,334-370,374-378,381,384-403,407-416,418,420,423-434
+  s_d28a1b5cc1d12a::t_ed782e430c8de2 172-177,373
+  s_0ae4d94c2cc7ca::t_ba96dc5e51d1b3 404-406
+  s_0ae4d94c2cc7ca::t_876ec859d5a88e 82,84-85,108-110,379-380,382-383,417,419,421-422
+  s_d28a1b5cc1d12a::t_987e367b594f3f 286
+test/self-review/run.sh
+  s_0ae4d94c2cc7ca::t_d4a272e5b356de 7-8
+  s_0ae4d94c2cc7ca::t_804a61697db838 19
+  s_0ae4d94c2cc7ca::t_33f6b76fb11b69 22-23,83-84
+  s_0ae4d94c2cc7ca::t_9b0301b11cff42 33
+  s_d28a1b5cc1d12a::t_56e42e1a85aefc 11-13,17-18,42,56-58,65,82
+  s_0ae4d94c2cc7ca::t_745dcf5df0f2f5 1-6,9-10,14-16,20-21,24-25,29-32,34-41,43-53,55,59-64,66-81,86-89,106-128
+  s_d28a1b5cc1d12a::t_34e94c969dbe41 54
+  s_d28a1b5cc1d12a::t_6718564d63680c 90-104
+  s_0ae4d94c2cc7ca::t_1738ad776ca90c 85,105
+  s_d28a1b5cc1d12a::t_575811b3f28612 26-28
+skills/self-review/SKILL.md
+  s_d28a1b5cc1d12a::t_c807c4446fe06b 160
+  s_d28a1b5cc1d12a::t_180f634a6b78dc 161-162
+  s_d28a1b5cc1d12a::t_e9f78f1e4dece9 114-115
+  s_d28a1b5cc1d12a::t_bf19cb4e39f1e7 126-129
+  s_d28a1b5cc1d12a::t_fa03af90762cd2 225
+  s_d28a1b5cc1d12a::t_51b0159d8757ba 226-227
+  s_d28a1b5cc1d12a::t_1e45508719c40e 94-95
+  s_d28a1b5cc1d12a::t_698744932eba03 22-23,27
+  s_d28a1b5cc1d12a::t_3540fec761bb12 228-231
+  s_d28a1b5cc1d12a::t_890d79c6350c55 234-235
+  s_d28a1b5cc1d12a::t_b341f005a3c9d8 125
+  s_d28a1b5cc1d12a::t_f97feadfef8e1f 150-159
+  s_d28a1b5cc1d12a::t_44b0cbef410c72 122-124
+  s_d28a1b5cc1d12a::t_db8ffae2b84d87 171,173-175
+  s_d28a1b5cc1d12a::t_3da0543726107a 97-99
+  s_d28a1b5cc1d12a::t_75761b788b6745 8
+  s_d28a1b5cc1d12a::t_429ea50e62e08d 180-182
+  s_d28a1b5cc1d12a::t_24da76fca42f64 24-26
+test/self-review/fixtures/small-clean/change/tests/test_repository.py
+  s_0ae4d94c2cc7ca::t_73dc2e23e22345 1-17
+test/self-review/fixtures/small-defects/base/tests/test_pricing.py
+  s_0ae4d94c2cc7ca::t_6fc303629231e8 1-22
+test/self-review/fixtures/small-defects/base/orders/repository.py
+  s_0ae4d94c2cc7ca::t_6fc303629231e8 1-47
+test/self-review/fixtures/small-defects/intent.txt
+  s_0ae4d94c2cc7ca::t_f79b89305f3d76 1
+test/self-review/fixtures/small-clean/traps.tsv
+  s_0ae4d94c2cc7ca::t_c034d76c559376 1-3
+test/self-review/fixtures/small-defects/base/README.md
+  s_0ae4d94c2cc7ca::t_6fc303629231e8 1-6
+test/self-review/fixtures/small-defects/change/orders/pricing.py
+  s_0ae4d94c2cc7ca::t_f79b89305f3d76 1-36
+test/self-review/fixtures/small-defects/change/tests/test_pricing.py
+  s_0ae4d94c2cc7ca::t_f79b89305f3d76 1-26
+test/self-review/fixtures/small-defects/change/README.md
+  s_0ae4d94c2cc7ca::t_f79b89305f3d76 1-8
+test/self-review/fixtures/small-defects/change/orders/service.py
+  s_0ae4d94c2cc7ca::t_f79b89305f3d76 1-76
+test/self-review/fixtures/small-defects/change/tests/test_service.py
+  s_0ae4d94c2cc7ca::t_f79b89305f3d76 1-47
+test/self-review/fixtures/small-clean/base/orders/log.py
+  s_0ae4d94c2cc7ca::t_c034d76c559376 1-12
+test/self-review/fixtures/small-clean/change/orders/models.py
+  s_0ae4d94c2cc7ca::t_c034d76c559376 1-30
+test/self-review/fixtures/small-clean/change/tests/test_service.py
+  s_0ae4d94c2cc7ca::t_c034d76c559376 1-48
+test/self-review/fixtures/small-clean/change/orders/repository.py
+  s_0ae4d94c2cc7ca::t_c034d76c559376 1-49
+test/self-review/fixtures/small-clean/base/orders/models.py
+  s_0ae4d94c2cc7ca::t_c034d76c559376 1-28
+docs/authoring-conventions.md
+  s_0ae4d94c2cc7ca::t_7da005307ddc8d 51-55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "91918a34f8f7009745e831f6766fd61d48a95b36",
+  "prompts": {},
+  "sessions": {
+    "s_0ae4d94c2cc7ca": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ae0a0853-b948-4e6b-9bb4-0205bc9f2a7c",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "stefanoslig <stefanoslignos@gmail.com>"
+    },
+    "s_a62dbe0033c0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "55a913a7-c04c-4598-854c-53d9c6277436",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "stefanoslig <stefanoslignos@gmail.com>"
+    },
+    "s_d28a1b5cc1d12a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4a6baa16-8816-4b3e-9dd7-aee946ec45d8",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "stefanoslig <stefanoslignos@gmail.com>"
+    }
+  }
+}
