@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.4"
+  version: "1.5"
 ---
 
 # Fresh-eyes review
@@ -46,6 +46,14 @@ artifacts.
    surrounding project material — except the paths the prompt lists as excluded: any exclusions
    the invocation supplies, plus, when this session authored the change, session-authored files
    that are not part of it (plans, notes, scratch), since a fresh context cannot tell them apart.
+   The prompt names the changeset by reference (range, SHAs, paths), never pasting diff or file
+   bodies. The reviewer reads sparingly, since every step re-sends all it has read: `--stat`
+   first, each changed file's diff once, the code around a hunk by line range (a whole file only
+   when short), code outside the diff by targeted search, each governing doc once and only those
+   governing the files in scope; generated or vendored files never line by line but against their
+   source, regenerated into scratch and diffed when the generator is at hand; an output the
+   harness truncated or saved to a file is searched or read by range, never whole again. It spawns
+   no agents of its own.
    It writes nothing into the project: every run it makes (tests, probes) disables or redirects to
    scratch space its side outputs (coverage, reports, snapshots), which tooling writes in-tree by
    default. Before spawning, create a marker file in scratch space and save there the file list
@@ -65,9 +73,12 @@ artifacts.
    a claim to test, not scope conceded. Tough but grounded, aimed at mistakes that matter: every
    finding names its location and a concrete failure scenario; style nits, speculation, and padding
    are out of scope, and zero findings is a valid outcome. Besides what the invocation asks, it
-   returns its findings numbered and what in scope it did not read, by name (or that it read
-   everything). Out of scope bounds what is reported, never what is investigated: a pre-existing
-   anomaly in the mechanism the change touches is a reason to audit it. If the harness cannot
+   returns its findings numbered — one mistake repeated at several sites is one finding listing
+   them all, distinct mistakes never share one — each citing the lines it read as evidence
+   (`path:lines`) and re-checked against them before returning, dropped when they disprove it;
+   and what in scope it did not read, by name (or that it read everything).
+   Out of scope bounds what is reported, never what is investigated: a pre-existing anomaly in
+   the mechanism the change touches is a reason to audit it. If the harness cannot
    isolate a context, fall back to an adversarial pass over the same inputs in the main session.
    Done when an isolated reviewer has returned its findings, or the fallback pass ran and its result
    is flagged as same-context (weaker) — and each repo or directory the reviewer may run in,

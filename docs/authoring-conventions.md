@@ -48,6 +48,11 @@ names the ref it used; `base unknown` means set the override. Both scripts judge
 its LF form. `test/compact-skill-creator/run.sh` is their harness: a behaviour change to either
 script adds or extends a fixture there in the same change.
 
+`test/self-review/run.sh` measures self-review end to end over fixtures with planted defects —
+recall, false positives, tokens, report shape ([SELF-REVIEW-TEST.md](../test/self-review/SELF-REVIEW-TEST.md));
+its `selfcheck` case is free, the others cost tokens. A behaviour change to self-review, or to
+the reviewer conduct in fresh-eyes-review, runs it and quotes the summary in the PR.
+
 ## Install scripts
 
 An option whose value is stored in a file rejects it before storing when it is empty, starts with

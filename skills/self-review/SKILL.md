@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Self-review
@@ -18,6 +18,12 @@ what/why belongs to the PR description (e.g. via /handover), never here.
 
 Only for a changeset you authored. The fresh-context reviewer exists to escape authoring
 blindness, so someone else's PR has nothing to escape and belongs to `maintainer-review`.
+
+Every agent step re-sends its whole context, so the session reads sparingly: it never prints the
+diff or its full stat (`--shortstat` and the hash suffice), never reads the changed files or the
+governing docs whole — the reviewer runs that checklist — and opens only cited ranges in the
+walk. It awaits each subagent within the same turn (a blocking spawn where the harness offers
+one), never polling it and never ending the turn to wait.
 
 ## Resolve the changeset
 
@@ -85,9 +91,12 @@ it runs without its confirmation step — with:
   are reviewed like any other change; the reports stay excluded always;
 - the mandate framed as a maintainer's merge gate — would anything here block the merge? — and
   extended by: the project's own governing docs (contributing, agent instructions, codestyle) run
-  as a checklist, not as background reading, against every changed file, the unchanged code the
+  as a checklist, not as background reading — a rule a text pattern can catch searched for in the
+  diff's added lines — against every changed file, the unchanged code the
   change newly relies on, and the submission itself, whose metadata block (step 4) the prompt must
-  carry verbatim; and leftovers — debug prints, commented-out code, stray TODOs, accidentally
+  carry verbatim; tests — new behaviour without a test that fails when it breaks, an assertion
+  that cannot fail; generated, vendored and lock files that changed while their source did not,
+  or contradict it; and leftovers — debug prints, commented-out code, stray TODOs, accidentally
   committed files;
 - the grounded bar: a finding exists only with a nameable concrete failure, violated rule, or
   redundancy — hedged speculation is out, zero findings is a valid outcome;
@@ -102,20 +111,22 @@ Before the first finding, check which planning documents the task has (ticket, r
 plan) and read any that exist: recommendations must weigh the full story. These documents still
 never reach the reviewer, which sees only the distilled intent (Review above).
 
-One finding at a time, recommending a disposition with a one-line why, worded via
+One question per finding, up to four per prompt when the question tool takes several (else one
+at a time), each recommending a disposition with a one-line why, worded via
 `explain-in-simple-language` when available — the author decides, and discussing the finding is
 offered as visibly as the dispositions themselves, never left an implicit escape hatch. Anything
 the author says that isn't a disposition is discussion, not a decision: answer the question, check
 the code, revise the recommendation, do what they ask with the finding — then the walk returns to
 that same finding, still open. Three dispositions close one:
 
-- **fix** — apply it to the working tree now; committing stays the author's move. Submission
-  metadata (PR title, description, commit subjects) the agent only drafts — applying it is the
-  author's (Boundaries).
-- **dismiss** — record the author's reason, pushing once toward one a maintainer can evaluate
-  ("the caller already null-checks", not "disagree"); "mirrors the existing pattern" counts only
-  once that pattern is verified sound — an unchecked one ratifies its bugs; if the author
-  insists, their words go in verbatim.
+- **fix** — queued until the round's walk ends (Fixer, below); committing stays the author's
+  move. Submission metadata (PR title, description, commit subjects) the agent only drafts —
+  applying it is the author's (Boundaries).
+- **dismiss** — record the author's reason; a recommended dismissal carries its reason in the
+  option, so picking it needs no follow-up question. Otherwise push once toward one a maintainer
+  can evaluate ("the caller already null-checks", not "disagree"); "mirrors the existing pattern"
+  counts only once that pattern is verified sound — an unchecked one ratifies its bugs; if the
+  author insists, their words go in verbatim.
 - **defer** — not fixed and not dismissed but handed onward: a follow-up ticket, a comment on
   another PR, a note the author keeps. Record the destination in one line; drafting the text is
   in scope, filing or posting it is not (Boundaries).
@@ -136,8 +147,19 @@ start at once on the working tree, the commit proposal moving to Wrap up; asks b
 (target, intent) stand. The report gains a procedural caveat naming where it began
 (`Dispositions decided by the agent from round 1, finding 3`).
 
-Done when every finding of the round is dispositioned and diff and metadata re-hashed as in steps
-3 and 4.
+**Fixer** — once the round's findings are all dispositioned, the queued fixes are applied. The
+session applies them itself while its context is still small (autoaccept from the start, at most
+~5 fixes); otherwise fresh-context fixers do, since every edit would re-send the session's grown
+context: one per group of fixes sharing files — no file in two groups, at most ~5 fixes each —
+in parallel where the harness allows (the session itself only when it has no subagents). A
+fixer is briefed with each fix's location, failure and the author's wording. Whoever applies a
+fix reads only what it needs (cited ranges, targeted search, never whole files or docs), touches
+nothing else, and gives a behaviour fix a test that fails without it where the project has
+tests. A fixer returns the files it changed and, per fix, the test it added or why not; a
+behaviour fix returned without a test goes back to it once.
+
+Done when every finding of the round is dispositioned, its queued fixes applied or reported not
+applicable, and diff and metadata re-hashed as in steps 3 and 4.
 
 ## Rounds
 
@@ -146,16 +168,18 @@ unreviewed code; a metadata draft earns one only once applied (below). Committin
 stays the author's move (propose a commit message in the repo's style), demanded only where project
 rules require a pinned review. The first round reviews the whole changeset; every later one, in
 this invocation or a re-run, only the **delta** — what changed since the last reviewed state — and
-its reach. The reviewer gets the full current diff as reference, plus:
+its reach. The reviewer gets the current range as reference, plus:
 
-- the delta hunks — one the walk applied carries the failure it addressed, never its disposition;
-  dismissed and deferred findings go unmentioned;
+- the delta by reference — the files the walk changed, or the SHA pair whose diff it is; a hunk
+  the walk applied carries the failure it addressed, never its disposition; dismissed and
+  deferred findings go unmentioned;
 - files the last round reported uncovered, reviewed whole as in a first round;
 - the mandate: check each hunk holds and follow its reach — call sites of what changed, mirrored
   sites, the tests and docs covering it, whatever else it judges reached; the rest of the changeset
   was reviewed and stands: no hunting there, though a grounded finding met on the way is reported
-  like any other; governing-docs checklist and leftovers hunt over the delta and the uncovered
-  files only.
+  like any other; governing-docs checklist, leftovers hunt and tests check over the delta and the
+  uncovered files only — for a fix, the tests check asks only that its own test fails without
+  it.
 
 The delta must be exact, else the round runs full, saying why. Exact: the fixes the walk applied —
 possibly none — when the diff hash the walk took still matches at round start, or none in the
@@ -198,15 +222,17 @@ coverage naming the unreviewed files, a same-context fallback), procedural confi
 files confirmed local-only) collapse; any other line is visible iff it records verification
 performed or qualifies the outcome — proof-of-process collapses.
 
-Compact above all: one line per finding, fusing location and concrete failure; the full prose stays
-in the session. The **Reviewed** line always carries the latest round's state (`working tree on
-<SHA>`, marked `unpinned`, when not a commit; once stamped, the new SHA with `stamped from <that
-state>`) and diffstat; **Diff** and **Metadata** their full hashes (never a later fix's), for the
-Stamp; history lives in the round headings, each naming the state it reviewed and, after the
-first, its scope — full with its reason.
+Compact above all: one line per finding, fusing its location as `path:line` (every site, for a
+mistake repeated) and concrete failure; the full prose stays in the session. The **Reviewed**
+line always carries the latest round's state (`working tree on <SHA>`, marked `unpinned`, when
+not a commit; once stamped, the new SHA with `stamped from <that state>`) and diffstat;
+**Diff** and **Metadata** their full hashes (never a later fix's), for the Stamp; history lives
+in the round headings, each naming the state it reviewed and, after the first, its scope — full
+with its reason.
 Provenance exactly as the environment reports it, `unknown` when it doesn't — never guessed or
 recalled; the reviewer's model, when it differs from the session's, appended to the **By** line as
-`review by <model>`; skill version from this file's frontmatter, date = today.
+`review by <model>`; skill version from this file's frontmatter, read from disk when the loaded
+text lacks it; date = today.
 
 ```markdown
 # Self-review — my-feature → main
