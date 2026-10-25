@@ -1849,6 +1849,7 @@ def gallery_component(changed):
           readonly zoom = signal(1);
           readonly current = computed(() => this.photos()[this.index()] ?? null);
           readonly canAdd = computed(() => !this.readonly && this.photos().length < this.maxPhotos);
+          private readonly photos$ = toObservable(this.photos);
         """, rot=", rotate" if changed else "")
     if changed:
         f.add("  readonly rotateError = signal(false);")
@@ -1856,7 +1857,7 @@ def gallery_component(changed):
 
           ngOnInit(): void {
             this.store.listPhotos(this.findingId);
-            toObservable(this.photos)
+            this.photos$
               .pipe(takeUntilDestroyed(this.destroyRef))
               .subscribe((photos) => this.photoCountChange.emit(photos.length));
         """)
@@ -1891,19 +1892,36 @@ def gallery_component(changed):
             this.zoom.update((z) => Math.max(1, z - 0.5));
           }
 
-          /** Queues the picked files; the queue uploads them one by one. */
+          /** Picked files wait in the gallery as pending photos until the user uploads them. */
           onFilesPicked(files: FileList | null): void {
             if (!files || this.readonly) {
               return;
             }
             const room = this.maxPhotos - this.photos().length;
-            Array.from(files)
+            const picked = Array.from(files)
               .slice(0, Math.max(0, room))
-              .forEach((file) => this.store.uploadQueue$.next(file));
+              .map((file): GalleryPhoto => {
+                const url = URL.createObjectURL(file);
+                return { id: '', url, thumbnailUrl: url, rotation: 0, takenAt: null, uploadedBy: '', fileName: file.name, pending: true, file };
+              });
+            this.pending.update((list) => [...list, ...picked]);
+          }
+
+          /** Hands every pending photo to the upload queue, which uploads them one by one. */
+          uploadPending(): void {
+            const list = this.pending();
+            this.pending.set([]);
+            for (const photo of list) {
+              URL.revokeObjectURL(photo.url);
+              if (photo.file) {
+                this.store.uploadQueue$.next(photo.file);
+              }
+            }
           }
 
           remove(photo: GalleryPhoto): void {
             if (photo.pending) {
+              URL.revokeObjectURL(photo.url);
               this.pending.update((list) => list.filter((p) => p !== photo));
               return;
             }
@@ -1952,7 +1970,7 @@ def gallery_component(changed):
           }
 
           trackById(_: number, photo: GalleryPhoto): string {
-            return photo.id ?? photo.fileName;
+            return photo.pending ? photo.url : photo.id;
           }
         }
         """)
@@ -2017,6 +2035,9 @@ def gallery_template(changed):
             {{ 'inspections.photos.upload' | translate }}
             <input type="file" accept="image/*" multiple (change)="onFilesPicked($any($event.target).files)" data-testid="gallery-file-input" />
           </label>
+          <button type="button" class="gallery__upload" *ngIf="pending().length" (click)="uploadPending()" data-testid="gallery-upload">
+            {{ 'inspections.photos.uploadPending' | translate }}
+          </button>
         </section>
         """)
     return f
@@ -2161,8 +2182,8 @@ def i18n(changed):
         "list": ["title", "search", "empty", "reference", "location", "inspector", "scheduled", "openFindings", "create"],
         "detail": ["title", "status", "history", "notes", "start", "complete", "delete", "deleteConfirm", "export"],
         "status": ["draft", "scheduled", "in_progress", "completed", "closed"],
-        "photos": ["title", "empty", "upload", "uploading", "uploadFailed", "delete", "deleteConfirm", "zoomIn",
-                   "zoomOut", "next", "previous"],
+        "photos": ["title", "empty", "upload", "uploadPending", "uploading", "uploadFailed", "delete", "deleteConfirm",
+                   "zoomIn", "zoomOut", "next", "previous"],
         "export": ["title", "format", "includePhotos", "queued", "running", "done", "failed", "download"],
     }
     if changed:
@@ -2220,6 +2241,7 @@ def e2e_spec(changed):
 
           test('uploads a picked photo', async () => {
             await photos.pick('fixtures/photos/crack.jpg');
+            await photos.upload.click();
             await expect(photos.thumbnails).toHaveCount(3);
           });
 
@@ -2270,6 +2292,7 @@ def page_object(changed):
           readonly next: Locator;
           readonly previous: Locator;
           readonly fileInput: Locator;
+          readonly upload: Locator;
         """)
     if changed:
         f.add("  readonly rotateLeft: Locator;", "  readonly rotateRight: Locator;")
@@ -2284,6 +2307,7 @@ def page_object(changed):
             this.next = this.gallery.getByTestId('gallery-next');
             this.previous = this.gallery.getByTestId('gallery-previous');
             this.fileInput = this.gallery.getByTestId('gallery-file-input');
+            this.upload = this.gallery.getByTestId('gallery-upload');
         """)
     if changed:
         f.add("    this.rotateLeft = this.gallery.getByTestId('gallery-rotate-left');",

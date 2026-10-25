@@ -22,7 +22,7 @@ import shutil
 import subprocess
 import sys
 
-ITEM = re.compile(r"^(\d+)\.\s+(.*)$")
+ITEM = re.compile(r"^(\d+[a-z]?)\.\s+(.*)$")  # "10a." / "10b.": a finding the session split
 SPAN = re.compile(r"`([^`]+)`")
 # a path-like token inside a backtick span: `path`, `path:12`, `path:~12`, `path:12-15`, `path:12,40-44`,
 # `path symbol()`; a known file extension keeps `dto.name`-style code out
@@ -238,10 +238,16 @@ def git(repo, *args):
     return subprocess.run(["git", "-C", repo, *args], capture_output=True, text=True, check=False).stdout
 
 
+def start_state(repo):
+    # make-fixture.sh records the reviewed state: HEAD, or a stash-create commit when the change is uncommitted
+    path = os.path.join(repo, ".git", "fixture-start")
+    return open(path).read().strip() if os.path.exists(path) else "HEAD"
+
+
 def changed_lines(repo):
     base = git(repo, "merge-base", "main", "HEAD").strip()
     total = 0
-    for line in git(repo, "diff", "--numstat", base, "HEAD").splitlines():
+    for line in git(repo, "diff", "--numstat", base, start_state(repo)).splitlines():
         a, d, _ = line.split("\t", 2)
         if a != "-":
             total += int(a) + int(d)
@@ -251,7 +257,7 @@ def changed_lines(repo):
 def added_ranges(repo, path):
     base = git(repo, "merge-base", "main", "HEAD").strip()
     out = []
-    for line in git(repo, "diff", "-U0", base, "HEAD", "--", path).splitlines():
+    for line in git(repo, "diff", "-U0", base, start_state(repo), "--", path).splitlines():
         m = re.match(r"^@@ -\S+ \+(\d+)(?:,(\d+))? @@", line)
         if m:
             start, count = int(m.group(1)), int(m.group(2) or 1)
@@ -357,8 +363,10 @@ def main():
         text = open(report).read()
         checks, findings = parse_report(text)
         matched, dups, unmatched, trap_hits = match(defects, traps, findings, a.tolerance)
+        # findings credited with two or more defects: distinct mistakes the reviewer put on one line
+        merged = sorted({n for n in matched.values() if list(matched.values()).count(n) > 1})
     else:
-        text, checks, findings, matched, dups, unmatched, trap_hits = "", {}, [], {}, [], [], []
+        text, checks, findings, matched, dups, unmatched, trap_hits, merged = "", {}, [], {}, [], [], [], []
         use["status"] = use.get("status", "") + "+no-report"
         exit_code = 1
 
@@ -378,7 +386,7 @@ def main():
         "blocking_recall": blocking_recall, "findings": len(findings), "precision": precision,
         "unmatched": [f["label"] for f in unmatched],
         "duplicates": [f["label"] for f in findings if f["num"] in dups],
-        "trap_hits": trap_hits, "missed": [d["id"] for d in defects if d["id"] not in matched],
+        "trap_hits": trap_hits, "merged": [f["label"] for f in findings if f["num"] in merged], "missed": [d["id"] for d in defects if d["id"] not in matched],
         "matched": {d: next(f["label"] for f in findings if f["num"] == n) for d, n in matched.items()},
         "structure_fails": structure_fails,
         "visible_lines": checks.get("visible_lines"),
@@ -405,12 +413,12 @@ def main():
         if text and not (os.path.exists(dest) and os.path.samefile(report, dest)):
             shutil.copy(report, dest)
         with open(os.path.join(a.out, "fixes.diff"), "w") as f:
-            f.write(git(a.repo, "diff"))
+            f.write(git(a.repo, "diff", start_state(a.repo)))
         with open(os.path.join(a.out, "score.md"), "w") as f:
             f.write(f"# {case}\n\n")
             f.write("| metric | value |\n| --- | --- |\n")
             for k in ("status", "defects", "found", "recall", "blocking_recall", "findings", "precision",
-                      "duplicates", "trap_hits", "tokens", "tokens_per_line", "cost_usd", "turns", "subagents",
+                      "duplicates", "trap_hits", "merged", "tokens", "tokens_per_line", "cost_usd", "turns", "subagents",
                       "minutes", "changed_lines", "visible_lines", "structure_fails", "gate"):
                 if k in score:
                     f.write(f"| {k} | {score[k]} |\n")
@@ -422,10 +430,10 @@ def main():
                 f.write("\n## Traps flagged\n\n" + "".join(f"- {t} by finding {label[n]}\n" for t, n in trap_hits))
 
     cols = ["case", "status", "defects", "found", "recall", "blocking_recall", "findings", "precision",
-            "trap_hits", "tokens", "tokens_per_line", "cost_usd", "turns", "subagents", "minutes", "structure_fails"]
-    row = [score[c] for c in cols]
-    row[8] = len(score["trap_hits"])
-    row[15] = ",".join(structure_fails) or "ok"
+            "trap_hits", "merged", "tokens", "tokens_per_line", "cost_usd", "turns", "subagents", "minutes", "structure_fails"]
+    counted = {"trap_hits": len(score["trap_hits"]), "merged": len(score["merged"]),
+               "structure_fails": ",".join(structure_fails) or "ok"}
+    row = [counted.get(c, score[c]) for c in cols]
     print("\t".join("-" if v is None else str(v) for v in row))
     sys.exit(exit_code)
 

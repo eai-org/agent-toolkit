@@ -74,7 +74,9 @@ artifacts.
    finding names its location and a concrete failure scenario; style nits, speculation, and padding
    are out of scope, and zero findings is a valid outcome. Besides what the invocation asks, it
    returns its findings numbered — one mistake repeated at several sites is one finding listing
-   them all, distinct mistakes never share one — each citing the lines it read as evidence
+   them all (several behaviours left untested are one); distinct mistakes never share one, not
+   even a bug and the test that misses it, nor two kinds grouped by theme (a missing test and a
+   convention breach in one spec) — each citing the lines it read as evidence
    (`path:lines`) and re-checked against them before returning, dropped when they disprove it;
    and what in scope it did not read, by name (or that it read everything).
    Out of scope bounds what is reported, never what is investigated: a pre-existing anomaly in

@@ -22,8 +22,9 @@ blindness, so someone else's PR has nothing to escape and belongs to `maintainer
 Every agent step re-sends its whole context, so the session reads sparingly: it never prints the
 diff or its full stat (`--shortstat` and the hash suffice), never reads the changed files or the
 governing docs whole — the reviewer runs that checklist — and opens only cited ranges in the
-walk. It awaits each subagent within the same turn (a blocking spawn where the harness offers
-one), never polling it and never ending the turn to wait.
+walk. It spawns every subagent blocking, so its result returns to the spawning step — in the
+background only when the harness has no blocking mode, then waiting for the completion notice;
+never polling or sleeping.
 
 ## Resolve the changeset
 
@@ -59,9 +60,14 @@ one), never polling it and never ending the turn to wait.
    into target, its title, description and the issue ids it lists as linked (as the forge shows
    them, sorted, one per line); nothing under a label without a value (e.g. no PR yet) — every
    line LF-terminated, CRLF folded to LF, each value's trailing blank lines dropped.
+5. Above 5,000 changed lines (`--shortstat`), or the limit the project rules file sets, state the
+   size and ask before reviewing, since cost grows with it: the whole change, only the paths the
+   author names, or nothing. Paths left out are excluded as in step 2 but named in an
+   outcome-weakening caveat.
 
 Done when source branch, target, reviewed state (SHA, or working tree on SHA), the diff's hash
-(`git diff … | git hash-object --stdin`) and the metadata's are recorded and the diff is non-empty.
+(`git diff … | git hash-object --stdin`) and the metadata's are recorded, the diff is non-empty,
+and a diff above the size limit is scoped by the author's answer.
 
 ## Project rules file
 
@@ -92,12 +98,10 @@ it runs without its confirmation step — with:
 - the mandate framed as a maintainer's merge gate — would anything here block the merge? — and
   extended by: the project's own governing docs (contributing, agent instructions, codestyle) run
   as a checklist, not as background reading — a rule a text pattern can catch searched for in the
-  diff's added lines — against every changed file, the unchanged code the
-  change newly relies on, and the submission itself, whose metadata block (step 4) the prompt must
-  carry verbatim; tests — new behaviour without a test that fails when it breaks, an assertion
-  that cannot fail; generated, vendored and lock files that changed while their source did not,
-  or contradict it; and leftovers — debug prints, commented-out code, stray TODOs, accidentally
-  committed files;
+  diff's added lines — against every changed file, the unchanged code the change newly relies on,
+  and the submission itself, whose metadata block (step 4) the prompt must carry verbatim; tests —
+  new behaviour without a test that fails when it breaks, an assertion that cannot fail; and
+  leftovers — debug prints, commented-out code, stray TODOs, accidentally committed files;
 - the grounded bar: a finding exists only with a nameable concrete failure, violated rule, or
   redundancy — hedged speculation is out, zero findings is a valid outcome;
 - an instruction to the reviewer to report back the harness and model it ran on.
@@ -109,7 +113,9 @@ coverage.
 
 Before the first finding, check which planning documents the task has (ticket, requirements,
 plan) and read any that exist: recommendations must weigh the full story. These documents still
-never reach the reviewer, which sees only the distilled intent (Review above).
+never reach the reviewer, which sees only the distilled intent (Review above). A finding naming
+two mistakes, even a bug and the test that misses it, is split in two before the walk; one mistake
+at several sites stays one.
 
 One question per finding, up to four per prompt when the question tool takes several (else one
 at a time), each recommending a disposition with a one-line why, worded via
@@ -119,9 +125,10 @@ the author says that isn't a disposition is discussion, not a decision: answer t
 the code, revise the recommendation, do what they ask with the finding — then the walk returns to
 that same finding, still open. Three dispositions close one:
 
-- **fix** — queued until the round's walk ends (Fixer, below); committing stays the author's
-  move. Submission metadata (PR title, description, commit subjects) the agent only drafts —
-  applying it is the author's (Boundaries).
+- **fix** — apply it to the working tree now; before the round's first fix, copy the modified and
+  untracked files `git status` lists to scratch, the baseline Rounds diffs against. Committing
+  stays the author's move. Submission metadata (PR title, description, commit subjects) the agent
+  only drafts — applying it is the author's (Boundaries).
 - **dismiss** — record the author's reason; a recommended dismissal carries its reason in the
   option, so picking it needs no follow-up question. Otherwise push once toward one a maintainer
   can evaluate ("the caller already null-checks", not "disagree"); "mirrors the existing pattern"
@@ -144,22 +151,11 @@ line with the why — a dismissal with the agent's reason, a deferral as a note 
 ticket or comment text drafted in the session and the finding listed at Wrap up for filing. Only a
 fix that would reshape the change (a redesign, scope beyond the finding) still asks. Later rounds
 start at once on the working tree, the commit proposal moving to Wrap up; asks before the walk
-(target, intent) stand. The report gains a procedural caveat naming where it began
+(target, intent, size) stand. The report gains a procedural caveat naming where it began
 (`Dispositions decided by the agent from round 1, finding 3`).
 
-**Fixer** — once the round's findings are all dispositioned, the queued fixes are applied. The
-session applies them itself while its context is still small (autoaccept from the start, at most
-~5 fixes); otherwise fresh-context fixers do, since every edit would re-send the session's grown
-context: one per group of fixes sharing files — no file in two groups, at most ~5 fixes each —
-in parallel where the harness allows (the session itself only when it has no subagents). A
-fixer is briefed with each fix's location, failure and the author's wording. Whoever applies a
-fix reads only what it needs (cited ranges, targeted search, never whole files or docs), touches
-nothing else, and gives a behaviour fix a test that fails without it where the project has
-tests. A fixer returns the files it changed and, per fix, the test it added or why not; a
-behaviour fix returned without a test goes back to it once.
-
-Done when every finding of the round is dispositioned, its queued fixes applied or reported not
-applicable, and diff and metadata re-hashed as in steps 3 and 4.
+Done when every finding of the round is dispositioned and diff and metadata re-hashed as in steps
+3 and 4.
 
 ## Rounds
 
@@ -170,16 +166,16 @@ rules require a pinned review. The first round reviews the whole changeset; ever
 this invocation or a re-run, only the **delta** — what changed since the last reviewed state — and
 its reach. The reviewer gets the current range as reference, plus:
 
-- the delta by reference — the files the walk changed, or the SHA pair whose diff it is; a hunk
-  the walk applied carries the failure it addressed, never its disposition; dismissed and
-  deferred findings go unmentioned;
+- the delta by reference — a scratch patch of each file a fix touched, diffed
+  (`git diff --no-index`) against its scratch copy, else `HEAD`, or `/dev/null` when created; or
+  the SHA pair whose diff it is; a hunk the walk applied carries the failure it addressed, never
+  its disposition; dismissed and deferred findings go unmentioned;
 - files the last round reported uncovered, reviewed whole as in a first round;
 - the mandate: check each hunk holds and follow its reach — call sites of what changed, mirrored
   sites, the tests and docs covering it, whatever else it judges reached; the rest of the changeset
   was reviewed and stands: no hunting there, though a grounded finding met on the way is reported
-  like any other; governing-docs checklist, leftovers hunt and tests check over the delta and the
-  uncovered files only — for a fix, the tests check asks only that its own test fails without
-  it.
+  like any other; governing-docs checklist and leftovers hunt over the delta and the uncovered
+  files only.
 
 The delta must be exact, else the round runs full, saying why. Exact: the fixes the walk applied —
 possibly none — when the diff hash the walk took still matches at round start, or none in the
@@ -287,8 +283,9 @@ the report carries the current state or Review has started.
 Print: the report's project-relative path, with the instruction to paste its content into the PR
 description or a comment; a warning not to commit the report — a later `git add .` drags it into
 the PR — unless the project rules file says otherwise; a reminder to run the project's usual
-checks (build, lint, tests) before pushing — this skill never runs them; and that the pushed head
-must match the reported SHA: unpinned → commit, then re-invoke to stamp; any later commit or
+checks (build, lint, tests) before pushing — this skill never runs them; the files a fix
+created, for the author to `git add`; and that the pushed head must match the reported SHA:
+unpinned → commit, then re-invoke to stamp; any later commit or
 metadata edit → the same re-invocation: a stamp when the content held, its changed metadata
 reviewed alone, else a re-run; after autoaccept, also the commit proposal (Rounds) and, first of
 all, the findings as one bullet per disposition, empty ones omitted — each finding in a few words
@@ -309,4 +306,5 @@ Done when all are printed.
 
 - Files written, scratch aside: the report, and the fixes the author approved during the walk —
   nothing else.
-- Read-only git plus `git fetch`; no commit, push, or PR operation — publishing is the author's.
+- Read-only git plus `git fetch`; no commit, push, or PR operation — publishing is the author's —
+  and no index or working-tree write through git (`add`, even `-N`, `reset`, `restore`, `stash`).

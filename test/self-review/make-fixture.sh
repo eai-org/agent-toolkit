@@ -12,7 +12,9 @@
 # explain-in-simple-language are linked into .claude/skills/, so a headless run with
 # `--setting-sources project` exercises the checkout under test; SKILLS_REF=<git ref> (e.g. HEAD,
 # main, a tag) exports those three skills from that ref instead, for a before/after comparison.
-# Both dirs are gitignored by the fixture, so the tree ends clean. Git is fenced below <repo-dir>'s
+# Both dirs are gitignored by the fixture, so the tree ends clean. UNCOMMITTED=1 commits only the
+# change's new files and leaves its edits to existing files in the working tree. Either way
+# .git/fixture-start records the state under review, for score.py. Git is fenced below <repo-dir>'s
 # parent: a failed init must never reach this toolkit's own repo.
 set -u
 
@@ -53,7 +55,14 @@ fi
 # First sentence of the intent, lower-cased first letter, cut at a word boundary within 72 chars.
 subject="$(head -n 1 "$fixture/intent.txt" | sed -E 's/^([^.:]*)[.:].*$/\1/' |
   awk '{ $1 = tolower(substr($1, 1, 1)) substr($1, 2); s = ""; for (i = 1; i <= NF; i++) { if (length(s) + length($i) + 1 > 66) break; s = (s == "" ? $i : s " " $i) } print s }')"
-g add -A && g commit -q -m "feat: ${subject}" || die "feature commit failed"
+if [ -n "${UNCOMMITTED:-}" ]; then
+  g ls-files -z --others --exclude-standard | xargs -0 git -C "$repo" add -- &&
+    g commit -q --allow-empty -m "feat: ${subject}" || die "feature commit failed"
+else
+  g add -A && g commit -q -m "feat: ${subject}" || die "feature commit failed"
+fi
+start="$(g stash create)" || die "recording the start state failed"
+echo "${start:-$(g rev-parse HEAD)}" > "$repo/.git/fixture-start"
 
 plan="$repo/.agents/plans/$name"
 mkdir -p "$plan" "$repo/.claude/skills" || die "cannot create plan or skills dir"
@@ -75,5 +84,5 @@ else
 fi
 echo "${SKILLS_REF:-working-tree}" > "$repo/.claude/skills-ref"
 
-[ -z "$(g status --porcelain)" ] || die "tree not clean after setup: $(g status --porcelain | head -3)"
-echo "$repo: $(g rev-parse --abbrev-ref HEAD) at $(g rev-parse --short HEAD), $(g diff --shortstat main...HEAD)"
+[ -n "${UNCOMMITTED:-}" ] || [ -z "$(g status --porcelain)" ] || die "tree not clean after setup: $(g status --porcelain | head -3)"
+echo "$repo: $(g rev-parse --abbrev-ref HEAD) at $(g rev-parse --short HEAD), $(g diff --shortstat main "$(cat "$repo/.git/fixture-start")")${UNCOMMITTED:+ (edits uncommitted)}"
