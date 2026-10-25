@@ -1,0 +1,55 @@
+skills/fresh-eyes-review/SKILL.md
+  s_a62dbe0033c0db::t_7b7b346275dc84 77-79
+test/self-review/compare.py
+  s_a62dbe0033c0db::t_363cdcda7f20ba 2,4-9,13-14,18-19,22-44,47-53,61-62,66,68-69,71-85,87
+test/self-review/SELF-REVIEW-TEST.md
+  s_c6038f52f73006::t_a2e2673959a016 92-93
+  s_a62dbe0033c0db::t_3c3e1e6959dd2c 16,39-42,69-70,99-100,107-110,115,120-121,127-131
+test/self-review/gen-incident.py
+  s_a62dbe0033c0db::t_7bcdb1bb1cf728 1852
+  s_a62dbe0033c0db::t_f964debdb0a1ed 2038-2040
+  s_a62dbe0033c0db::t_dc86ed70d8625e 2244
+  s_a62dbe0033c0db::t_486ad470caa036 1973
+  s_a62dbe0033c0db::t_790bc4717edcee 2310
+  s_a62dbe0033c0db::t_e1e8a2ed9c5bcf 2295
+  s_a62dbe0033c0db::t_fc7228a31939aa 1860
+  s_a62dbe0033c0db::t_86549787c8743e 2185-2186
+  s_a62dbe0033c0db::t_a137c1c4e840ca 1895,1901,1903-1915,1919,1924
+  s_a62dbe0033c0db::t_da338349318eba 1916-1918
+test/self-review/run.sh
+  s_a62dbe0033c0db::t_4500cedd2a4374 11-13,26,31,39-41,49,52,64,69-74,77,80,89-93,95,120,131-132,134
+test/self-review/score.py
+  s_a62dbe0033c0db::t_36de1ef582ccfd 25
+  s_a62dbe0033c0db::t_78a9563ea4d31e 241-246,250,260,366-367,369,389,416,421,433-436
+skills/self-review/SKILL.md
+  s_a62dbe0033c0db::t_7b7b346275dc84 117-118,288
+  s_a62dbe0033c0db::t_625b9864f71db0 116,309-310
+  s_c6038f52f73006::t_a2e2673959a016 25-27,63-66,69-70,101,104,128-131,154,157-158,169-172,177-178,286-287
+  s_c6038f52f73006::t_a574fcfe3ee44c 102-103
+test/self-review/make-fixture.sh
+  s_a62dbe0033c0db::t_4fbff652f8d266 15-17,58-65,87-88
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e44273ca974b9d8646c937d85928eab3c48867ac",
+  "prompts": {},
+  "sessions": {
+    "s_a62dbe0033c0db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "55a913a7-c04c-4598-854c-53d9c6277436",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "stefanoslig <stefanoslignos@gmail.com>"
+    },
+    "s_c6038f52f73006": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bf751ea5-fa16-4727-baf0-504cbfa61465",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "stefanoslig <stefanoslignos@gmail.com>"
+    }
+  }
+}
