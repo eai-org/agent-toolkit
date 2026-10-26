@@ -97,7 +97,9 @@ the session's cumulative usage once. Budgets cap the damage of a runaway run: `B
 status `error_max_budget_usd` and stays in the table — the overrun is the result.
 
 Reference cost on Sonnet (self-review 1.1, 2026-10-24): small cases 0.2–1.2M tokens, 0.2–0.7 USD;
-big-pr 0.9–1.2M tokens, 0.5–0.8 USD; incident 2.7–3.2M tokens, 1.5–1.8 USD.
+big-pr 0.9–1.2M tokens, 0.5–0.8 USD; incident 2.7–3.2M tokens, 1.5–1.8 USD. On Opus
+(self-review 1.1 at `e44273c`, 2026-10-26, one run each): small cases 0.3–1.2M tokens, 0.4–1.5
+USD; big-pr 1.4M tokens, 1.5 USD; incident 10.2M tokens, 6.5 USD.
 
 `selfcheck` costs nothing: it builds every fixture, validates the labels, and scores an oracle
 report (must reach recall 1, precision 1) and a null report (0 findings).
