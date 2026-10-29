@@ -113,26 +113,57 @@ def parse_report(text):
 
 
 def same_file(finding_path, label_path):
-    """A finding may shorten its path (`photo.mapper.ts`, `libs/.../photo-dto.ts`); match by suffix."""
-    fp = re.split(r"\.\.\.|\u2026", finding_path)[-1].lstrip("./")
-    lp = label_path.lstrip("./")
-    return bool(fp) and (lp == fp or lp.endswith("/" + fp))
+    """A finding may shorten its path (`photo.mapper.ts`, `libs/.../photo-dto.ts`,
+    `ui/photo-gallery/photo-gallery.component.ts` for web/libs/ui/photo-gallery/src/lib/\u2026): the
+    file name must match and the other segments appear in the label's path, in order."""
+    fp = re.split(r"\.\.\.|\u2026", finding_path)[-1].lstrip("./").split("/")
+    lp = label_path.lstrip("./").split("/")
+    if not fp[-1] or fp[-1] != lp[-1]:
+        return False
+    rest = iter(lp[:-1])
+    return all(seg in rest for seg in fp[:-1])
 
 
 STOP = {"that", "with", "from", "this", "when", "then", "than", "into", "only", "every", "never", "does",
         "fixed", "dismissed", "deferred", "refuted", "file", "line", "code", "test", "tests", "added", "instead"}
 
 
-def words(text):
-    return {w for w in re.findall(r"[a-z0-9_]+", text.lower()) if len(w) >= 4 and w not in STOP}
+def stems(text):
+    """Word stems of 4+ letters, stop words out: `rotates`, `rotated` and `rotate` agree."""
+    out = set()
+    for w in re.findall(r"[a-z0-9_]+", text.lower()):
+        if len(w) < 4 or w in STOP:
+            continue
+        for suffix in ("ing", "ed", "es", "e", "s"):
+            if w.endswith(suffix) and len(w) - len(suffix) >= 4:
+                w = w[:-len(suffix)]
+                break
+        out.add(w)
+    return out
+
+
+def support(finding, label_path, label_text):
+    """How far the finding's text backs the label, the file's own name aside: the number of word
+    stems it shares with the label's description, plus 2 when code it quotes in backticks appears
+    in that description — code with a dot, bang or bracket (`console.log`, `assignee!`) or a long
+    name, never a plain short word like `ngOnInit`, which any finding on the file may cite."""
+    own = stems(os.path.basename(label_path))
+    shared = len((stems(finding["text"]) - own) & (stems(label_text) - own))
+    quoted = [s for s in re.findall(r"`([^`]+)`", finding["text"]) if "/" not in s and not re.search(r":[~\d]", s)]
+    if any((re.search(r"[^A-Za-z]", s) or len(s) >= 12) and s.lower() in label_text.lower() for s in quoted):
+        shared += 2
+    return shared
 
 
 def hits(label_sites, finding, tol, need_line=False, label_text=""):
     """Smallest distance between a finding site and a label site in the same file, or None.
-    A finding that cites a file without a line matches a site in it only when its text shares a
-    word with the label's description (the file's own name aside), and after every line match."""
+    A cited line hits within `tol` lines. Off by more, up to APPROX (reviewers cite up to a
+    dozen lines off), it hits only when the finding's text supports the label by two or more
+    (`support`), ranked behind exact hits by how well it does. A finding that cites a file without
+    a line hits on any support, after every line match."""
     best = None
     for lp, llo, lhi in label_sites:
+        backing = 0 if need_line else support(finding, lp, label_text)
         for site in finding["sites"]:
             fp, flo, fhi = site[:3]
             if not same_file(fp, lp):
@@ -140,15 +171,18 @@ def hits(label_sites, finding, tol, need_line=False, label_text=""):
             if need_line and len(site) > 3:
                 continue
             if fhi is None:
-                own = words(os.path.basename(lp))
-                if need_line or not (words(finding["text"]) - own) & (words(label_text) - own):
+                if not backing:
                     continue
-                dist = tol + 0.5
+                dist = APPROX + 0.5
             elif lhi is None:
                 dist = 0
             else:
                 dist = max(0, llo - fhi, flo - lhi)
-            if dist <= tol + 0.5 and (best is None or dist < best):
+                if dist > tol:
+                    if dist > APPROX or backing < 2:
+                        continue
+                    dist = APPROX - min(backing, APPROX - tol - 1)
+            if best is None or dist < best:
                 best = dist
     return best
 
@@ -170,9 +204,10 @@ def match(defects, traps, findings, tol):
         claimed_f.add(fnum)
         matched[did] = fnum
     # A finding that names two failures in one line ("swallows save errors; debug print left")
-    # credits both: the reader learns of each. Only defects no finding claimed alone go this way.
+    # credits both: the reader learns of each. Only defects no finding claimed alone go this way,
+    # never through an off-line citation, which cannot show the line names both.
     for _, dist, did, fnum in pairs:
-        if did not in claimed_d:
+        if did not in claimed_d and not tol < dist <= APPROX:
             claimed_d.add(did)
             matched[did] = fnum
     duplicates = [f["num"] for f in findings if f["num"] not in claimed_f
@@ -205,17 +240,18 @@ def usage(result_path):
         except ValueError:
             return {"status": "bad-result"}
     # A resume continues the session and reports its usage and cost cumulatively: count the last.
+    # Turns and subagents it reports per invocation: sum them.
     tokens, cost, turns, subagents, models = 0, 0.0, 0, 0, set()
     for i, r in enumerate(results):
         same = i + 1 < len(results) and results[i + 1].get("session_id") == r.get("session_id")
         turns += r.get("num_turns") or 0
+        subagents += (r.get("subagent_stats") or {}).get("spawned") or 0
         if same:
             continue
         for name, m in (r.get("modelUsage") or {}).items():
             models.add(name)
             tokens += sum(m.get(k, 0) or 0 for k in ("inputTokens", "cacheReadInputTokens", "cacheCreationInputTokens", "outputTokens"))
         cost += r.get("total_cost_usd") or 0
-        subagents += (r.get("subagent_stats") or {}).get("spawned") or 0
     last = results[-1]
     status = last.get("subtype") or "unknown"
     if last.get("is_error"):

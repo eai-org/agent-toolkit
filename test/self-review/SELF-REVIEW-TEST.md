@@ -49,10 +49,11 @@ fixture's `REQUIREMENTS.md`, the intent source the skill prefers), `defects.tsv`
   carries the drivers of the runaway review this harness was built after: diffs above the agent
   CLI's output limit, a regenerated 64-file API client with one model hand-edited, backend
   contracts outside the diff the frontend relies on, change docs shipped with the PR, governing
-  docs and project skills. 15 defects (contracts, flag-off regression, vocabulary, null handling,
-  swapped fields, generated drift, leak, intent, omissions, test gaps, conventions), 3 traps,
-  ~3,650 added lines. On Sonnet the reviewer reads frugally and never runs away as the frontier
-  model did in the original incident; there the fix work dominates the cost.
+  docs and project skills. 18 defects (contracts, flag-off regression, vocabulary, null handling,
+  swapped fields, generated drift, data loss, double rotation, unprovided root URL, leak, intent,
+  omissions, test gaps, conventions), 2 traps, ~3,650 added lines. On Sonnet the reviewer reads
+  frugally and never runs away as the frontier model did in the original incident; there the fix
+  work dominates the cost.
 
 Labels: `defects.tsv` is `id, sites, kind, blocking, description`; `traps.tsv` is
 `id, sites, description`. `sites` is `path:line`, `path:lo-hi` or `path:*` (anywhere in the
@@ -61,13 +62,17 @@ line unless its kind is `omission` or `missing_test` (those point at the place t
 have touched). `selfcheck` validates this.
 
 Matching: a finding cites `path:line` sites inside backtick spans; a shortened path
-(`photo.mapper.ts`, `libs/.../x.ts`) matches by suffix. A cited line hits a label site within
-`--tolerance` lines (default 5), a `path:~N` estimate within 15. A file-only citation hits only
-when its text shares a word with the defect's description, file name aside. Each defect goes to
-its closest hitting finding, round-1 findings first (later rounds review fixes); a defect no finding
-claimed alone goes to a finding that already claimed another, since a line naming two failures
-tells the reader both; that finding counts as merged. Estimates and file-only citations never
-count as trap hits.
+(`photo.mapper.ts`, `libs/.../x.ts`, `ui/photo-gallery/x.ts`) matches when its file name does and
+its other segments appear in the label's path in order. A cited line hits a label site within
+`--tolerance` lines (default 5), a `path:~N` estimate within 15. Off by up to 15 (reviewers cite
+up to a dozen lines off), a line hits only when the finding's text backs the defect's
+description, file name aside — two shared word stems, or quoted code found in it (`console.log`,
+`assignee!`, not a plain short word like `ngOnInit`) — and ranks behind exact hits. A file-only
+citation hits on one shared stem, after every line hit. Each defect goes to its closest hitting
+finding, round-1 findings first (later rounds review fixes); a defect no finding claimed alone
+goes to a finding that already claimed another, since a line naming two failures tells the reader
+both — never through an off-line citation; that finding counts as merged. Estimates and
+file-only citations never count as trap hits.
 
 Never tune a fixture toward the current skill text: a new kind of miss gets a new defect, a
 false positive the owner judged wrong gets a trap.
@@ -92,14 +97,16 @@ the equivalent headless flags), then scores with [score.py](score.py). Autoaccep
 before a fix that reshapes the change and before reviewing a diff above the size limit (no
 fixture at its default size reaches it); either ends a headless run without a report: the runner
 then resumes the session with "go with your recommendation", at most twice, and the scorer counts
-the session's cumulative usage once. Budgets cap the damage of a runaway run: `BUDGET_SMALL`
-(8 USD), `BUDGET_BIG` (30 USD), `BUDGET_INCIDENT` (10 USD); a run the cap stopped scores with
-status `error_max_budget_usd` and stays in the table — the overrun is the result.
+the session's cumulative usage once, turns and subagents summed over the resumes. Budgets cap the
+damage of a runaway run: `BUDGET_SMALL` (8 USD), `BUDGET_BIG` (30 USD), `BUDGET_INCIDENT`
+(10 USD); a run the cap stopped scores with status `error_max_budget_usd` and stays in the table —
+the overrun is the result.
 
 Reference cost on Sonnet (self-review 1.1, 2026-10-24): small cases 0.2–1.2M tokens, 0.2–0.7 USD;
 big-pr 0.9–1.2M tokens, 0.5–0.8 USD; incident 2.7–3.2M tokens, 1.5–1.8 USD. On Opus
 (self-review 1.1 at `e44273c`, 2026-10-26, one run each): small cases 0.3–1.2M tokens, 0.4–1.5
-USD; big-pr 1.4M tokens, 1.5 USD; incident 10.2M tokens, 6.5 USD.
+USD; big-pr 1.4M tokens, 1.5 USD; incident 10.2M tokens, 6.5 USD. On Fable (2026-10-27, one
+run): incident 4.8M tokens, 13.3 USD.
 
 `selfcheck` costs nothing: it builds every fixture, validates the labels, and scores an oracle
 report (must reach recall 1, precision 1) and a null report (0 findings).

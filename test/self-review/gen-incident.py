@@ -1183,7 +1183,9 @@ def v2_service():
         @Injectable({ providedIn: 'root' })
         export class V2InspectionsService implements InspectionsDataSource {
           private readonly http = inject(HttpClient);
-          private readonly config = inject(ApiConfiguration);
+        """, types=",\n  ".join(MODEL_TYPES))
+    f.mark("root_url").add("  private readonly config = inject(ApiConfiguration);")
+    f.block("""
           private readonly logger = inject(Logger);
           private readonly inspectionsApi = inject(InspectionsApiService);
           private readonly findingsApi = inject(FindingsApiService);
@@ -1191,7 +1193,7 @@ def v2_service():
           private readonly commentsApi = inject(CommentsApiService);
           private readonly drawingsApi = inject(DrawingsApiService);
           private readonly exportsApi = inject(ExportsApiService);
-        """, types=",\n  ".join(MODEL_TYPES))
+        """)
     for name, args, ret, doc, _, v2 in METHODS:
         f.add("", "  /**", "   * %s" % doc, "   */", "  %s(%s): Observable<%s> {" % (name, args, ret))
         if name == "loadAllFindings":
@@ -1422,7 +1424,9 @@ def inspection_mapper():
          */
         export function toUpdateInspectionDto(changes: InspectionChanges): UpdateInspectionDto {
           return {
-            title: (changes.title ?? '').trim(),
+        """)
+    f.mark("partial_update").add("    title: (changes.title ?? '').trim(),")
+    f.block("""
             inspectorId: changes.inspectorId ?? null,
             scheduledFor: toCalendarDate(changes.scheduledFor),
             notes: blankToNull(changes.notes ?? null),
@@ -1583,7 +1587,9 @@ def finding_mapper():
         /** Builds the update payload; see toUpdateInspectionDto for why nothing is dropped. */
         export function toUpdateFindingDto(changes: FindingChanges): UpdateFindingDto {
           return {
-            title: (changes.title ?? '').trim(),
+        """)
+    f.mark("partial_update").add("    title: (changes.title ?? '').trim(),")
+    f.block("""
             description: changes.description?.trim() || null,
             category: LEGACY_TO_V2_CATEGORY[changes.category ?? 'other'],
             severity: LEGACY_TO_V2_SEVERITY[changes.severity ?? 'medium'],
@@ -1940,7 +1946,7 @@ def gallery_component(changed):
                   if (photo.pending && photo.file) {
                     // A new photo is not on the server yet: rotate the file itself before it is uploaded.
             """)
-        f.mark("trap_new_photo").add("        photo.file = await rotateImageFile(photo.file, rotation);")
+        f.mark("double_rotation").add("        photo.file = await rotateImageFile(photo.file, rotation);")
         f.block("""
                     photo.rotation = rotation;
                     this.pending.update((list) => [...list]);
@@ -2090,6 +2096,27 @@ ROUTES = [
     ("login", "login", "LoginPage", "@inspections/auth/feature", False),
     ("**", "not-found", "NotFoundPage", "@inspections/shared/ui-not-found", False),
 ]
+
+
+def app_config():
+    f = F().block("""
+        import { provideHttpClient } from '@angular/common/http';
+        import { ApplicationConfig } from '@angular/core';
+        import { provideRouter, withComponentInputBinding } from '@angular/router';
+        import { APP_CONFIG } from '@inspections/shared/config';
+        import { environment } from '../environments/environment';
+        import { appRoutes } from './app.routes';
+
+        export const appConfig: ApplicationConfig = {
+        """)
+    f.mark("providers").add("  providers: [")
+    return f.block("""
+            provideRouter(appRoutes, withComponentInputBinding()),
+            provideHttpClient(),
+            { provide: APP_CONFIG, useValue: environment },
+          ],
+        };
+        """)
 
 
 def routes(changed):
@@ -2580,6 +2607,8 @@ def docs_change():
     for title, items in groups:
         tasks.add("## " + title, "")
         for i, item in enumerate(items, 1):
+            if title.startswith("1") and i == 4:
+                tasks.mark("root_url_tasks")
             if title.startswith("4") and i == 2:
                 tasks.mark("intent_tasks")
             tasks.add("- [x] %s.%d %s" % (title.split(".")[0], i, item))
@@ -2887,8 +2916,6 @@ def main():
     gt = gallery_template(True)
     change.write(G + "/photo-gallery.component.html", gt)
     change.write(G + "/rotate-image-file.ts", rotate_util())
-    traps.append(("%s/photo-gallery.component.ts:%d" % (G, gc.marks["trap_new_photo"]),
-                  "rotating a pending (new) photo in the browser before upload is what the intent asks"))
     proposal, design, tasks = docs_change()
     change.write("docs/changes/inspections-v2/proposal.md", proposal)
     change.write("docs/changes/inspections-v2/design.md", design)
@@ -2900,6 +2927,10 @@ def main():
     change.write(en, i18n(True))
     defect("omission", "no", "%s/photo-gallery.component.html:%d|%s:*" % (G, gt.marks["i18n"], en),
            "the gallery shows 'inspections.photos.rotateFailed', which en.json does not define: users see the raw key when rotation fails")
+    ac = app_config()
+    base.write("web/apps/inspector/src/app/app.config.ts", ac)
+    base.write("web/apps/inspector/src/environments/environment.ts",
+               ["export const environment = { production: false, apiUrl: 'https://api.inspections.test' };"])
     R = "web/apps/inspector/src/app/app.routes.ts"
     base.write(R, routes(False))
     rt = routes(True)
@@ -2913,6 +2944,13 @@ def main():
            "page.waitForTimeout(3000) in an E2E test; the Playwright rules forbid it (wait for a web-first assertion)")
     base.write("web/e2e/pages/finding-photos.page.ts", page_object(False))
     change.write("web/e2e/pages/finding-photos.page.ts", page_object(True))
+    defect("omission", "yes", "web/apps/inspector/src/app/app.config.ts:%d|%s/v2/v2-inspections.service.ts:%d|web/libs/clients/inspections-client/src/lib/api-configuration.ts:*|docs/changes/inspections-v2/tasks.md:%d"
+           % (ac.marks["providers"], LIB, v2.marks["root_url"], tasks.marks["root_url_tasks"]),
+           "ApiConfiguration.rootUrl is never provided: the generated client resolves every v2 call against '' (the web origin) while the API lives at APP_CONFIG.apiUrl, so with the flag on every v2 request goes to the wrong host; tasks.md 1.4 claims it done")
+    defect("data_loss", "yes", "%s/v2/mappers/finding.mapper.ts:%d|%s/v2/mappers/inspection.mapper.ts:%d" % (LIB, fm.marks["partial_update"], LIB, im.marks["partial_update"]),
+           "toUpdateFindingDto and toUpdateInspectionDto turn Partial changes into a full PUT body, filling the fields the caller did not pass with '', null or defaults: a one-field edit wipes the other fields on v2, where legacy PATCHes only what changed")
+    defect("logic", "yes", "%s/photo-gallery.component.ts:%d" % (G, gc.marks["double_rotation"]),
+           "a pending photo's file is replaced by its rotated copy, then rotated again by the whole cumulative angle on the next turn: two right turns give 90 + 180 = 270 degrees instead of 180")
 
     with open(os.path.join(dest, "intent.txt"), "w") as f:
         f.write("Make the inspection and finding screens talk to the new v2 inspections API when the server feature flag "
