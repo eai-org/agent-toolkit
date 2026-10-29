@@ -1,0 +1,38 @@
+test/self-review/gen-incident.py
+  s_c6038f52f73006::t_7af936dd2bdb29 2947-2949
+  s_c6038f52f73006::t_64e499c9596bbe 2101-2121
+  s_c6038f52f73006::t_6299f7ce554775 1590-1592
+  s_c6038f52f73006::t_ad1c0c3d2d96ca 1196
+  s_c6038f52f73006::t_49a25d8893d7ad 1427-1429
+  s_c6038f52f73006::t_48e6b339124e83 2930-2933
+  s_c6038f52f73006::t_d314baad7603dd 1186-1188
+  s_c6038f52f73006::t_52f2134eeafaea 2950-2953
+  s_c6038f52f73006::t_6215f83f2e04c0 1949
+  s_c6038f52f73006::t_54ad5b2b976d45 2610-2611
+test/self-review/score.py
+  s_c6038f52f73006::t_c389472a304aec 243,248
+  s_c6038f52f73006::t_3d67e0bd3904ea 208,210
+  s_c6038f52f73006::t_43179ccf097c2e 116-124
+  s_c6038f52f73006::t_0b91d19920158f 147-149,153
+  s_c6038f52f73006::t_7f8c3f67895e55 207
+  s_c6038f52f73006::t_48af0ebb0b78f5 176
+  s_c6038f52f73006::t_58f2d45d765c28 131-146,150-152,154-155,160-163,166,174,181-185
+test/self-review/SELF-REVIEW-TEST.md
+  s_c6038f52f73006::t_b58b0d7179be43 52-56,65-75,100-103,108-109
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "97b4531f804f380629febc09fafbf30683e7e20d",
+  "prompts": {},
+  "sessions": {
+    "s_c6038f52f73006": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bf751ea5-fa16-4727-baf0-504cbfa61465",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "stefanoslig <stefanoslignos@gmail.com>"
+    }
+  }
+}
