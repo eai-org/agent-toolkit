@@ -49,7 +49,7 @@ deviation that touches it are stated.
   raises; a broken import or fixture is no failure seen), only then write the fix; never skip the
   run because the fix looks obvious. Rework the test within the step until it fails that way; until
   it does, no fix is written, and a test that cannot be made to fail that way is blocked outright
-  (below).
+  (below). Once the fix is in, rerun the same test and see it pass.
 - Blocked outright — a step the codebase contradicts, an unmet prerequisite — → stop, leave the
   task unticked, report what blocks it; leave the edits made so far in place and list them with
   the blocker, never revert on your own.

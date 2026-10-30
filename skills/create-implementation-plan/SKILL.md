@@ -134,7 +134,8 @@ Structure — five parts:
    may know no such rule) that the test must be seen failing on the bug before the fix is written
    (its assertion, or the error the bug raises; a broken import or fixture is no failure seen), the
    failure seen is reported in one line, and a test that cannot be made to fail that way stops the
-   run before any fix, with the reason reported.
+   run before any fix, with the reason reported. The step writing the fix says to rerun that test
+   afterwards and see it pass.
 4. **Acceptance criteria** — flat `- [ ] AC-n` checklist the implementation must satisfy, copied
    from the requirements' AC section. If unnumbered, number them (`AC-1`, …). Each references the
    step number(s) that satisfy it (e.g. "AC-3 → steps 4, 7"). Tag any AC that needs manual
