@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.8"
+  version: "1.9"
 ---
 
 # Memory doctor
@@ -89,10 +89,10 @@ flat file with no index, treat each section as a block.
 
 Both axes are proposals the user confirms or flips.
 
-- **Scope** — *"would this be true or wanted in a different project too?"* Yes → **user-level**
-  (the agent's own config home). No → **project-level** (a doc in the repo, or the repo's
-  project-scoped skill/rule config). For user-level, **do not** assume reusable config lives in any
-  particular managed repo; if it does, the user redirects on confirmation.
+- **Scope** — *"would this be true or wanted in a different project too?"* Yes → **user-level**.
+  No → **project-level** (a doc in the repo, or the repo's project-scoped skill/rule config). For
+  user-level, **do not** assume reusable config lives in any particular managed repo; if it does,
+  the user redirects on confirmation.
 - **Form** — short standing behavioral constraint → **rule**; multi-step procedure with a trigger →
   **skill**; reference knowledge/design/context read when relevant but not an instruction → **doc**.
 
@@ -100,7 +100,10 @@ Both axes are proposals the user confirms or flips.
 rule to merge into, or a new file in the home the repo's governing docs name (the docs index,
 onboarding or doc-placement doc); without one, a skill or rule falls back to the agent's project
 config dirs (e.g. `.claude/skills`, `.claude/rules`), a doc to a path the user names. User-level
-homes are the agent's own config dirs (e.g. `~/.claude/skills`, `~/.claude/rules`).
+skills and rules go to the agent's own config dirs (e.g. `~/.claude/skills`, `~/.claude/rules`), a
+new user-level doc to a path the user names: the block's question asks whether they keep a
+version-controlled home (once per run; never search for one) and, if so, recommends it over an
+untracked location.
 
 Do each relocate or merge through [self-improve](../self-improve/SKILL.md) in its driven mode: hand
 it the block's content plus the confirmed scope, form and path; it drafts and applies the edit
