@@ -1,0 +1,330 @@
+name: harnesses
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Tools on PATH
+        run: |
+          for t in python3 python jq node cygpath uuidgen openssl; do
+            printf '%-8s %s\n' "$t" "$(command -v "$t" || echo missing)"
+          done
+
+      - uses: actions/checkout@v7
+
+      - name: auto-update harness
+        if: ${{ !cancelled() }}
+        run: bash test/auto-update/run.sh
+
+      - name: compact-skill-creator harness
+        if: ${{ !cancelled() }}
+        run: bash test/compact-skill-creator/run.sh
+
+      # the harness only points at its logs
+      - name: compact-skill-creator logs
+        if: failure()
+        run: |
+          for f in test/compact-skill-creator/runs/*/*.log; do
+            [ -e "$f" ] || continue
+            echo "== $f"
+            cat "$f"
+          done
+
+      - name: Not run on this job
+        if: ${{ !cancelled() }}
+        run: |
+          echo "::notice title=Not run on Linux::test/use-conversational-language/: needs a model judge, which CI does not have"
+
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        # Git Bash on Windows runners
+        shell: bash
+    steps:
+      - name: Tools on PATH
+        run: |
+          for t in python3 python jq node cygpath uuidgen openssl; do
+            printf '%-8s %s\n' "$t" "$(command -v "$t" || echo missing)"
+          done
+
+      - uses: actions/checkout@v7
+
+      - name: compact-skill-creator harness
+        if: ${{ !cancelled() }}
+        run: bash test/compact-skill-creator/run.sh
+
+      # the harness only points at its logs
+      - name: compact-skill-creator logs
+        if: failure()
+        run: |
+          for f in test/compact-skill-creator/runs/*/*.log; do
+            [ -e "$f" ] || continue
+            echo "== $f"
+            cat "$f"
+          done
+
+      - name: Installer check helpers
+        if: ${{ !cancelled() }}
+        run: |
+          cat >"$RUNNER_TEMP/installer-checks.sh" <<'EOF'
+          REPO="$(cygpath -u "$GITHUB_WORKSPACE")"
+          FAILS=0
+          OUT=""
+
+          fail() {
+            echo "FAIL: $*"
+            FAILS=$((FAILS + 1))
+          }
+
+          finish() {
+            if [ "$FAILS" -gt 0 ]; then
+              echo "$FAILS check(s) failed"
+              exit 1
+            fi
+            echo "All checks passed"
+          }
+
+          # drive path like a real user's home, so link targets take the form users get
+          fresh_home() {
+            HOME="$(mktemp -d "$(cygpath -u "$RUNNER_TEMP")/home.XXXXXX")"
+            export HOME
+            echo "HOME=$HOME"
+          }
+
+          skill_names() {
+            local d
+            for d in "$REPO"/skills/*/; do
+              d="${d%/}"
+              echo "${d##*/}"
+            done
+          }
+
+          rule_names() {
+            local f
+            for f in "$REPO"/rules/*.md; do
+              echo "${f##*/}"
+            done
+          }
+
+          # steps run with bash -e, so a failing installer gets recorded instead of ending the step
+          run_installer() {
+            local rc=0
+            echo "\$ ./$*"
+            OUT="$(cd "$REPO" && "./$@" 2>&1)" || rc=$?
+            printf '%s\n' "$OUT" | sed 's/^/    /'
+            if [ "$rc" -ne 0 ]; then fail "./$* exited with $rc"; fi
+          }
+
+          out_has() {
+            if [[ "$OUT" != *"$1"* ]]; then fail "output lacks: $1"; fi
+          }
+
+          out_lacks() {
+            if [[ "$OUT" == *"$1"* ]]; then fail "output has: $1"; fi
+          }
+
+          # MSYS reads a junction as a symlink too
+          expect_links() {
+            local dir="$1" name
+            shift
+            for name in "$@"; do
+              if [ ! -L "$dir/$name" ]; then fail "$dir/$name is not a link"; fi
+            done
+          }
+
+          expect_copies() {
+            local dir="$1" name
+            shift
+            for name in "$@"; do
+              if [ -L "$dir/$name" ] || [ ! -e "$dir/$name" ]; then fail "$dir/$name is not a copy"; fi
+            done
+          }
+
+          expect_absent() {
+            if [ -e "$1/$2" ] || [ -L "$1/$2" ]; then fail "$1/$2 still exists"; fi
+          }
+
+          # one "<LinkType or none> <name>" line per entry; pwsh ends lines with CRLF
+          kinds() {
+            KINDS_DIR="$(cygpath -w "$1")" pwsh -NoProfile -Command \
+              'Get-ChildItem -Force -LiteralPath $env:KINDS_DIR | ForEach-Object { "{0} {1}" -f ($_.LinkType ?? "none"), $_.Name }' \
+              | tr -d '\r'
+          }
+
+          print_kinds() {
+            local lines
+            if ! lines="$(kinds "$2")"; then
+              fail "could not list $2"
+              return 0
+            fi
+            echo "$1 ($2):"
+            awk 'NF { n[$1]++ } $1 == "none" { print "  not a link: " $2 } END { for (k in n) print "  " k ": " n[k] }' <<<"$lines"
+          }
+
+          # copies: a re-run over rule copies skips each one and warns, by design
+          expect_no_changes() {
+            local verbs='link|relink|prune|remove|skip' hits
+            if [ "${2:-}" = copies ]; then verbs='link|relink|prune|remove'; fi
+            hits="$(grep -E "^  ($verbs) " <<<"$OUT" || true)"
+            if [ -n "$hits" ]; then fail "$1 changed entries:"$'\n'"$hits"; fi
+            if [ "${2:-}" != copies ] && [[ "$OUT" == *"held by entries this script does not own"* ]]; then
+              fail "$1 found entries it does not own"
+            fi
+          }
+          EOF
+
+      - name: Installers link, and a re-run changes nothing
+        if: ${{ !cancelled() }}
+        run: |
+          . "$RUNNER_TEMP/installer-checks.sh"
+          fresh_home
+          skills=($(skill_names))
+          rules=($(rule_names))
+
+          run_installer install.sh
+          expect_links "$HOME/.agents/skills" "${skills[@]}"
+          expect_links "$HOME/.claude/skills" "${skills[@]}"
+          out_lacks "copies instead of linking"
+          print_kinds "skills, agents layer" "$HOME/.agents/skills"
+          print_kinds "skills, Claude layer" "$HOME/.claude/skills"
+
+          run_installer install-opinionated-rules.sh
+          print_kinds "rules, agents layer" "$HOME/.agents/rules"
+          print_kinds "rules, Claude layer" "$HOME/.claude/rules"
+          rule_copies=""
+          for name in "${rules[@]}"; do
+            if [ ! -L "$HOME/.agents/rules/$name" ] || [ ! -L "$HOME/.claude/rules/$name" ]; then
+              rule_copies=copies
+            fi
+          done
+          if [ -z "$rule_copies" ]; then
+            out_lacks "copies instead of linking"
+          else
+            out_has "Warning: this environment copies instead of linking"
+          fi
+
+          run_installer install.sh
+          expect_no_changes "skills re-run"
+          expect_links "$HOME/.agents/skills" "${skills[@]}"
+          expect_links "$HOME/.claude/skills" "${skills[@]}"
+          run_installer install-opinionated-rules.sh
+          expect_no_changes "rules re-run" $rule_copies
+          finish
+
+      - name: install.sh --force turns copied skills into links
+        if: ${{ !cancelled() }}
+        run: |
+          . "$RUNNER_TEMP/installer-checks.sh"
+          fresh_home
+          skills=($(skill_names))
+          mkdir -p "$HOME/.agents/skills" "$HOME/.claude/skills"
+          for name in "${skills[@]}"; do
+            cp -R "$REPO/skills/$name" "$HOME/.agents/skills/$name"
+            cp -R "$REPO/skills/$name" "$HOME/.claude/skills/$name"
+          done
+          expect_copies "$HOME/.agents/skills" "${skills[@]}"
+          expect_copies "$HOME/.claude/skills" "${skills[@]}"
+
+          run_installer install.sh --force
+          expect_links "$HOME/.agents/skills" "${skills[@]}"
+          expect_links "$HOME/.claude/skills" "${skills[@]}"
+          out_lacks "copies instead of linking"
+          print_kinds "skills, agents layer" "$HOME/.agents/skills"
+          print_kinds "skills, Claude layer" "$HOME/.claude/skills"
+          finish
+
+      - name: Without native symlinks, skills use junctions and rules copy
+        if: ${{ !cancelled() }}
+        run: |
+          . "$RUNNER_TEMP/installer-checks.sh"
+          fresh_home
+          skills=($(skill_names))
+          rules=($(rule_names))
+          echo "MSYS=${MSYS-<unset>}"
+          # a global nativestrict would make the shim refuse the installer's last ln -s too
+          unset MSYS
+
+          # fails the nativestrict attempt like a machine without Developer Mode, turns every
+          # other ln -s into a copy
+          shim="$(cygpath -u "$RUNNER_TEMP")/no-native-ln"; log="$shim.log"; real_ln="$(command -v ln)"
+          mkdir -p "$shim"
+          cat >"$shim/ln" <<EOF
+          #!/usr/bin/env bash
+          case "\${MSYS:-}" in *nativestrict*) echo "refused \$*" >>"$log"; exit 1 ;; esac
+          echo "passed \$*" >>"$log"
+          MSYS=winsymlinks:deepcopy exec "$real_ln" "\$@"
+          EOF
+          chmod +x "$shim/ln"
+          export PATH="$shim:$PATH"
+
+          run_installer install.sh
+          grep -q '^refused ' "$log" || fail "the ln shim never refused a nativestrict call"
+          expect_links "$HOME/.agents/skills" "${skills[@]}"
+          expect_links "$HOME/.claude/skills" "${skills[@]}"
+          for dir in "$HOME/.agents/skills" "$HOME/.claude/skills"; do
+            lines="$(kinds "$dir")" || fail "could not list $dir"
+            others="$(grep -v '^Junction ' <<<"$lines" || true)"
+            if [ -n "$others" ]; then fail "not junctions in $dir:"$'\n'"$others"; fi
+          done
+          out_lacks "copies instead of linking"
+
+          run_installer install-opinionated-rules.sh
+          expect_copies "$HOME/.agents/rules" "${rules[@]}"
+          expect_copies "$HOME/.claude/rules" "${rules[@]}"
+          out_has "Warning: this environment copies instead of linking"
+          out_has "links to single files like these need Developer Mode"
+          print_kinds "skills, agents layer" "$HOME/.agents/skills"
+          print_kinds "skills, Claude layer" "$HOME/.claude/skills"
+          print_kinds "rules, agents layer" "$HOME/.agents/rules"
+          print_kinds "rules, Claude layer" "$HOME/.claude/rules"
+
+          run_installer install.sh
+          expect_no_changes "skills re-run, no native symlinks"
+          run_installer install-opinionated-rules.sh
+          expect_no_changes "rules re-run, no native symlinks" copies
+
+          echo "ln calls:"
+          cat "$log" 2>/dev/null || echo "(none)"
+          finish
+
+      - name: install.sh --exclude holds on a re-run
+        if: ${{ !cancelled() }}
+        run: |
+          . "$RUNNER_TEMP/installer-checks.sh"
+          fresh_home
+          skills=($(skill_names))
+          name="${skills[0]}"
+
+          run_installer install.sh
+          run_installer install.sh --exclude "$name"
+          expect_absent "$HOME/.agents/skills" "$name"
+          expect_absent "$HOME/.claude/skills" "$name"
+          grep -qx "$name" "$HOME/.agents/excluded-skills" || fail "$name is missing from excluded-skills"
+
+          run_installer install.sh
+          expect_absent "$HOME/.agents/skills" "$name"
+          expect_absent "$HOME/.claude/skills" "$name"
+          if grep -Eq "^  (link|relink) +$name\$" <<<"$OUT"; then fail "the plain re-run linked $name again"; fi
+          finish
+
+      # Git Bash has no git in /usr/bin, where the harness's BASE_PATH looks for it
+      - name: auto-update harness (trial)
+        if: ${{ !cancelled() }}
+        run: |
+          git_dir="$(dirname "$(command -v git)")"
+          sed "/^BASE_PATH=/s|\"\$|:$git_dir\"|" test/auto-update/run.sh >test/auto-update/run-trial.sh
+          grep '^BASE_PATH=' test/auto-update/run-trial.sh
+          bash test/auto-update/run-trial.sh
+
+      - name: Not run on this job
+        if: ${{ !cancelled() }}
+        run: |
+          echo "::notice title=Not run on Windows::test/use-conversational-language/: needs a model judge, which CI does not have"

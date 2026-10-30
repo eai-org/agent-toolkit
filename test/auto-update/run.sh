@@ -205,12 +205,14 @@ print(json.loads("\n".join(lines[start:end + 1]))["hooks"][0]["command"])
 '
 }
 
+# GNU form first: GNU stat -f prints file system info to stdout before it fails,
+# BSD stat -c fails with nothing on stdout.
 mtime() {
-  stat -f %m "$1" 2>/dev/null || stat -c %Y "$1" 2>/dev/null
+  stat -c %Y "$1" 2>/dev/null || stat -f %m "$1" 2>/dev/null
 }
 
 mode() {
-  stat -f %Lp "$1" 2>/dev/null || stat -c %a "$1" 2>/dev/null
+  stat -c %a "$1" 2>/dev/null || stat -f %Lp "$1" 2>/dev/null
 }
 
 new_case() {
