@@ -1,7 +1,6 @@
 {
   "name": "agent-toolkit",
   "displayName": "Agent Toolkit",
-  "version": "0.1.0",
   "description": "A collection of project-agnostic skills for common engineering tasks such as ticket refinement, planning, code reviews, agent memory hygiene, skill authoring, and more.",
   "author": {
     "name": "EAI",

@@ -12,6 +12,10 @@ New skills ship at version `0.1` as a trial; bump to `1.0` only after a successf
 Every other change bumps the last component, unless an uncommitted bump is already pending or the
 branch already raised it against `main`.
 
+`.claude-plugin/plugin.json` and its marketplace entry carry no `version` on purpose: installs then
+track the commit SHA, so every push is an update. Ignore the missing-version warning from
+`claude plugin validate`.
+
 ## Multi-agent quirks
 
 Skills with `disable-model-invocation: true` also need `type: flow`, or Kimi Code hides them even

@@ -157,6 +157,17 @@ Add the marketplace, then install the toolkit:
 All skills install together, namespaced as `/agent-toolkit:<skill>` (for example
 `/agent-toolkit:memory-doctor`).
 
+Each commit on the default branch is a new version. Update from a shell:
+
+```sh
+claude plugin marketplace update agent-toolkit
+claude plugin update agent-toolkit@agent-toolkit
+```
+
+A running session keeps its loaded copy; the update loads in a new session or after
+`/reload-plugins`. For background updates, turn on the marketplace's auto-update
+([auto-update.md](./auto-update.md#notes)).
+
 ## Install via agentwheel
 
 [agentwheel](https://github.com/NestDevLab/agentwheel) installs the rules and skills together
