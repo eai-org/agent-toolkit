@@ -38,10 +38,11 @@ Maintenance to run from time to time, keeping your setup tidy and your context s
 
 ### Task workflow
 
-A daily routine for any programming task, following the
+The full routine, following the
 [RPAC workflow](https://medium.com/engineering-in-the-age-of-ai/the-refine-plan-act-pattern-for-agentic-ai-coding-59ee013e4427):
 fetch a ticket, refine it, harden it, plan it, harden it again, split the plan into small tasks,
-then let a fresh session execute them one at a time and consolidate the changes.
+then let a fresh session execute them one at a time and consolidate the changes. Most tasks need
+only part of it: [how much each needs](./docs/core-philosophy.md#sizing-the-chain-to-the-task).
 
 - **[fetch-ticket](./skills/fetch-ticket/SKILL.md)** — download a ticket from any tracker
   (e.g. GitHub, Jira, Azure DevOps) and save it as a self-contained markdown file.

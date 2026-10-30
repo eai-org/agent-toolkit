@@ -65,6 +65,17 @@ In the toolkit:
   they live on after the task ships — as PR descriptions, ticket comments, documentation. This is
   what makes the workflow team-friendly regardless of how much AI the team uses.
 
+### Sizing the chain to the task
+
+Run as much of the full chain as the task needs:
+
+- **Small**: a contained change with nothing left to decide. Skip the phases: implement it
+  directly and prove it with tests.
+- **Normal**: most tickets. Refine-Plan-Act, then `self-review` before the PR.
+- **High-stakes**: changes costly to get wrong or hard to undo. All of normal, plus
+  `harden-artifact` on the requirements and the plan, a `verify-understanding` teach-back, and
+  `maintainer-review` by whoever decides the merge, never the author.
+
 ## Pillar 3: human in the loop
 
 The agent recommends, the human decides. Skills are primarily user-invoked: nothing activates
