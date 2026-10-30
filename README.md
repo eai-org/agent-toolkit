@@ -186,8 +186,8 @@ installed separately from the skills.
   skill before writing or editing a governing doc, so it stays compact.
 - **[git-read-only-by-default](./rules/git-read-only-by-default.md)** — never commit, push, merge,
   or otherwise write to git without an explicit instruction.
-- **[no-ai-attribution](./rules/no-ai-attribution.md)** — no AI co-author trailers on commits and
-  no "Generated with" footers on PRs.
+- **[no-ai-attribution](./rules/no-ai-attribution.md)** — no AI co-author trailers, "Generated with"
+  footers, session links or trailers, or other AI-attribution lines on commits and PRs.
 - **[no-nonsense-comments](./rules/no-nonsense-comments.md)** — write only code comments that
   still make sense to a future reader with zero context, prefer no comment over a low-value one,
   and voice them via [use-conversational-language](./skills/use-conversational-language/SKILL.md).
