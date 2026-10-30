@@ -123,8 +123,8 @@ no-task-left line are printed.
 
 ## Stop to re-plan
 
-Reached only from the stop in Execute or Verify, in place of Close: the task stays unticked, no
-checkbox changes, and no *Commit* subject, "Next task:" or "Review the group first:" block is
+Reached only from the stop in Execute or Verify, in place of Close: no checkbox changes — a redone
+task stays ticked — and no *Commit* subject, "Next task:" or "Review the group first:" block is
 printed. Write no file — the report lives in the session output only, with no plan edit and no
 decisions-log line; lines logged earlier in the run stay as they are.
 
@@ -163,7 +163,8 @@ Report, in order:
    bare prompts, `/create-implementation-plan <upstream-path>` and `/harden-artifact <plan-path>`,
    same order. No block and no in-words re-plan line → recommend revisiting the plan in words.
 4. Last, tell the user to pass what happened on to the session they start, and to discard the
-   edits not worth keeping before starting it.
+   edits not worth keeping before starting it; a redone task → also that it stays ticked, so later
+   runs take it as done until they untick it.
 
 Done when what happened, every edit with its keep verdict, the recommendation — both forms of
 each printed block, the re-plan one warned, and each in-words line its case calls for — and the
