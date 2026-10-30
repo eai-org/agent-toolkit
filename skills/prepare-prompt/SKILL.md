@@ -3,7 +3,7 @@ name: prepare-prompt
 description: Prepare a prompt that hands this session's work to a fresh agent session — to continue it, check it, or pick up what was left open. Use when asked for a prompt or brief for the next session.
 license: MIT
 metadata:
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Prepare prompt
@@ -31,7 +31,10 @@ complete prompt when two lines cover the case.
 3. **Latitude and boundaries** — what it may decide alone, when deviating is fine, what it must
    not touch (read-only, no git or tracker writes, files to ignore).
 4. **Facts it cannot derive** — paths, the planning directory, docs to read, tool quirks with the
-   workaround, a command that saves time.
+   workaround (even one a failed try revealed), a command that saves time. When it continues the
+   work, picking up what was left open included, also each approach this or an earlier session tried
+   and ruled out, one line with the reason; none when its job is to check, verify or review, even if
+   it continues the work afterwards, since they would steer the check.
 
 The deliverable form and the write boundaries are the usual gaps: check whether the case needs
 them.
@@ -39,7 +42,9 @@ them.
 What stays and what goes:
 
 - A fact the next session builds on takes one line, never how it was reached. Anything it will
-  redo anyway, and any narration of this session, goes.
+  redo anyway, and any narration of this session, goes. A ruled-out approach (part 4) is a fact in
+  its own right, not narration, and may share the line of the decision that replaced it
+  ("X, not Y: reason").
 - When its job is to check, verify or review something, this session's own conclusions about that
   thing go entirely — they would steer the check. When its job is to continue the work, the
   decisions it must build on stay, one line each.
@@ -68,8 +73,8 @@ every revision reprints the whole block.
   remembered.
 - Every fact stated as settled was verified in this session or stated by the user; an inference
   is marked as one ("probably", "unverified") or cut.
-- Nothing narrates this session; for a checking job, nothing states this session's conclusion
-  about the thing checked.
+- Nothing narrates this session (a ruled-out approach is not narration); for a checking job, nothing
+  states this session's conclusion about the thing checked, nor a ruled-out approach.
 - A session holding only this text can act without asking what was meant.
 
 Done when all four hold.
