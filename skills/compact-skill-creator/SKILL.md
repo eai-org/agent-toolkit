@@ -4,7 +4,7 @@ description: Author or refine a skill for maximum token economy without losing i
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
-  version: "1.24"
+  version: "1.25"
 ---
 
 # Compact skill creator
@@ -52,11 +52,14 @@ Compress *within* a type — but never starve a Mandatory trigger to save a few 
 In every type, never use `:` in the description — `: ` in the unquoted value breaks some agents'
 YAML parsers; avoid the character rather than quote it.
 
-Two sharpeners for the trigger wording:
+Three sharpeners for the trigger wording:
 
 - **One trigger per distinct path** through the skill. Phrasings collapse only when they lead the
   agent down the same path (true synonyms — "review a branch" / "check changes before merging");
   never collapse triggers that name different inputs or modes (a PR link vs a bare branch name).
+- **The observed error is a trigger path too** for a Mandatory or Self-Evident skill that fixes a
+  failure mode: the description names the error the agent hits during other work, in the error's
+  distinctive words, never its whole message.
 - **Front-load the skill's leading word** (see compact-docs-writer). When the description carries
   the word the user's prompts and docs already use, the agent links that shared language to the
   skill and fires it more reliably.
