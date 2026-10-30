@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.4"
+  version: "1.5"
 ---
 
 # Fresh-eyes review
@@ -42,7 +42,9 @@ artifacts.
    Done when the user has approved the prompt, as shown or amended — or the explicit-inputs skip
    applied.
 3. **Spawn one fresh-context reviewer** (a subagent or equivalent isolated session, e.g. a
-   non-interactive run of the agent's own CLI with the prompt) with the prompt, free to read any
+   non-interactive run of the agent's own CLI or, only when the user asks for a review by a
+   different model, of another installed agent CLI; no installed CLI offers that model, or its
+   run fails → ask) with the prompt, free to read any
    surrounding project material — except the paths the prompt lists as excluded: any exclusions
    the invocation supplies, plus, when this session authored the change, session-authored files
    that are not part of it (plans, notes, scratch), since a fresh context cannot tell them apart.

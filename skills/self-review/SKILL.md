@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Self-review
@@ -205,8 +205,9 @@ state>`) and diffstat; **Diff** and **Metadata** their full hashes (never a late
 Stamp; history lives in the round headings, each naming the state it reviewed and, after the
 first, its scope — full with its reason.
 Provenance exactly as the environment reports it, `unknown` when it doesn't — never guessed or
-recalled; the reviewer's model, when it differs from the session's, appended to the **By** line as
-`review by <model>`; skill version from this file's frontmatter, date = today.
+recalled; the reviewer's harness and model, when either differs from the session's, appended to
+the **By** line as `review by <harness>, <model>`; skill version from this file's frontmatter,
+date = today.
 
 ```markdown
 # Self-review — my-feature → main
