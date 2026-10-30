@@ -3,7 +3,7 @@ name: explain-in-simple-language
 description: Explain code, a decision, a recap, or a question to the user, or write a document a human reads, so a fluent but often non-native reader understands it on the first read. Use when explaining or asking the user anything, when writing a review, report, or brief a human reads (never text sent under the user's name), or when the user asks for simpler words or says they did not understand.
 license: MIT
 metadata:
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Explain in simple language
@@ -40,7 +40,9 @@ up to your desk understand this?
   mechanism.
 - **Depth.** Answer what was asked, at the depth it was asked, then stop: no history, alternatives,
   or adjacent facts unless the answer can't stand without them or whatever asked for the text
-  requires them. Prefer brevity, never at the expense of clarity:
+  requires them. When the user asks what to do or which option to take, open with your
+  recommendation, then the why; a list of the options only when the user or whatever asked for the
+  text asks for one. Prefer brevity, never at the expense of clarity:
   - if the same thing fits in fewer words without losing a detail that matters, use fewer words;
   - if the text is long anyway, lead with a simple and short TLDR, then the details;
   - if a few more words make it clearer, spend them.
