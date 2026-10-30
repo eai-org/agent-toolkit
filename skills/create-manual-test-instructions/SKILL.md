@@ -4,7 +4,7 @@ description: Turn a ticket, requirements document or code change (branch, PR, co
 context: fork
 license: MIT
 metadata:
-  version: "1.8"
+  version: "1.9"
 ---
 
 # Create manual test instructions
@@ -25,10 +25,11 @@ metadata:
   title and description too. Then resolve the task's planning home — its `<id>-<slug>/` directory
   (no ticket → no id) or flat `<id>-<slug>.*` files in the project's planning directory, id and
   slug from the branch name or PR — and read the ticket and requirements there when present for
-  the intent, the "before" and the edge cases; the checks still follow the code. No merge base →
-  `git fetch --unshallow` and retry. Running forked, you can't ask mid-run: an ambiguous target, a
-  failed fetch, still no merge base or an empty diff → write nothing and say in the final message
-  what to pass on the next run; never guess a target.
+  the intent, the "before" and the edge cases; the checks still follow the code, a Reproduction
+  part's steps aside (What to verify). No merge base → `git fetch --unshallow` and retry. Running
+  forked, you can't ask mid-run: an ambiguous target, a failed fetch, still no merge base or an
+  empty diff → write nothing and say in the final message what to pass on the next run; never
+  guess a target.
 
 Where needed for accurate navigation, also read the code the input cites and the design frames or
 screenshots it links when they are on disk.
@@ -53,12 +54,15 @@ parts:
    any prerequisite state).
 3. **Before vs after** — how the area behaved before, how it should behave now.
 4. **What to verify** — checklist of behaviors to confirm, including edge cases (empty values,
-   multiple items, boundaries) where relevant. A behaviour resting on an Open question of the
-   input goes under a closing **Not settled yet** line, never as a plain check: on a non-blocking
-   question, with its tentative answer; on a blocking one, listed as undecided, naming who decides
-   when the input names them, with no expected value — never invented. Each point where a code
-   change differs from its ticket — built but never asked for, or asked for but not built — goes
-   under a closing **Differs from the ticket** line, with nothing invented for the missing side.
+   multiple items, boundaries) where relevant. A requirements document's Reproduction part, in the
+   input or read for a code change, gives the first check, a regression check: its steps, passed
+   when the expected behaviour it records shows. A ticket's own reproduction field isn't that part.
+   A behaviour resting on an Open question of the input goes under a closing **Not settled yet**
+   line, never as a plain check: on a non-blocking question, with its tentative answer; on a
+   blocking one, listed as undecided, naming who decides when the input names them, with no
+   expected value — never invented. Each point where a code change differs from its ticket —
+   built but never asked for, or asked for but not built — goes under a closing
+   **Differs from the ticket** line, with nothing invented for the missing side.
 
 A change with nothing a person can test by hand (a refactor, a dependency bump, a backend change
 with no visible effect) still gets the file: part 1 says why, the other parts stay empty.

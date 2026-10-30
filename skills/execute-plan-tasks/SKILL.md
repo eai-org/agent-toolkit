@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "0.6"
+  version: "0.7"
 ---
 
 # Execute plan tasks
@@ -44,6 +44,12 @@ deviation that touches it are stated.
 - **A copy is not exempt.** A file the plan says to copy or mirror was written for its own
   runtime and tooling: check each setting fits this task's target before copying. A misfit is a
   deviation — settle and log it as above.
+- **Fail-first test** — a step requiring its test to fail before the fix, however the plan words
+  it: write the test, run it and see it fail on the bug (its assertion, or the error the bug
+  raises; a broken import or fixture is no failure seen), only then write the fix; never skip the
+  run because the fix looks obvious. Rework the test within the step until it fails that way; until
+  it does, no fix is written, and a test that cannot be made to fail that way is blocked outright
+  (below).
 - Blocked outright — a step the codebase contradicts, an unmet prerequisite — → stop, leave the
   task unticked, report what blocks it; leave the edits made so far in place and list them with
   the blocker, never revert on your own.
@@ -69,8 +75,9 @@ remaining failure is reported as predating the task or outside its scope, never 
 *Done when* or AC checks: those pass or are handed to the user. Name the ACs still partly open. A
 check handed to the user never holds the task's tick back, while a manual-only AC
 stays unticked even when its tasks are ticked; both are listed as pending the user's check. Then
-print the files touched, any deviation logged, and the task's *Commit* subject (absent → propose
-one in the repo's style) to commit once the change is reviewed. Finally hand off the next unticked
+print the files touched, any deviation logged, any fail-first test's failure seen in one line, and
+the task's *Commit* subject (absent → propose one in the repo's style) to commit once the change is
+reviewed. Finally hand off the next unticked
 task as its own fenced block under the label "Next task:", holding a single copy-pasteable launch
 command — session name and prompt combined, in the launch syntax of the agent tool in use
 (vendor-agnostic — `claude` below is only the example; `<slug>` is the plan filename without id
@@ -96,9 +103,9 @@ claude --name self-review-<slug> "/self-review"
 When no task is left, say in place of the next-task blocks that the plan is done, or, while an
 AC is pending the user's check, that its tasks are done and acceptance is pending.
 
-Done when the touched files, the commit subject, the checks pending the user, both `/self-review`
-forms when a group completed and it is available, and either both next-task forms or the
-no-task-left line are printed.
+Done when the touched files, any fail-first test's failure seen, the commit subject, the checks
+pending the user, both `/self-review` forms when a group completed and it is available, and either
+both next-task forms or the no-task-left line are printed.
 
 ## Boundaries
 

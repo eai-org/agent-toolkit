@@ -3,7 +3,7 @@ name: refine-ticket
 description: Refine a development ticket — or brainstorm a raw idea — into a validated, self-contained REQUIREMENTS document — the "what", verified against the codebase. Invoke manually only.
 license: MIT
 metadata:
-  version: "1.20"
+  version: "1.21"
 ---
 
 # Refine ticket
@@ -134,6 +134,27 @@ Open questions marked **blocking**, naming who answers it and the question draft
 (via `use-conversational-language` when available). Print no hand-off commands while a blocking
 entry exists, only the one for once the answer is in: `/refine-ticket <path>.REQUIREMENTS.md`.
 
+## Bug tickets
+
+A ticket is a bug when its tracker type says so (a fetched file's `**Type**` header line, else the
+tracker's type field); with no type (an idea, pasted text, a typeless tracker), when its text
+reports existing behaviour breaking what should already work, not a wish to change what works as
+intended. A non-bug type whose text reads like a bug, or a case neither settles, is a grill
+question.
+
+For a bug, try to reproduce it with what the project already provides (running the app, an
+existing command or test): no scratch script, no source edit, no tracked file written. A run's
+side outputs (build output, caches, coverage, reports, snapshots) may land only in scratch space or
+git-ignored paths; a run that would write elsewhere is not made, and the bug counts as not
+reproduced. A run acting on shared or external state (a remote service, a shared database) is a
+grill question, never made unasked.
+
+Not reproduced (the attempt didn't show it, or nothing in the project can try it, e.g. a
+production-only or external-integration bug) is a grill question on where it occurred
+(environment, data, version), per the Golden rule's local-environment line; never assume it fixed
+or invalid. Still unreproduced after grilling → the Reproduction part says so and why; that alone
+is not blocking.
+
 ## "Already exists" / "reuse X" is a directive
 
 When the ticket says a capability exists or names something to reuse, find what's *behind* it (the
@@ -189,18 +210,22 @@ Six parts (Verified codebase facts, Overrides, and Open questions may be empty �
    answer (above).
 6. **Acceptance criteria** — flat, verifiable checklist the implementation must satisfy.
 
+A bug adds a **Reproduction** part right after Context: the steps, what they show now (observed),
+what they should show (expected), and whether you reproduced it and how, or why not.
+
 Each requirement is self-contained; user-facing strings that must stay in a given language are
 quoted verbatim.
 
-Done when the six parts are present and
+Done when the six parts, plus Reproduction for a bug, are present and
 `grep -niE "as discussed|we agreed|see ticket|as mentioned"` on the file returns nothing.
 
 ## Boundaries
 
 - Do **not** write an implementation plan or describe "how".
-- Do **not** modify any source files. The only files written are the REQUIREMENTS document, the
-  ticket file a delegated fetch-ticket writes, and the assets and ticket entries an
-  `/attach-to-ticket` run in answer to the attachments question writes.
+- Do **not** modify any source files. The only files written, a reproduction run's side outputs
+  aside (Bug tickets), are the REQUIREMENTS document, the ticket file a delegated fetch-ticket
+  writes, and the assets and ticket entries an `/attach-to-ticket` run in answer to the attachments
+  question writes.
 
 When done, state — in **project-relative paths** — that the requirements file is ready, then hand
 off each next phase as its own fenced block under the label quoted below, holding one
