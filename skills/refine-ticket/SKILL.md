@@ -143,11 +143,13 @@ intended. A non-bug type whose text reads like a bug, or a case neither settles,
 question.
 
 For a bug, try to reproduce it with what the project already provides (running the app, an
-existing command or test): no scratch script, no source edit, no tracked file written. A run's
-side outputs (build output, caches, coverage, reports, snapshots) may land only in scratch space or
-git-ignored paths; a run that would write elsewhere is not made, and the bug counts as not
-reproduced. A run acting on shared or external state (a remote service, a shared database) is a
-grill question, never made unasked.
+existing command or test), the smallest that shows it: a unit test before an integration test
+before e2e or the running app, a larger one only when the bug lies in how parts connect. No
+scratch script, no source edit, no tracked file written. A run's side outputs (build output,
+caches, coverage, reports, snapshots) may land only in scratch space or git-ignored paths; a run
+that would write elsewhere is not made, and the bug counts as not reproduced. A run acting on
+shared or external state (a remote service, a shared database) is a grill question, never made
+unasked.
 
 Not reproduced (the attempt didn't show it, or nothing in the project can try it, e.g. a
 production-only or external-integration bug) is a grill question on where it occurred

@@ -130,12 +130,13 @@ Structure — five parts:
 
    When the requirements carry a Reproduction part, step 1 is a regression test or a scripted
    reproduction asserting the expected behaviour that part records, whether or not the bug was
-   reproduced, so it is not discovery; the fix follows in later steps. Its How says (the executor
-   may know no such rule) that the test must be seen failing on the bug before the fix is written
-   (its assertion, or the error the bug raises; a broken import or fixture is no failure seen), the
-   failure seen is reported in one line, and a test that cannot be made to fail that way stops the
-   run before any fix, with the reason reported. The step writing the fix says to rerun that test
-   afterwards and see it pass.
+   reproduced, so it is not discovery; the fix follows in later steps. It is the smallest test that
+   shows the bug (unit before integration before e2e), a larger one only when the bug lies in how
+   parts connect. Its How says (the executor may know no such rule) that the test must be seen
+   failing on the bug before the fix is written (its assertion, or the error the bug raises; a
+   broken import or fixture is no failure seen), the failure seen is reported in one line, and a
+   test that cannot be made to fail that way stops the run before any fix, with the reason
+   reported. The step writing the fix says to rerun that test afterwards and see it pass.
 4. **Acceptance criteria** — flat `- [ ] AC-n` checklist the implementation must satisfy, copied
    from the requirements' AC section. If unnumbered, number them (`AC-1`, …). Each references the
    step number(s) that satisfy it (e.g. "AC-3 → steps 4, 7"). Tag any AC that needs manual
