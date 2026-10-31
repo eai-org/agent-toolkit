@@ -3,7 +3,7 @@ name: use-conversational-language
 description: Voice rules for text published under a person's name and read as if a person typed it, such as chat messages to colleagues, PR comments and descriptions, commit messages, review replies, and code comments. Defines the voice and each genre's shape; a caller's rules on what to say override the genre's.
 license: MIT
 metadata:
-  version: "1.11"
+  version: "1.12"
 ---
 
 # Use conversational language
@@ -36,8 +36,9 @@ Hard rules:
   streamline, ensure, additionally, "key" as an adjective): write the way people actually type,
   with the plainest everyday word.
 - Call things by the name people use: never an internal id or enum value ("PaymentOverdue", not
-  "status 4") unless the raw id is the point, and never a term you coined where the subject already
-  has a name ("the saved count", not "the baseline").
+  "status 4") unless the raw id is the point, never a term you coined where the subject already
+  has a name ("the saved count", not "the baseline"), and never shorthand for a case the reader
+  didn't watch you work out ("a pick closes its finding"): spell the case out in their words.
 - Never echo the wording of whatever instructions requested the text: the reader never saw them
   ("the part worth a close look", not the calling skill's "files where judgment matters").
 - Quoted text, titles, names and fixed lines the caller requires (trailers, template footers) keep
