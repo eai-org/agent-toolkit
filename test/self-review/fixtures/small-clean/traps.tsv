@@ -1,0 +1,3 @@
+id	sites	description
+T1	orders/repository.py:28	row.get("note") is deliberate: rows dumped before this change have no note key
+T2	orders/service.py:27	note is None is a valid order without a note, not a missing validation
