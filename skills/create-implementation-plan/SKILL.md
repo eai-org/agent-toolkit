@@ -3,7 +3,7 @@ name: create-implementation-plan
 description: Turn a refined requirements document into a structured implementation PLAN.md a fresh session can execute. Planning only — decides the "how", not the "what". Invoke manually only.
 license: MIT
 metadata:
-  version: "1.18"
+  version: "1.19"
 ---
 
 # Create Implementation Plan
@@ -42,11 +42,12 @@ design, not a separate phase that runs before planning starts.
 
 3. **Work out the approach.** This is the core of the task: design the "how" — what existing code to
    reuse, what to introduce, where each change goes, and the order of operations that avoids broken
-   intermediate states (data model before its consumers, code before its tests). Track dependencies
-   between steps. Working this out surfaces the **decision tree**: the forks where more than one
-   reasonable approach exists. Typical forks to design through (and grill on when the code can't
-   settle them): whether to refactor existing code to reuse it or build anew; which API or interface
-   to call; which unit tests to add; code style, file names, and folder structure.
+   intermediate states (data model before its consumers, code before its tests, a bug's regression
+   test aside: see the Plan file's Steps). Track dependencies between steps. Working this out
+   surfaces the **decision tree**: the forks where more than one reasonable approach exists.
+   Typical forks to design through (and grill on when the code can't settle them): whether to
+   refactor existing code to reuse it or build anew; which API or interface to call; which unit
+   tests to add; code style, file names, and folder structure.
 
    **Docs generally outrank prior art.** A mirrored analogue doesn't override a documented rule,
    and a rule's rationale doesn't license exceptions to it — existing code may predate the rule.
@@ -126,6 +127,16 @@ Structure — five parts:
    restating what step 2 did. Step 1 must never be discovery work ("find the field names", "explore
    where this lives") — discovery already happened in the steps above. A small deterministic sanity
    check of a known fact is fine; open-ended investigation is not.
+
+   When the requirements carry a Reproduction part, step 1 is a regression test or a scripted
+   reproduction asserting the expected behaviour that part records, whether or not the bug was
+   reproduced, so it is not discovery; the fix follows in later steps. It is the smallest test that
+   shows the bug (unit before integration before e2e), a larger one only when the bug lies in how
+   parts connect. Its How says (the executor may know no such rule) that the test must be seen
+   failing on the bug before the fix is written (its assertion, or the error the bug raises; a
+   broken import or fixture is no failure seen), the failure seen is reported in one line, and a
+   test that cannot be made to fail that way stops the run before any fix, with the reason
+   reported. The step writing the fix says to rerun that test afterwards and see it pass.
 4. **Acceptance criteria** — flat `- [ ] AC-n` checklist the implementation must satisfy, copied
    from the requirements' AC section. If unnumbered, number them (`AC-1`, …). Each references the
    step number(s) that satisfy it (e.g. "AC-3 → steps 4, 7"). Tag any AC that needs manual
