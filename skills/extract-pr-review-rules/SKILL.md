@@ -23,9 +23,9 @@ Identify the forge from the repo URL and work through whatever MCP or CLI is con
 (GitHub → `gh`). Unrecognized URL, or nothing connected → ask.
 
 The URL is only the comment source; the rules land in the **current** project's docs, and the
-run's state in a checkpoint file in its agent docs directory — the one its doc-placement guide
-(such as `.agents/docs/README.md`) names, else `.agents/docs/`, created when missing — default
-`.agents/docs/pr-review-checkpoint.md`. Absent → **first run**, no checkpoint, whole history in
+run's state in a checkpoint file in its planning directory — the one its governing docs name or
+already in use, else `.agents/plans/`, created when missing — default
+`.agents/plans/pr-review-checkpoint.md`. Absent → **first run**, no checkpoint, whole history in
 scope. Already there → read it: built from the same repo, its checkpoint makes this a **refresh**;
 built from another repo, ask — another file path, or replace it with a first run.
 
@@ -93,7 +93,8 @@ checkpoint untouched, print step 6's counts naming the unread part, and stop.
 
 Merge the returns into one list, topic by topic, tagging each rule with its author; the same rule
 from several reviewers is one entry carrying every handle and the newest link. Judge each against
-the standing rules in the entry file, the docs it links, and the agent docs directory:
+the standing rules in the entry file, the docs it links, and the project's agent docs directory
+(such as `.agents/docs/`):
 
 - **New** — no standing rule says it.
 - **Covered** — a standing rule already says it; pre-struck, so a refresh costs nothing for rules
@@ -125,7 +126,7 @@ Done when every survivor is applied, declined at its diff, or reported already c
 Write the checkpoint file from the template, replacing an existing one; only now, so an
 interrupted run re-fetches the same comments and step 4 marks what already landed as covered. The
 count is cumulative (the file's plus this run's processed), the timestamp the time in
-`$SCRATCH/started`. Not indexed from the entry file: nothing in it guides an agent.
+`$SCRATCH/started`.
 
 ```markdown
 # PR review checkpoint

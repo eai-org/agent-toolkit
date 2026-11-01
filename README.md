@@ -337,6 +337,7 @@ flowchart TD
   plans_rule -. informs .-> check_impl
   plans_rule -. informs .-> handover
   plans_rule -. informs .-> self_review
+  plans_rule -. informs .-> extract_pr
 
   docs_rule["self-contained-docs rule"] --> prepare_prompt["prepare-prompt"]
   docs_rule -. informs .-> fetch_ticket
