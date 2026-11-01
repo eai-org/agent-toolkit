@@ -42,6 +42,9 @@
         "memory-doctor": {
           "requires": ["skills/self-improve"]
         },
+        "extract-pr-review-rules": {
+          "requires": ["skills/self-improve"]
+        },
         "review-ticket": {
           "requires": [
             "skills/fetch-ticket",

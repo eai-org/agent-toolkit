@@ -96,9 +96,12 @@ Review helpers that check the codebase while assisting with code or ticket revie
   self-improve persists when installed. Takes the fetched file, or a PR URL a subagent fetches
   first.
 - **[extract-pr-review-rules](./skills/extract-pr-review-rules/SKILL.md)** — mine the conventions
-  your reviewers actually enforce out of every PR review comment in a repo, saved as a
-  per-reviewer rules doc indexed from your agent entry file so the review skills run it as a
-  checklist; later runs resume from a checkpoint and read only the new comments.
+  your reviewers actually enforce out of every PR review comment in a repo, triage them with you in
+  one batch, and persist them through self-improve into the project's topic docs, so each rule
+  loads only with its subject; later runs resume from a checkpoint and read only the new comments.
+- **[raw-extract-pr-review-rules](./skills/raw-extract-pr-review-rules/SKILL.md)** — deprecated
+  forerunner that saves the same rules as one per-reviewer doc with source links, indexed from your
+  agent entry file; kept for projects already running it.
 - **[review-code-assistant](./skills/review-code-assistant/SKILL.md)** — prepare a review of a PR
   or branch with you: the diff the platform shows, the project's conventions run as a checklist,
   and candidate comments in diff order, read-only and never posted.
@@ -321,6 +324,7 @@ flowchart TD
   self --> compact_docs["compact-docs-writer"]
   compact --> compact_docs
   memory_doctor["memory-doctor"] --> self
+  extract_pr["extract-pr-review-rules"] --> self
   refine_pr -. when available .-> self
   compact_gov["compact-governing-docs rule"] --> compact
   compact_gov --> compact_docs
