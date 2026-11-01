@@ -99,9 +99,6 @@ Review helpers that check the codebase while assisting with code or ticket revie
   your reviewers actually enforce out of every PR review comment in a repo, triage them with you in
   one batch, and persist them through self-improve into the project's topic docs, so each rule
   loads only with its subject; later runs resume from a checkpoint and read only the new comments.
-- **[raw-extract-pr-review-rules](./skills/raw-extract-pr-review-rules/SKILL.md)** — deprecated
-  forerunner that saves the same rules as one per-reviewer doc with source links, indexed from your
-  agent entry file; kept for projects already running it.
 - **[review-code-assistant](./skills/review-code-assistant/SKILL.md)** — prepare a review of a PR
   or branch with you: the diff the platform shows, the project's conventions run as a checklist,
   and candidate comments in diff order, read-only and never posted.
