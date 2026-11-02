@@ -3,7 +3,7 @@ name: create-implementation-plan
 description: Turn a refined requirements document into a structured implementation PLAN.md a fresh session can execute. Planning only — decides the "how", not the "what". Invoke manually only.
 license: MIT
 metadata:
-  version: "1.19"
+  version: "1.20"
 ---
 
 # Create Implementation Plan
@@ -65,7 +65,11 @@ design, not a separate phase that runs before planning starts.
    **Deletions tend to cascade.** When a step deletes code, look for what that code was the last
    user of (a module, helper, template, constant, package) by searching for each one's other users,
    and consider naming it for deletion too, repeating for every piece newly orphaned; one the
-   search cannot clear (an export, a name resolved at runtime) is a fork to grill.
+   search cannot clear (an export, a name resolved at runtime) is a fork to grill. Each test
+   deleted with its code gets a verdict by behaviour: the part that checks something the surviving
+   code still does moves over, only the rest goes. A step that moves or renames code searches docs,
+   agent instructions, CI workflows, build scripts and config for the old name and lists every hit
+   in its Where.
 
    **Walk every point a run can stop** when steps change live state in stages (a deploy, a
    migration, a swap): each step, an abort, a timeout, a lost worker, an automatic re-run or
