@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "0.5"
+  version: "0.6"
 ---
 
 # Harden artifact
@@ -143,7 +143,10 @@ Done when every surviving finding has a disposition.
 Any edit earns a fresh round: a new reviewer on the whole artifact with the same prompt, told
 nothing of earlier findings or decisions. A re-raised finding matching a dropped, dismissed or
 deferred one keeps that outcome unless it brings evidence the earlier one lacked. Rounds stop when
-one leads to no edit, or at 2 per invocation; the user may stop earlier or ask for more.
+one leads to no edit, or at 2 per invocation; the user may stop earlier or ask for more. When every
+edit of a round only rewords, its meaning kept, offer the fresh round instead of starting it, naming
+each reworded edit, even under autoaccept: the user decides, since only a fresh reader can tell
+whether new wording reads as meant.
 
 Done when a stop condition has ended the rounds.
 
