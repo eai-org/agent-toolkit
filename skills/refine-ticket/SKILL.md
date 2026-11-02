@@ -3,7 +3,7 @@ name: refine-ticket
 description: Refine a development ticket — or brainstorm a raw idea — into a validated, self-contained REQUIREMENTS document — the "what", verified against the codebase. Invoke manually only.
 license: MIT
 metadata:
-  version: "1.21"
+  version: "1.22"
 ---
 
 # Refine ticket
@@ -210,7 +210,12 @@ Six parts (Verified codebase facts, Overrides, and Open questions may be empty �
 5. **Open questions** — non-blocking ambiguities, each with your tentative answer and why it's
    non-blocking. A blocking question appears here only marked **blocking**: one someone else must
    answer (above).
-6. **Acceptance criteria** — flat, verifiable checklist the implementation must satisfy.
+6. **Acceptance criteria** — flat, verifiable checklist the implementation must satisfy. A "none
+   left" criterion (a removal, a doc sweep) gives its exact search — each removed name as a whole
+   word, in every form it is written (case and separator variants) — with an allow-list of
+   legitimate hits, and the hits outside that list it finds on the default branch today: like a
+   bug's regression test, it must be seen failing, since a search too narrow passes while stale text
+   remains.
 
 A bug adds a **Reproduction** part right after Context: the steps, what they show now (observed),
 what they should show (expected), and whether you reproduced it and how, or why not.

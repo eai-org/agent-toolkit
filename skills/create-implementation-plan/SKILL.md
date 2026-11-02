@@ -3,7 +3,7 @@ name: create-implementation-plan
 description: Turn a refined requirements document into a structured implementation PLAN.md a fresh session can execute. Planning only — decides the "how", not the "what". Invoke manually only.
 license: MIT
 metadata:
-  version: "1.19"
+  version: "1.20"
 ---
 
 # Create Implementation Plan
@@ -141,7 +141,11 @@ Structure — five parts:
    from the requirements' AC section. If unnumbered, number them (`AC-1`, …). Each references the
    step number(s) that satisfy it (e.g. "AC-3 → steps 4, 7"). Tag any AC that needs manual
    verification only `(manual — leave unticked, report as pending)`. The execution session uses
-   this as its done-check and ticks the rest.
+   this as its done-check and ticks the rest. A "none left" AC (a removal, a doc sweep) carries its
+   exact search — each removed name as a whole word, in every form it is written (case and
+   separator variants) — with an allow-list of legitimate hits, run on the default branch to see it
+   find hits outside that list, as a regression test is seen failing first (Steps); one the
+   requirements left without them gets them here.
 5. **Decisions log** — a standing instruction copied into the plan for the execution session:
    "When a settled decision deviates from or extends this plan, append one line — the decision
    and its why — to `<id>-<slug>.DECISIONS.md` beside this plan, the moment it's settled." Without
