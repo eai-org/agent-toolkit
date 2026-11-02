@@ -22,9 +22,9 @@ approves. The skill proposes; the user stays in control of every change. Three w
   lessons already phrased as durable guidance, sometimes with all or part of a target it settled
   with the user (scope, form, path — possibly a new file or a merge into an existing one). Skip
   step 1; skip step 2 for a lesson whose target the caller settled fully, run it for the rest
-  keeping what the caller settled — its Mechanical lesson bullet always applies. Several lessons
-  at once → first propose their placement as one table, each lesson with its doc, existing or
-  new; then draft + apply, lessons sharing a target as one diff.
+  keeping what the caller settled — its Mechanical lesson bullet and new-doc indexing requirement
+  always apply. Several lessons at once → first propose their placement as one table, each lesson
+  with its doc, existing or new; then draft + apply, lessons sharing a target as one diff.
 
 "Skill/doc" means any standing instruction: a `SKILL.md`, `AGENTS.md`/`CLAUDE.md`, a
 coding-standards or convention doc, a rules file — anything that guides future agents. A "check"
