@@ -20,7 +20,7 @@ be asked, then fetch. When it's unclear whether an asset can or should be downlo
 
 Escape paths and URLs from ticket text in every command for the shell running it (POSIX `'` →
 `'\''`, PowerShell `'` → `''`). Download each **straight to disk** —
-`curl -fSL --proto '=http,https' --proto-redir '=http,https' -o 'attachment-<N>.<ext>' -- '<url>'`
+`curl -fSL --connect-timeout 5 --speed-limit 1024 --speed-time 30 -w '%{time_connect}\n' --proto '=http,https' --proto-redir '=http,https' -o 'attachment-<N>.<ext>' -- '<url>'`
 (`curl.exe` on Windows), or the MCP attachment tool's save-to-path variant. **Never** route an
 attachment as inline base64 through the model and re-emit it: output caps (~100k chars) truncate it
 silently — valid header, missing trailer, won't open. Some attachment MCP tools return **only**
@@ -29,11 +29,15 @@ binaries; fetch from the tracker's REST API straight to disk with a bearer token
 same command, never printed or echoed:
 
 ```
-curl -fSL --proto '=http,https' --proto-redir '=http,https' -H "Authorization: Bearer $(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 --query accessToken -o tsv)" -o 'attachment-<N>.<ext>' -- '<url>'
+curl -fSL --connect-timeout 5 --speed-limit 1024 --speed-time 30 -w '%{time_connect}\n' --proto '=http,https' --proto-redir '=http,https' -H "Authorization: Bearer $(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 --query accessToken -o tsv)" -o 'attachment-<N>.<ext>' -- '<url>'
 ```
 
 (Content URLs often share the MCP's auth; on 401, retry with the tracker's own credentials if
 obtainable.)
+
+A failed download deletes its partial file. When curl cannot connect to a host (exit 7, or 28 with
+`time_connect` printed as 0), its remaining attachments skip curl: fetch them through a fitting
+MCP, else list them as **not downloaded**.
 
 **Verify integrity, not just transfer** — non-empty; matches `Content-Length` if sent; type trailer
 present (PNG `IEND`, JPEG `FFD9`, PDF `%%EOF`), else the detected type matches the extension (e.g.
