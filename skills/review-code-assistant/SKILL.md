@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.13"
+  version: "1.14"
 ---
 
 # Review code assistant
@@ -94,9 +94,8 @@ nothing produces no output.
 - **Realistic risk** — security or performance footguns that genuinely apply here, not an audit.
 - **Leftovers** — debug prints, commented-out code, stray TODOs, accidentally committed files.
 
-Before reviewing, load the project's own convention docs (CLAUDE.md/AGENTS.md, any relevant
-codestyle/contributing docs, and the project's PR-review rules doc when one exists, default
-`.agents/docs/pr-review-rules.md`), then run them as a checklist, not as background reading,
+Before reviewing, load the project's own convention docs (CLAUDE.md/AGENTS.md and any relevant
+codestyle/contributing docs), then run them as a checklist, not as background reading,
 against every changed file and the submission itself (title, description, linked issues). A clear
 violation is a first-class, citable comment and the skill's edge over a human, easiest to miss in
 new test files (test-structure conventions) and on new class members (visibility and naming).

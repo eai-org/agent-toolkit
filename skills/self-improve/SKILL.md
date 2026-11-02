@@ -4,7 +4,7 @@ description: Capture durable user feedback into the governing skill, doc or chec
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
-  version: "1.12"
+  version: "1.13"
 ---
 
 # Self-improve
@@ -19,10 +19,12 @@ approves. The skill proposes; the user stays in control of every change. Three w
   the lesson, finish what the user asked for, and offer to persist it at the next natural
   breakpoint.
 - **Driven by another skill** — a caller (or its launch command, pasted by the user) hands over
-  lessons already phrased as durable guidance, sometimes with a target it settled with the user
-  (scope, form and path — possibly a new file or a merge into an existing one). Skip step 1; skip
-  step 2 only for a lesson whose target the caller settled, run it for the rest — its Mechanical
-  lesson bullet always applies. Then draft + apply.
+  lessons already phrased as durable guidance, sometimes with all or part of a target it settled
+  with the user (scope, form, path — possibly a new file or a merge into an existing one). Skip
+  step 1; skip step 2 for a lesson whose target the caller settled fully, run it for the rest
+  keeping what the caller settled — its Mechanical lesson bullet and new-doc indexing requirement
+  always apply. Several lessons at once → first propose their placement as one table, each lesson
+  with its doc, existing or new; then draft + apply, lessons sharing a target as one diff.
 
 "Skill/doc" means any standing instruction: a `SKILL.md`, `AGENTS.md`/`CLAUDE.md`, a
 coding-standards or convention doc, a rules file — anything that guides future agents. A "check"
@@ -69,7 +71,8 @@ Whenever unsure whether it generalizes, ask the user.
    unenforced) and fix that root cause: surface it where the agent looks, tighten its scope,
    cross-reference it, or enforce it mechanically. If none fits, propose a new target and ask
    before drafting: a check for a mechanical lesson (below), a new skill for a recurring workflow,
-   a new rule for a standing constraint, or the most fitting doc otherwise. Ask whenever unsure.
+   a new rule for a standing constraint, or the most fitting doc otherwise; a new doc comes with its
+   entry-file index line and read-when hook, or nothing ever loads it. Ask whenever unsure.
    - **Mechanical lesson** (a banned API, an import shape, a file location: any fixed pattern) →
      propose a deterministic check over prose; the check is declined, or no tooling can host it
      (the proposal says so) → write the rule. Read the repo's check scripts and CI first: wire or
