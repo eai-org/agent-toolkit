@@ -3,7 +3,7 @@ name: refine-pr-review
 description: Triage a fetched PR review with the user, comment by comment, drafting each reply and producing a REQUIREMENTS file for the accepted code changes. Takes the PR-REVIEW file produced by fetch-pr-review, or a PR URL. Invoke manually only.
 license: MIT
 metadata:
-  version: "1.10"
+  version: "1.11"
 ---
 
 # Refine PR review
@@ -43,7 +43,9 @@ row affected → the ANSWERS file is not rewritten. Then Phase 2 on that file, t
   current code settles, an approval with no ask, the author's own comment) — when written, it is
   drafted and shown like any other.
 
-Bot findings take `bot: included`, `bot: partial` (Notes say which part) or `bot: ignored`.
+Bot findings take `bot: included` (reply "fixed"), `bot: partial` (Notes say which part; the
+reply names what was fixed and why the rest was not) or `bot: ignored` (reply: the reason, one
+short factual sentence, no thanks or hedging).
 
 ## Naming a comment
 
@@ -104,9 +106,10 @@ Per comment type:
   say so.
 - Review verdict summaries and general comments → each actionable ask inside them is triaged like
   a thread. An `(author)` comment → no action unless it carries an ask worth tracking.
-- Bot comments → never drafted replies; present the actionable findings as one batch
-  include-or-ignore question. A bot thread flagged `human reply` is triaged as a human thread, the
-  reply addressed to that person.
+- Bot comments → present the actionable findings as one batch include-or-ignore question, each
+  ignore or partial recommendation carrying its draft reply; a bot comment with no finding (a
+  passing quality gate, a change summary) gets no reply. A bot thread flagged `human reply` is
+  triaged as a human thread, the reply addressed to that person.
 
 Phase 1 is complete only when every comment in the PR-REVIEW file has a user-confirmed verdict.
 Write the ANSWERS file now, before Phase 2.
@@ -152,11 +155,11 @@ rows included for completeness:
   when the fetch has one, its reply a top-level comment quoting the ask.
 - **Verdict** — `address` / `partial` / `push back` / `no action`, or `resolved earlier` /
   `bot: included` / `bot: partial` / `bot: ignored`.
-- **Reply** — canned one-liner for address. Post-fix stance: written as if the accepted changes
-  are already made ("did X, kept Y as is because …") — the sheet is pasted after the fixes land. A
-  reply too long for a cell goes below the table under a `## Reply <row #>` heading that opens with
-  the original comment quoted in full as a blockquote, so each reply is checkable against its
-  question without scrolling back to the table.
+- **Reply** — canned one-liner for address and bot: included. Post-fix stance: written as if the
+  accepted changes are already made ("did X, kept Y as is because …") — the sheet is pasted after
+  the fixes land. A reply too long for a cell goes below the table under a `## Reply <row #>`
+  heading that opens with the original comment quoted in full as a blockquote, so each reply is
+  checkable against its question without scrolling back to the table.
 - **Notes** — the reasoning in a few words, for future review rounds.
 
 ## Lessons
