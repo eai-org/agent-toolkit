@@ -3,7 +3,7 @@ name: create-implementation-plan
 description: Turn a refined requirements document into a structured implementation PLAN.md a fresh session can execute. Planning only — decides the "how", not the "what". Invoke manually only.
 license: MIT
 metadata:
-  version: "1.19"
+  version: "1.20"
 ---
 
 # Create Implementation Plan
@@ -71,6 +71,12 @@ design, not a separate phase that runs before planning starts.
    migration, a swap): each step, an abort, a timeout, a lost worker, an automatic re-run or
    restart. At each, settle what the target is left in and what the log, notifications and any
    manual-fix advice say there. Hazards recorded in related plans' decisions logs are prior art.
+
+   **Parts released separately each meet the other's live version** (a backend and its frontend,
+   a service and its callers, a schema and its code): prefer a shape it tolerates — additions
+   optional, defaulting to the pre-change behaviour; removals and renames only once no live
+   version still uses them. None reasonable → a fork to grill; the plan's Conventions then state
+   the release order.
 
    **Grill the user along the way.** Whenever the approach hits a fork you can't settle from the
    code, stop and resolve it with the user before continuing — don't guess, and don't defer the
