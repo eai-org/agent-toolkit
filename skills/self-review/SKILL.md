@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.1"
+  version: "1.2"
 ---
 
 # Self-review
@@ -33,8 +33,9 @@ blindness, so someone else's PR has nothing to escape and belongs to `maintainer
    are part of the change or deliberate local-only tweaks (build config, data paths), the latter
    excluded from the diff (pathspec) and named in a procedural caveat — exclusion drops the whole
    path, so a tweak atop a changed file the author stashes first; untracked files likewise, and
-   since the diff can't see them, those that belong the author `git add`s first — a forgotten one
-   ships unreviewed later. The reports this skill writes need no sorting and are always excluded.
+   since the diff can't see them, those that belong the author `git add`s first (under autoaccept,
+   the agent — Disposition walk) — a forgotten one ships unreviewed later. The reports this skill
+   writes need no sorting and are always excluded.
    Nothing beyond the tip reviewed → **pinned** to its SHA; otherwise **unpinned** — reviewed,
    but with no SHA for a maintainer to check the pushed head against, until stamped. Pinned is
    preferable, so suggest committing first when the work is ready for it — never insist, the
@@ -135,7 +136,9 @@ line with the why — a dismissal with the agent's reason, a deferral as a note 
 ticket or comment text drafted in the session and the finding listed at Wrap up for filing. Only a
 fix that would reshape the change (a redesign, scope beyond the finding) still asks. Later rounds
 start at once on the working tree, the commit proposal moving to Wrap up; asks before the walk
-(target, intent) stand. The report gains a procedural caveat naming where it began
+(target, intent) stand, except step 2's untracked files: the agent sorts them itself and `git add`s
+those that belong, naming them in a procedural caveat — staging only, committing stays the
+author's. The report gains a procedural caveat naming where it began
 (`Dispositions decided by the agent from round 1, finding 3`).
 
 Done when every finding of the round is dispositioned and diff and metadata re-hashed as in steps
@@ -285,4 +288,6 @@ Done when all are printed.
 
 - Files written, scratch aside: the report, and the fixes the author approved during the walk —
   nothing else.
-- Read-only git plus `git fetch`; no commit, push, or PR operation — publishing is the author's.
+- Read-only git plus `git fetch` and, under autoaccept, `git add` of step 2's untracked files; no
+  commit, push, or PR operation unless the author explicitly asks — publishing is the author's
+  call.
