@@ -1,0 +1,1 @@
+Add an optional free-text note to orders: recorded at placement, at most 200 characters, longer notes rejected; the note round-trips through the repository.

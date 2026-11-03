@@ -14,3 +14,4 @@ CLAUDE.local.md
 
 # Skill test harnesses
 test/**/runs/**
+test/**/__pycache__/**

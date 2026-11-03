@@ -1,0 +1,11 @@
+id	sites	kind	blocking	description
+D1	orders/models.py:9	intent_mismatch	yes	CANCEL_WINDOW_MINUTES is 60 while the requirement and README say 30 minutes
+D2	orders/pricing.py:30	convention	yes	coupon_discount_cents divides with / and returns float cents; the project rule is int cents only
+D3	orders/service.py:30	none_handling	yes	place() reads coupon.code when _coupon returned None (no code given) and crashes with AttributeError
+D4	orders/service.py:68	inverted_condition	yes	expiry check is inverted: valid (future-expiring) coupons are rejected as expired, expired ones accepted
+D5	orders/service.py:57	swallowed_exception	yes	cancel() swallows any exception from save(), reporting a cancellation that was never persisted
+D6	orders/service.py:59	leftover	no	debug print() left in library code; the project rule is orders.log only
+D7	tests/test_pricing.py:26	tautological_test	no	test_coupon_reduces_total asserts >= 0, which cannot fail; it never checks the discount
+D8	orders/repository.py:8|orders/repository.py:19	omission	yes	to_row/from_row were not updated: coupon_code is dropped on save and lost on get
+D9	orders/service.py:45-52|tests/test_service.py:*	missing_test	no	the 30-minute cancellation window is new behaviour with no test that fails when it breaks
+D10	README.md:6-8	docs	no	README does not say that codes match case-insensitively nor that coupon and bulk discounts stack; AGENTS.md wants every user-facing rule documented

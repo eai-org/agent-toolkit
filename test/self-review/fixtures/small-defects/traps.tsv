@@ -1,0 +1,3 @@
+id	sites	description
+T1	orders/coupons.py:15|orders/coupons.py:19	code.upper() on a str-typed code is fine; flagging a None code here is speculation
+T2	orders/service.py:49	returning None for an already cancelled order is the documented no-op, not a missed error

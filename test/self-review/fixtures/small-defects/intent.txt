@@ -1,0 +1,1 @@
+Add coupon codes to orders: a coupon has a percent discount and an optional expiry, is applied at placement and recorded on the order, and unknown or expired codes are rejected. Cancelling a PENDING order is only allowed within 30 minutes of placement; cancelling an already cancelled order stays a no-op.
