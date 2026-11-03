@@ -215,7 +215,8 @@ Six parts (Verified codebase facts, Overrides, and Open questions may be empty â
    word, in every form it is written (case and separator variants) â€” with an allow-list of
    legitimate hits, and the hits outside that list it finds on the default branch today: like a
    bug's regression test, it must be seen failing, since a search too narrow passes while stale text
-   remains.
+   remains. A search that finds none is widened to the forms the name is actually written in;
+   still none, the criterion records that nothing is left to remove.
 
 A bug adds a **Reproduction** part right after Context: the steps, what they show now (observed),
 what they should show (expected), and whether you reproduced it and how, or why not.

@@ -143,9 +143,11 @@ Structure — five parts:
    verification only `(manual — leave unticked, report as pending)`. The execution session uses
    this as its done-check and ticks the rest. A "none left" AC (a removal, a doc sweep) carries its
    exact search — each removed name as a whole word, in every form it is written (case and
-   separator variants) — with an allow-list of legitimate hits, run on the default branch to see it
-   find hits outside that list, as a regression test is seen failing first (Steps); one the
-   requirements left without them gets them here.
+   separator variants) — with an allow-list of legitimate hits and the hits outside that list it
+   finds on the default branch today, as a regression test is seen failing first (Steps). When the
+   requirements give no search or no hits, the planner runs the search on the default branch and
+   records them here; one that finds none is widened to the forms the name is actually written in,
+   and still none means the AC records that nothing is left to remove.
 5. **Decisions log** — a standing instruction copied into the plan for the execution session:
    "When a settled decision deviates from or extends this plan, append one line — the decision
    and its why — to `<id>-<slug>.DECISIONS.md` beside this plan, the moment it's settled." Without
