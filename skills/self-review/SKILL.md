@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.1"
+  version: "1.2"
 ---
 
 # Self-review
