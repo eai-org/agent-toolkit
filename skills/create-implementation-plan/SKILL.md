@@ -67,9 +67,10 @@ design, not a separate phase that runs before planning starts.
    and consider naming it for deletion too, repeating for every piece newly orphaned; one the
    search cannot clear (an export, a name resolved at runtime) is a fork to grill. Each test
    deleted with its code gets a verdict by behaviour: the part that checks something the surviving
-   code still does moves over, only the rest goes. A step that moves or renames code searches docs,
-   agent instructions, CI workflows, build scripts and config for the old name and lists every hit
-   in its Where.
+   code still does moves to a test the step names in its Where, and only the rest is deleted. A
+   step that moves or renames code searches docs, agent instructions, CI workflows, build scripts
+   and config for the old name in every form it is written (case and separator variants) and
+   lists every hit in its Where.
 
    **Walk every point a run can stop** when steps change live state in stages (a deploy, a
    migration, a swap): each step, an abort, a timeout, a lost worker, an automatic re-run or
