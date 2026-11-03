@@ -72,7 +72,8 @@ then let a fresh session execute them one at a time and consolidate the changes.
 - **[execute-plan-tasks](./skills/execute-plan-tasks/SKILL.md)** — execute one task of that
   breakdown at a time: implement it, verify it, tick it off in the plan, and hand it back for
   review before the next; when a group is done, hand it to self-review (if installed) before the
-  next group starts.
+  next group starts. A task whose approach fails twice, or needs reshaping, stops unticked with a
+  hand-off to re-plan or harden the plan (if installed).
 - **[create-manual-test-instructions](./skills/create-manual-test-instructions/SKILL.md)** —
   derive manual test steps from a ticket or requirements file, or from a code change (branch,
   PR, commit range, diff), useful for the developer or QA.
@@ -295,6 +296,8 @@ flowchart TD
   plan -. when available .-> split["split-plan-tasks"]
   split --> execute["execute-plan-tasks"]
   execute -. when available .-> self_review
+  execute -. when available .-> plan
+  execute -. when available .-> harden
   self_review -. when available .-> handover["handover"]
   handover --> express
   simple_rule["write-simple-explanations rule"] --> simple["explain-in-simple-language"]
