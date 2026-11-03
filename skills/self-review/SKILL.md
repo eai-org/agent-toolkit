@@ -108,7 +108,9 @@ One finding at a time, recommending a disposition with a one-line why, worded vi
 offered as visibly as the dispositions themselves, never left an implicit escape hatch. Anything
 the author says that isn't a disposition is discussion, not a decision: answer the question, check
 the code, revise the recommendation, do what they ask with the finding — then the walk returns to
-that same finding, still open. Three dispositions close one:
+that same finding, still open. Before recommending or applying a fix, read the lines the finding
+cites with the whole function or section around them — reviewers misread code too, and a fix taken
+on trust can be disproved a round later. Three dispositions close one:
 
 - **fix** — apply it to the working tree now; committing stays the author's move. Submission
   metadata (PR title, description, commit subjects) the agent only drafts — applying it is the
