@@ -46,3 +46,29 @@ For an agent that does have an auto-loaded rules directory, wire it with:
 ```sh
 ./install-opinionated-rules.sh --rules-dir <agent-rules-dir>
 ```
+
+## Enforcing no-ai-attribution in Claude Code
+
+[`no-ai-attribution`](../rules/no-ai-attribution.md) keeps the agent from writing AI attribution
+into commits and PRs; Claude Code can also be set not to add it at all, in
+`~/.claude/settings.json`:
+
+```json
+{
+  "attribution": {
+    "commit": "",
+    "pr": "",
+    "sessionUrl": false
+  }
+}
+```
+
+The empty strings drop the co-author trailer and the PR footer, and `sessionUrl` `false` drops the
+`Claude-Session` trailer and session link that cloud and Remote Control sessions add. Cloud
+sessions don't read this file; for a cloud session on one repository, outside a
+[claude.ai project](https://code.claude.com/docs/en/claude-projects), commit the same block to that
+repository's `.claude/settings.json`, where it applies to everyone working in it.
+`"attribution": false` covers all three in one value but needs Claude Code v2.1.281 or later; older
+builds reject the whole settings file that holds it. The deprecated `includeCoAuthoredBy` key is
+ignored once `commit` or `pr` is set. Key names and versions follow the
+[settings reference](https://code.claude.com/docs/en/settings-reference#attribution).
