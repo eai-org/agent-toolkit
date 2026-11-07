@@ -3,7 +3,7 @@ name: handover
 description: Use when handing finished work over to code review — writing a PR description or packaging a change for review by a human, an agent, or both.
 license: MIT
 metadata:
-  version: "0.10"
+  version: "0.11"
 ---
 
 # Handover
@@ -51,9 +51,10 @@ Read these, skipping what doesn't exist:
 An earlier artifact — a ticket review, a prior round — counts only where nothing later settled the
 point.
 
-Each source once, no deeper than the artifact needs: skim the diff whole, deep-read only the files
-you will name in the *Review guide*, and never rebuild history commit by commit — which commit
-changed what is the diff's job, not yours.
+Each source once, no deeper than the artifact needs: skim the diff whole; deep-read only the files
+you will name in the *Review guide*; for a visual, read just the function, component or directory
+it draws; never rebuild history commit by commit — which commit changed what is the diff's job,
+not yours.
 
 Then match the plan's steps and acceptance criteria against the diff both ways — planned but
 absent, present but unplanned. Done when every source is read or confirmed absent and every planned
@@ -85,6 +86,11 @@ description, and stands alone:
 - **Related tickets go unmentioned** unless a why depends on one ("built this way to prepare
   for <X>") — then cite its tracker URL.
 - **Under a screen**, ~400 words; the caps below are limits, not targets.
+- **A visual where the diff hides the change's shape** — a flow across several files, a moved or
+  split layout, a reordered call chain — one per point, never a second for the same one. The
+  smallest shape that makes the point, from [visuals.md](visuals.md), placed right under the line
+  it supports; it takes screen, not words. A visual is a claim: every node and `+`/`-` line is in
+  the diff or a source.
 - **Never hard-wrap**: forges (e.g. GitHub) render newlines in PR bodies as line breaks — one
   line per paragraph or bullet.
 - **Plain reviewer-facing wording**, never this skill's vocabulary. Before drafting, actually

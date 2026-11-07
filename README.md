@@ -78,8 +78,9 @@ then let a fresh session execute them one at a time and consolidate the changes.
   derive manual test steps from a ticket or requirements file, or from a code change (branch,
   PR, commit range, diff), useful for the developer or QA.
 - **[handover](./skills/handover/SKILL.md)** — package a finished change for its reviewers:
-  what it does and why, the decisions and plan deviations worth knowing, and a review guide —
-  paste-ready as the PR description. [More about handover](https://medium.com/engineering-in-the-age-of-ai/the-missing-step-in-agentic-coding-the-handover-d1963c3d2c1d).
+  what it does and why, the decisions and plan deviations worth knowing, a review guide, and a
+  diagram or tree wherever the diff alone hides the change's shape — paste-ready as the PR
+  description. [More about handover](https://medium.com/engineering-in-the-age-of-ai/the-missing-step-in-agentic-coding-the-handover-d1963c3d2c1d).
 - **[prepare-prompt](./skills/prepare-prompt/SKILL.md)** — write the prompt that hands this
   session's work to a fresh session — what exists, what is open, what to do and in what form, the
   facts it cannot derive — as short as the next session allows.
