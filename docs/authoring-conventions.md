@@ -40,6 +40,13 @@ offering to clear the current session (`/clear`, again only the example) and run
 there, followed by the same labelled blocks with the bare prompts, same order. An option naming an
 optional sibling is printed only when that skill is available.
 
+When the harness has subagents and a next phase needs no decision the user has not taken (a small
+mechanical change set, no open question), the skill may lead with one sentence offering to run that
+phase as subagents from the current session, each with a defined brief, a report of its result
+(`done`, or one line per item it handled) or `blocked`, and the skill-level `autoaccept` on;
+nothing is spawned before the user's yes, and the launch-command blocks then follow under "or in a
+fresh session:".
+
 ## Markdown
 
 Wrap prose lines at the `max_line_length` in `.editorconfig`. Never break code (fenced blocks or

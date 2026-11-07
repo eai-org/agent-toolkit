@@ -4,7 +4,7 @@ description: Capture durable user feedback into the governing skill, doc or chec
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
-  version: "1.13"
+  version: "1.14"
 ---
 
 # Self-improve
@@ -18,9 +18,10 @@ approves. The skill proposes; the user stays in control of every change. Three w
   governs (or should). Don't silently correct and move on, but don't derail the task either: note
   the lesson, finish what the user asked for, and offer to persist it at the next natural
   breakpoint.
-- **Driven by another skill** — a caller (or its launch command, pasted by the user) hands over
-  lessons already phrased as durable guidance, sometimes with all or part of a target it settled
-  with the user (scope, form, path — possibly a new file or a merge into an existing one). Skip
+- **Driven by another skill** — a caller hands over lessons already phrased as durable guidance
+  (directly, through its launch command pasted by the user, or to a subagent it spawns per
+  [delegate.md](delegate.md)), sometimes with all or part of a target it settled with the user
+  (scope, form, path — possibly a new file or a merge into an existing one). Skip
   step 1; skip step 2 for a lesson whose target the caller settled fully, run it for the rest
   keeping what the caller settled — its Mechanical lesson bullet and new-doc indexing requirement
   always apply. Several lessons at once → first propose their placement as one table, each lesson
@@ -35,8 +36,8 @@ coding-standards or convention doc, a rules file — anything that guides future
 - **Confirm before applying.** The skill's job is to **suggest**, never to change text on its own.
   Never edit a skill, doc or check without the user's explicit go-ahead on the concrete change —
   present it as a diff and apply only on approval, whether the user invoked the skill or the agent
-  self-triggered. State plainly whether a change is not yet applied (awaiting approval) or already
-  applied (and where), so the user never has to ask.
+  self-triggered — except under Autoaccept, below. State plainly whether a change is not yet
+  applied (awaiting approval) or already applied (and where), so the user never has to ask.
 - **Editing any skill/doc → always route the write through one of two skills to keep it compact;
   never edit it directly.** A `SKILL.md` goes through
   [compact-skill-creator](../compact-skill-creator/SKILL.md); any other doc (rule,
@@ -44,6 +45,15 @@ coding-standards or convention doc, a rules file — anything that guides future
   [compact-docs-writer](../compact-docs-writer/SKILL.md). Actually invoke the skill and follow its
   workflow *before* drafting or applying; reading it, applying its principles by hand, or naming it
   after a direct edit does not count. A check is edited directly.
+
+## Autoaccept
+
+The word `autoaccept`, in the invocation or a caller's brief, is the go-ahead given in advance:
+each lesson's target (the placement table included) and edit take the agent's own recommendation
+and are applied without the diff being confirmed (the compaction skills' present-and-confirm step
+included), each reported with the file it changed or that already covers it. Still put to the user
+(in a subagent, reported `blocked`): a lesson that reverses an existing rule, one needing a new
+target (step 2), and any placement the agent is unsure of.
 
 ## Recognize a persistable correction (self-trigger)
 
@@ -89,5 +99,6 @@ Whenever unsure whether it generalizes, ask the user.
    case (must pass), both results in the proposal; one that cannot run here is labelled untested.
 4. **Apply the edit.** Route the write per the Hard rules — `SKILL.md` → compact-skill-creator, any
    other doc → compact-docs-writer, a check → edited directly — presenting a diff and applying only
-   on approval. Done when every handed-over or captured lesson is applied, declined by the user,
-   or reported as already covered, each named in the closing message.
+   on approval, Autoaccept aside. Done when every handed-over or captured lesson is applied,
+   declined by the user, reported as already covered or still put to the user (Autoaccept), each
+   named in the closing message.
