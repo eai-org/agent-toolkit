@@ -1,0 +1,23 @@
+README.md
+  s_2818a1b12a5bad::t_65579b5baca9a7 81-83
+skills/handover/SKILL.md
+  s_2818a1b12a5bad::t_65579b5baca9a7 6,54-57,89-93
+skills/handover/visuals.md
+  s_2818a1b12a5bad::t_65579b5baca9a7 1-66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3577aa616536495929d61331f67eba6ad82a1bdd",
+  "prompts": {},
+  "sessions": {
+    "s_2818a1b12a5bad": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "10c2f908-eaf8-4dc8-8923-596a88907e76",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "stefanoslig <stefanoslignos@gmail.com>"
+    }
+  }
+}
