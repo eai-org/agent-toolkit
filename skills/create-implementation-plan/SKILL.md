@@ -3,7 +3,7 @@ name: create-implementation-plan
 description: Turn a refined requirements document into a structured implementation PLAN.md a fresh session can execute. Planning only — decides the "how", not the "what". Invoke manually only.
 license: MIT
 metadata:
-  version: "1.20"
+  version: "1.21"
 ---
 
 # Create Implementation Plan
@@ -63,9 +63,12 @@ design, not a separate phase that runs before planning starts.
    verbatim" is a decision settled line by line, never by the file's existence. A technical claim
    a step rests on ("X needs exactly Y") is verified against a doc, a compile or a test, never
    read off what the prior art happens to do. A command a step tells the session to run is such a
-   claim: run it first, as written, from the directory the step names, on the state the step
-   expects; one that fails for an out-of-scope cause (a sibling project's restore, a missing
-   sample set) is rescoped in the plan with its reason, never left for the session to discover.
+   claim. One that only reads or validates the current state (a build, a test, a lint) is run
+   first, as written, from the directory the step names; one that fails for an out-of-scope cause
+   (a sibling project's restore, a missing sample set) is rescoped in the plan with its reason,
+   never left for the session to discover. One that changes state (a generator, a migration, a
+   deploy) or needs an earlier step's output is never run while planning: check only that it
+   resolves (the tool is installed, the flag exists) and leave the run to the session.
 
    **Deletions tend to cascade.** When a step deletes code, look for what that code was the last
    user of (a module, helper, template, constant, package) by searching for each one's other users,
