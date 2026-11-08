@@ -1,7 +1,8 @@
 import type { EngineInterface } from 'claude-code'
+import type { Repo } from '../types'
 import type { FileInfo, Reader } from './workflow'
 
-export type Repo = { root: string; checkout: string }
+export type { Repo } from '../types'
 
 const parent = (p: string) => p.replace(/\/+$/, '').replace(/\/[^/]*$/, '') || '/'
 
