@@ -1,0 +1,39 @@
+workflow-band/test/band.test.tsx
+  s_18a029f13d85b6::t_b66cf792dcf50c 69-70
+  s_18a029f13d85b6::t_972181add7bc03 125-135
+  s_18a029f13d85b6::t_3bb03fa0944a7c 1-68,71-124,136-143
+workflow-band/types.d.ts
+  s_18a029f13d85b6::t_1fdd62bfa44361 14-17,20
+  s_18a029f13d85b6::t_ba79dbfbc2f2f0 1-13
+workflow-band/register.tsx
+  s_18a029f13d85b6::t_786b29ce6574db 190
+  s_18a029f13d85b6::t_0d108476b7920f 1-26,28-189,191-194
+workflow-band/ui/band.tsx
+  s_18a029f13d85b6::t_a619b46708b97e 1-2,5-35,37-52,54-56,64-113
+  s_18a029f13d85b6::t_44c4ff9e16ce70 53,57-63
+  s_18a029f13d85b6::t_3825c50f876e3b 3-4
+  s_18a029f13d85b6::t_1846ee082ca4a0 36
+workflow-band/src/metrics.ts
+  s_18a029f13d85b6::t_b74a8865f5d194 1,3
+workflow-band/src/workflow.ts
+  s_18a029f13d85b6::t_3825c50f876e3b 1,4
+  s_18a029f13d85b6::t_b74a8865f5d194 2-3
+workflow-band/src/repo.ts
+  s_18a029f13d85b6::t_b74a8865f5d194 2,5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a92d4b0dfb2245aba8ccce2f88d0eb30af21120c",
+  "prompts": {},
+  "sessions": {
+    "s_18a029f13d85b6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ade1329a-3650-486e-ada5-1fa26a098151",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "stefanoslig <stefanoslignos@gmail.com>"
+    }
+  }
+}
