@@ -20,13 +20,17 @@ export async function runStep($: EngineInterface, action: Action, hasConversatio
   if (answer === CLEAR_FIRST || answer === RUN_HERE) await run()
 }
 
+export const vscodeLink = (path: string): string => `vscode://file${encodeURI(path.replace(/\\/g, '/').replace(/^\/?/, '/'))}`
+
 export async function openFile($: EngineInterface, path: string): Promise<void> {
   try {
-    if ((await $.process.run(['code', '-r', path]).catch(() => null))?.exitCode === 0) return
     const windows = (await $.env.get('OS')) === 'Windows_NT'
     const mac = !windows && (await $.process.run(['uname'])).stdout.trim() === 'Darwin'
-    const r = await $.process.run(windows ? ['cmd', '/c', 'start', '', path] : [mac ? 'open' : 'xdg-open', path])
-    if (r.exitCode !== 0) throw new Error(r.stderr)
+    const open = (target: string) =>
+      $.process.run(windows ? ['cmd', '/c', 'start', '', target] : [mac ? 'open' : 'xdg-open', target]).then((r) => r.exitCode === 0, () => false)
+    // the link needs no `code` CLI on PATH
+    if ((await $.env.get('TERM_PROGRAM')) === 'vscode' && (await open(vscodeLink(path)))) return
+    if (!(await open(path))) throw new Error(path)
   } catch {
     $.ui.toast(`Could not open ${path}`)
   }

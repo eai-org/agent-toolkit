@@ -41,7 +41,7 @@ test('the pane lists every step and the current group\'s tasks', async ($, on) =
 test('a row\'s file and skill are one press away', async ($, on) => {
   const { pane: p, argv, commands } = await pane($, on)
   await p.press({ key: 'file-plan' })
-  expect(argv).toContainEqual(['code', '-r', PLN])
+  expect(argv).toContainEqual(['open', PLN])
   await p.press({ key: 'act-task-2.2' })
   expect(commands).toEqual([{ command: 'execute-plan-tasks', args: `${PLN} 2.2` }])
   await p.unmount()

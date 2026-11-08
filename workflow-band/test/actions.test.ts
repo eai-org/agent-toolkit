@@ -1,10 +1,10 @@
 import type { EngineInterface } from 'claude-code'
 import { expect, test } from 'claude-code/testing'
-import { CANCEL, CLEAR_FIRST, openFile, RUN_HERE, runStep } from '../src/actions'
+import { CANCEL, CLEAR_FIRST, openFile, RUN_HERE, runStep, vscodeLink } from '../src/actions'
 import { listFiles, repoOf } from '../src/repo'
 
 // The test kit's `$` only raises events, so the helpers get a hand-made engine.
-type Fake = { names?: string[]; answer?: string | Error; os?: string; uname?: string; git?: { exitCode: number; stdout: string }; repo?: string | null; tree?: Record<string, { name: string; kind: string }[]> }
+type Fake = { names?: string[]; answer?: string | Error; os?: string; term?: string; uname?: string; git?: { exitCode: number; stdout: string }; repo?: string | null; tree?: Record<string, { name: string; kind: string }[]> }
 
 function fake(f: Fake = {}) {
   const runs: { command: string; args?: string }[] = []
@@ -24,7 +24,7 @@ function fake(f: Fake = {}) {
       },
       toast: (t: string) => void toasts.push(t),
     },
-    env: { get: async () => f.os },
+    env: { get: async (k: string) => (k === 'OS' ? f.os : k === 'TERM_PROGRAM' ? f.term : undefined) },
     process: {
       run: async (a: string[]) => {
         argv.push(a)
@@ -92,48 +92,52 @@ test('an unlisted skill toasts', async () => {
   expect(t.toasts).toEqual(["split-plan-tasks isn't installed"])
 })
 
-// `code` stands for VS Code's CLI; `codeFails` makes it exit non-zero or throw.
-function opener(f: Fake & { codeFails?: 'exit' | 'throw'; openerFails?: boolean }) {
+function opener(f: Fake & { linkFails?: boolean; openerFails?: boolean }) {
   const t = fake(f)
-  const inner = t.$.process.run
   ;(t.$.process as any).run = async (a: string[]) => {
-    if (a[0] === 'code') {
-      t.argv.push(a)
-      if (f.codeFails === 'throw') throw new Error('ENOENT')
-      return { exitCode: f.codeFails ? 127 : 0, stdout: '', stderr: '' }
-    }
-    if (f.openerFails && a[0] !== 'uname') {
-      t.argv.push(a)
-      return { exitCode: 1, stdout: '', stderr: 'no' }
-    }
-    return inner(a)
+    if (a[0] === 'uname') return { exitCode: 0, stdout: `${f.uname ?? 'Linux'}\n`, stderr: '' }
+    t.argv.push(a)
+    const fails = f.openerFails || (f.linkFails && a.at(-1)!.startsWith('vscode://'))
+    return { exitCode: fails ? 1 : 0, stdout: '', stderr: '' }
   }
   return t
 }
 
-test('openFile uses the VS Code CLI first and nothing else when it works', async () => {
-  const t = opener({ uname: 'Darwin' })
-  await openFile(t.$, '/r/a.md')
-  expect(t.argv).toEqual([['code', '-r', '/r/a.md']])
+test('vscodeLink encodes POSIX and Windows paths, keeping the drive colon', () => {
+  expect(vscodeLink('/r/a b.md')).toBe('vscode://file/r/a%20b.md')
+  expect(vscodeLink('C:\\Users\\you\\a b.md')).toBe('vscode://file/C:/Users/you/a%20b.md')
+})
+
+test('inside VS Code a file opens through a vscode:// link', async () => {
+  const t = opener({ uname: 'Darwin', term: 'vscode' })
+  await openFile(t.$, '/r/a b.md')
+  expect(t.argv).toEqual([['open', 'vscode://file/r/a%20b.md']])
   expect(t.toasts).toEqual([])
 })
 
-test('openFile falls back to the OS opener per platform when code fails', async () => {
-  for (const codeFails of ['exit', 'throw'] as const) {
-    const mac = opener({ uname: 'Darwin', codeFails })
-    await openFile(mac.$, '/r/a.md')
-    expect(mac.argv.pop()).toEqual(['open', '/r/a.md'])
-  }
-  const linux = opener({ codeFails: 'exit' })
-  await openFile(linux.$, '/r/a.md')
-  expect(linux.argv.pop()).toEqual(['xdg-open', '/r/a.md'])
-  const win = opener({ os: 'Windows_NT', codeFails: 'exit' })
-  await openFile(win.$, 'C:\\a.md')
-  expect(win.argv.pop()).toEqual(['cmd', '/c', 'start', '', 'C:\\a.md'])
+test('outside VS Code, or when the link fails, the OS opener gets the path', async () => {
+  const plain = opener({ uname: 'Darwin' })
+  await openFile(plain.$, '/r/a b.md')
+  expect(plain.argv).toEqual([['open', '/r/a b.md']])
+  const failed = opener({ uname: 'Darwin', term: 'vscode', linkFails: true })
+  await openFile(failed.$, '/r/a b.md')
+  expect(failed.argv).toEqual([['open', 'vscode://file/r/a%20b.md'], ['open', '/r/a b.md']])
 })
 
-test('openFile toasts when code and the OS opener both fail', async () => {
-  const bad = opener({ uname: 'Darwin', codeFails: 'exit', openerFails: true })
+test('openFile picks the OS opener per platform', async () => {
+  const linux = opener({})
+  await openFile(linux.$, '/r/a.md')
+  expect(linux.argv).toEqual([['xdg-open', '/r/a.md']])
+  const win = opener({ os: 'Windows_NT' })
+  await openFile(win.$, 'C:\\a.md')
+  expect(win.argv).toEqual([['cmd', '/c', 'start', '', 'C:\\a.md']])
+  const winCode = opener({ os: 'Windows_NT', term: 'vscode' })
+  await openFile(winCode.$, 'C:\\r\\a.md')
+  expect(winCode.argv).toEqual([['cmd', '/c', 'start', '', 'vscode://file/C:/r/a.md']])
+})
+
+test('openFile toasts when the link and the OS opener both fail', async () => {
+  const bad = opener({ uname: 'Darwin', term: 'vscode', openerFails: true })
   await openFile(bad.$, '/r/a.md')
   expect(bad.toasts).toEqual(['Could not open /r/a.md'])
 })

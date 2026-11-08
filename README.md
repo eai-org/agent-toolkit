@@ -94,6 +94,8 @@ numbers row (cost, last turn, agent time, reuse, open callers, tests, tokens, tu
 Markdown) and Expand. Expand opens a side pane with every step, its file and skill button, the PR's
 tasks, the task's other files, and a ▾ task switcher. It follows the task the last workflow skill
 ran on (this session, then this checkout, then the repo), else the newest under `.agents/plans/`.
+A clicked file opens in VS Code when Claude Code runs in VS Code's terminal, else in the system's
+default app.
 
 `/workflow-band off` hides it, `/workflow-band on` brings it back, across sessions. Claude Code
 2.1.319 or later, plugin install only (`install.sh` and agentwheel don't install it).
