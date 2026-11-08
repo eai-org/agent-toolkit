@@ -54,7 +54,7 @@ test('a refined idea shows the task created after it', async ($, on) => {
   tree[ROOT] = [...tree[ROOT]!, { name: 'dark-mode', kind: 'dir' }]
   tree[`${ROOT}/dark-mode`] = [{ name: 'dark-mode.REQUIREMENTS.md', kind: 'file', mtimeMs: 20 }]
   await $.turn.complete({ answer: '', durationMs: 1 } as never)
-  expect((await ui.find({ key: 'run' }))?.text).toBe('▶ Run harden requirements')
+  expect((await ui.find({ key: 'run' }))?.text).toBe('▶ Run plan')
   await ui.unmount()
 })
 

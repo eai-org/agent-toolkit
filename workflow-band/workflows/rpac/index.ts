@@ -9,18 +9,17 @@ type Step = {
   label: string
   compact?: string
   skill: string
-  kind: 'main' | 'optional' | 'extra'
+  kind: 'main' | 'extra'
   file?: 'ticket' | 'requirements' | 'plan' | 'manualTest'
   arg: Arg
+  hardens?: true
   perGroup?: 'selfReviews' | 'handovers'
 }
 
 const STEPS: Step[] = [
   { key: 'fetch', label: 'Fetch', compact: 'ticket', skill: 'fetch-ticket', kind: 'main', file: 'ticket', arg: 'id' },
-  { key: 'refine', label: 'Refine', compact: 'requirements', skill: 'refine-ticket', kind: 'main', file: 'requirements', arg: 'ticket' },
-  { key: 'harden-requirements', label: 'Harden requirements', skill: 'harden-artifact', kind: 'optional', arg: 'requirements' },
-  { key: 'plan', label: 'Plan', compact: 'plan', skill: 'create-implementation-plan', kind: 'main', file: 'plan', arg: 'requirements' },
-  { key: 'harden-plan', label: 'Harden plan', skill: 'harden-artifact', kind: 'optional', arg: 'plan' },
+  { key: 'refine', label: 'Refine', compact: 'requirements', skill: 'refine-ticket', kind: 'main', file: 'requirements', arg: 'ticket', hardens: true },
+  { key: 'plan', label: 'Plan', compact: 'plan', skill: 'create-implementation-plan', kind: 'main', file: 'plan', arg: 'requirements', hardens: true },
   { key: 'split', label: 'Split', compact: 'split', skill: 'split-plan-tasks', kind: 'main', arg: 'plan' },
   { key: 'execute', label: 'Execute', compact: 'execute', skill: 'execute-plan-tasks', kind: 'main', arg: 'plan' },
   { key: 'self-review', label: 'Self-review', compact: 'self-review', skill: 'self-review', kind: 'main', arg: 'none', perGroup: 'selfReviews' },
@@ -33,6 +32,7 @@ const TICKET_ID = /^([A-Z][A-Z0-9]*-\d+|\d+)(?=-|$)/
 
 const step = (key: string) => STEPS.find((s) => s.key === key)
 const act = (skill: string, args: string): Action => ({ skill, args, label: `▶ ${skill}` })
+const harden = (file: string | undefined): Action[] => (file ? [{ skill: 'harden-artifact', args: file, label: '⛨ harden' }] : [])
 const tokens = (args: string) => args.split(/\s+/).filter(Boolean)
 const matches = (path: string, token: string) => path === token || path.endsWith(`/${token}`)
 const allTicked = (g: PlanGroup) => g.tasks.every((t) => t.done)
@@ -90,19 +90,17 @@ export const rpac: Workflow = {
 
     const status = (s: Step): Status => {
       if (s.file) return f[s.file] ? 'done' : s.key === 'fetch' ? 'skipped' : 'todo'
-      if (s.skill === 'harden-artifact') return hardened.has(arg[s.arg]) ? 'done' : 'todo'
       return s.key === 'split' && groups ? 'done' : 'todo'
     }
     const rows: Row[] = STEPS.filter((s) => !s.perGroup).map((s) => {
       const file = s.file && f[s.file]
-      const hardenable = STEPS.some((h) => h.skill === 'harden-artifact' && h.arg === s.file)
       return {
         key: s.key,
         label: s.label,
         status: status(s),
         file,
-        hardened: file && hardenable && hardened.has(file) ? true : undefined,
-        actions: (s.key === 'fetch' && !f.ticket) || (s.key === 'execute' && !groups) ? [] : actions(s),
+        hardened: file && s.hardens && hardened.has(file) ? true : undefined,
+        actions: (s.key === 'fetch' && !f.ticket) || (s.key === 'execute' && !groups) ? [] : [...actions(s), ...(s.hardens ? harden(file) : [])],
       }
     })
 
@@ -130,7 +128,7 @@ export const rpac: Workflow = {
         ...g.tasks.map((t): Row => {
           const own = act('execute-plan-tasks', `${arg.plan} ${t.id}`)
           return t.id === stopped
-            ? { key: `task-${t.id}`, label: `${t.id} ${t.title}`, status: 'stopped', actions: [own, ...actions(step('harden-plan')!), ...actions(step('plan')!)] }
+            ? { key: `task-${t.id}`, label: `${t.id} ${t.title}`, status: 'stopped', actions: [own, ...harden(f.plan), ...actions(step('plan')!)] }
             : { key: `task-${t.id}`, label: `${t.id} ${t.title}`, status: t.done ? 'done' : 'todo', actions: [own] }
         }),
         ...perGroup.map((s): Row => ({ key: `${s.key}-${g.n}`, label: s.label, status: groupStatus.get(`${s.key}-${g.n}`)!, actions: actions(s) })),
@@ -141,9 +139,6 @@ export const rpac: Workflow = {
     if (groups) execute.rows = groupRows
     const leaves = [...rows.filter((r) => r !== execute && step(r.key)!.kind !== 'extra'), ...groupRows.flatMap((g) => g.rows!)]
     const far = leaves.map((r) => r.status).lastIndexOf('done')
-    leaves.forEach((r, i) => {
-      if (i < far && r.status !== 'done' && step(r.key)?.kind === 'optional') r.status = 'skipped'
-    })
     const open = leaves.slice(0, far).find((r) => r.key.startsWith('task-') && r.status === 'todo')
     const next = stopped ? undefined : open ?? leaves.slice(far + 1).find((r) => r.status === 'todo')
     if (next) next.status = 'current'

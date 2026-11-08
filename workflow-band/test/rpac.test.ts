@@ -38,17 +38,25 @@ const find = (rows: Row[], key: string): Row | undefined => {
 const SPLIT = ['TICKET', 'REQUIREMENTS', 'PLAN']
 const tick = (...ids: string[]) => ids.reduce((p, id) => p.replace(`[ ] **${id}`, `[x] **${id}`), PLAN)
 
-test('before planning, hardening the requirements is next', async () => {
+const keys = (rows: Row[]): string[] => rows.flatMap((r) => [r.key, ...keys(r.rows ?? [])])
+
+test('after refine, plan is next and the refine row offers hardening', async () => {
   const v = await view(['TICKET', 'REQUIREMENTS'])
   expect(find(v.rows, 'fetch')?.status).toBe('done')
   expect(find(v.rows, 'refine')?.status).toBe('done')
-  expect(v.next).toMatchObject({ skill: 'harden-artifact', args: REQ, label: 'harden requirements' })
+  expect(v.next).toMatchObject({ skill: 'create-implementation-plan', args: REQ, label: 'plan' })
+  expect(find(v.rows, 'refine')?.actions.map((a) => [a.label, a.args])).toEqual([['▶ refine-ticket', P('123-x/123-x.TICKET.md')], ['⛨ harden', REQ]])
+  expect(find(v.rows, 'plan')?.actions.map((a) => a.label)).toEqual(['▶ create-implementation-plan'])
 })
 
-test('an optional step passed over is skipped', async () => {
+test('after plan, split is next and no row is about hardening', async () => {
   const v = await view(SPLIT, '# Plan\n- [ ] AC-1 a\n')
-  expect(find(v.rows, 'harden-requirements')?.status).toBe('skipped')
-  expect(v.next).toMatchObject({ skill: 'harden-artifact', args: PLN })
+  expect(v.next).toMatchObject({ skill: 'split-plan-tasks', args: PLN, label: 'split' })
+  expect(find(v.rows, 'plan')?.actions.map((a) => [a.skill, a.args, a.label])).toEqual([
+    ['create-implementation-plan', REQ, '▶ create-implementation-plan'],
+    ['harden-artifact', PLN, '⛨ harden'],
+  ])
+  expect(keys((await view(SPLIT)).rows).filter((k) => k.startsWith('harden-'))).toEqual([])
 })
 
 test('executing shows the group and task', async () => {
@@ -140,6 +148,7 @@ test('an idea without a ticket skips fetch, and rows missing their input file of
   const v = await rpac.view(task, [], io)
   expect(find(v.rows, 'fetch')?.status).toBe('skipped')
   expect(find(v.rows, 'fetch')?.actions).toEqual([])
+  expect(find(v.rows, 'refine')?.actions.map((a) => a.label)).toEqual(['⛨ harden'])
   expect(v.compact[0]?.label).toBe('requirements')
   expect(find(v.rows, 'split')?.actions).toEqual([])
   expect(find(v.rows, 'execute')?.actions).toEqual([])
