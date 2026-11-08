@@ -43,8 +43,16 @@ test('a folder with only other docs is no task', () => {
   expect(tasksFrom([f('wb/wb.DESIGN.md')])).toEqual([])
 })
 
+test('a design and plan without a ticket or requirements is no task', () => {
+  expect(tasksFrom([f('wb/wb.DESIGN.md'), f('wb/wb.PLAN.md'), f('wb/wb.DECISIONS.md')])).toEqual([])
+})
+
+test('requirements with a plan is one task', () => {
+  expect(tasksFrom([f('idea/idea.REQUIREMENTS.md'), f('idea/idea.PLAN.md')]).map((t) => t.key)).toEqual(['idea'])
+})
+
 test('tasks are newest first and carry the newest mtime', () => {
-  const tasks = tasksFrom([f('a/a.PLAN.md', 1), f('b/b.PLAN.md', 5), f('a/a.DESIGN.md', 3)])
+  const tasks = tasksFrom([f('a/a.REQUIREMENTS.md', 1), f('b/b.REQUIREMENTS.md', 5), f('a/a.DESIGN.md', 3)])
   expect(tasks.map((t) => [t.key, t.mtimeMs])).toEqual([['b', 5], ['a', 3]])
 })
 
@@ -65,7 +73,7 @@ test('a re-fetched ticket set keeps its children and drops the parent, in any or
 })
 
 test('a loose doc joins the only task in its folder, not a folder of several', () => {
-  const one = tasksFrom([f('snag/snag.PLAN.md'), f('snag/figma-notes.md')])
+  const one = tasksFrom([f('snag/snag.REQUIREMENTS.md'), f('snag/figma-notes.md')])
   expect(rpacFiles(one[0]!).other).toEqual([P('snag/figma-notes.md')])
   const many = tasksFrom([f('100-p/101-w.TICKET.md'), f('100-p/102-a.TICKET.md'), f('100-p/notes.md')])
   expect(many.flatMap((t) => rpacFiles(t).other)).toEqual([])

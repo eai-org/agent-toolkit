@@ -156,7 +156,7 @@ test('an idea without a ticket skips fetch, and rows missing their input file of
 })
 
 test('taskOf finds the task by a checkout-relative path, only for RPAC skills', async () => {
-  const tasks = await rpac.tasks([f('123-x/123-x.PLAN.md'), f('idea/idea.REQUIREMENTS.md'), f('add-x/add-x.REQUIREMENTS.md')], reader({}))
+  const tasks = await rpac.tasks([f('123-x/123-x.TICKET.md'), f('123-x/123-x.PLAN.md'), f('idea/idea.REQUIREMENTS.md'), f('add-x/add-x.REQUIREMENTS.md')], reader({}))
   expect(rpac.taskOf('agent-toolkit:execute-plan-tasks', '.agents/plans/123-x/123-x.PLAN.md 2.2', tasks)).toBe('123-x')
   expect(rpac.taskOf('refine-ticket', 'idea', tasks)).toBe('idea')
   expect(rpac.taskOf('fetch-ticket', '123', tasks)).toBe('123-x')
