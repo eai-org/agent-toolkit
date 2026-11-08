@@ -47,3 +47,19 @@ test('tasks are newest first and carry the newest mtime', () => {
   const tasks = tasksFrom([f('a/a.PLAN.md', 1), f('b/b.PLAN.md', 5), f('a/a.DESIGN.md', 3)])
   expect(tasks.map((t) => [t.key, t.mtimeMs])).toEqual([['b', 5], ['a', 3]])
 })
+
+test('an attachment beside a lone ticket keeps the task', () => {
+  const tasks = tasksFrom([f('123-x/123-x.TICKET.md'), f('123-x/attachment-1.png')])
+  expect(tasks.map((t) => t.key)).toEqual(['123-x'])
+  expect(tasks[0].files.length).toBe(1)
+})
+
+test('a re-fetched ticket set keeps its children and drops the parent, in any order', () => {
+  const input = [f('100-p/100-p.TICKET.md'), f('100-p-v2/100-p-v2.TICKET.md'), f('100-p-v2/101-w.TICKET.md'), f('100-p/101-w.REQUIREMENTS.md')]
+  for (const files of [input, [...input].reverse()]) {
+    const tasks = tasksFrom(files)
+    expect(tasks.map((t) => t.key)).toEqual(['101-w'])
+    expect(tasks[0].files.length).toBe(2)
+    expect(rpacFiles(tasks[0]).ticket).toBe(P('100-p-v2/101-w.TICKET.md'))
+  }
+})
