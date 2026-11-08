@@ -91,9 +91,11 @@ A Claude Code mod that shows the current task above the prompt: a steps row (✓
 ○ to do, ? unknown, ⚠ stopped, ⛨ hardened; a done step opens its file) with `▶ Run <step>` for the
 next skill, which first asks whether to clear a session that already has a conversation, and a
 numbers row (cost, last turn, agent time, reuse, open callers, tests, tokens, turns) with Copy (as
-Markdown) and Expand. Expand opens a side pane with every step, its file and skill button, the PR's
+Markdown) and Expand. Expand opens a side pane with every step, its file and skill buttons, the PR's
 tasks, the task's other files, and a ▾ task switcher. It follows the task the last workflow skill
 ran on (this session, then this checkout, then the repo), else the newest under `.agents/plans/`.
+Each workflow's folder can be set in `.agents/workflow-band.json`, e.g.
+`{ "folders": { "rpac": ".agents/plans" } }`.
 A clicked file opens in VS Code when Claude Code runs in VS Code's terminal, else in the system's
 default app.
 
