@@ -1,9 +1,6 @@
-import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register } from 'claude-code'
-import { commandName } from './src/actions'
 import {
   GREP_DEFS,
-  NO_TOKENS,
   addTokens,
   addedLines,
   callsIn,
@@ -15,24 +12,10 @@ import {
   isTestCommand,
   parseDefs,
   testCounts,
-  type Numbers,
 } from './src/metrics'
-import { pickTask } from './src/pick'
-import { listFiles, reader, repoOf } from './src/repo'
-import { runsKey } from './src/runs'
-import type { Run } from './src/workflow'
-import type { UiState } from './types'
+import { PANE, TASK, readNumbers, readShown, readUi, refresh, setNumbers, setUi } from './src/state'
 import { drawBand } from './ui/band'
-import { WORKFLOWS } from './workflows'
-
-// what /clear starts over
-const TASK = { spent: 0, turns: 0, turnCosts: [], tokens: NO_TOKENS, busyMs: 0, reused: [], created: [], removed: [], openCallers: [], tests: { state: 'none' as const } }
-const EMPTY: Numbers = { ...TASK, cost: 0, project: '', session: '' }
-const UI: UiState = { paneOpen: false, picking: false }
-
-const numbers = atom({ plugin: 'agent-toolkit', key: 'numbers' } as const, EMPTY, { shape: 'numbers-1' })
-const shown = atom({ plugin: 'agent-toolkit', key: 'shown' } as const, null, { shape: 'shown-1' })
-const ui = atom({ plugin: 'agent-toolkit', key: 'ui' } as const, UI, { shape: 'ui-1' })
+import { drawPane } from './ui/pane'
 
 const union = (a: string[], b: string[]) => [...new Set([...a, ...b])]
 const base = (path: string) => path.replace(/\/+$/, '').split('/').pop() ?? path
@@ -47,32 +30,8 @@ async function start($: EngineInterface, resumed: boolean): Promise<Map<string, 
   // the cost so far is the baseline for the next turn's own cost
   const usage = await $.session.usage().catch(() => undefined)
   const turns = resumed ? await $.session.turns().catch(() => undefined) : undefined
-  await update($, numbers, (n) => ({ ...n, project, session, cost: usage?.cost?.usd ?? n.cost, turns: turns ?? n.turns }))
+  await setNumbers($, (n) => ({ ...n, project, session, cost: usage?.cost?.usd ?? n.cost, turns: turns ?? n.turns }))
   return grep?.exitCode === 0 ? parseDefs(grep.stdout) : new Map()
-}
-
-async function refresh($: EngineInterface): Promise<void> {
-  try {
-    const repo = await repoOf($)
-    const stored = await $.store.get(runsKey(repo.root))
-    const runs = Array.isArray(stored) ? (stored as Run[]) : []
-    const where = { session: await $.session.id(), checkout: repo.checkout, pinned: (await read($, ui)).pinned }
-    const io = reader($)
-    for (const wf of WORKFLOWS) {
-      const tasks = await wf.tasks(await listFiles($, repo, wf.roots), io)
-      const task = pickTask(tasks, runs, where)
-      if (!task) continue
-      const view = await wf.view(task, runs, io)
-      const names = await Promise.all(wf.skills.map((skill) => commandName($, skill)))
-      const installed = wf.skills.filter((_, i) => names[i] !== undefined)
-      await update($, shown, () => ({ workflow: wf.id, name: wf.name, repo, task, tasks: tasks.map(({ key, title }) => ({ key, title })), view, installed }))
-      return
-    }
-    await update($, shown, () => null)
-  } catch (err) {
-    $.ui.log(`workflow-band: refresh failed: ${err instanceof Error ? err.message : String(err)}`, { to: 'debug' })
-    await update($, shown, () => null).catch(() => undefined)
-  }
 }
 
 export const register: Register = (on) => {
@@ -98,7 +57,7 @@ export const register: Register = (on) => {
 
   // the cost baseline stays
   on('session.end', async ($, e, next) => {
-    if (e.reason === 'clear') await update($, numbers, (n) => ({ ...n, ...TASK }))
+    if (e.reason === 'clear') await setNumbers($, (n) => ({ ...n, ...TASK }))
     return next(e)
   }).catch(($, e, next) => next(e))
 
@@ -107,7 +66,7 @@ export const register: Register = (on) => {
       const ran = await next(e)
       if (ran.deny === undefined && isTestCommand(e.command)) {
         const tests = { state: ran.isError ? ('fail' as const) : ('pass' as const), ...testCounts(ran.text ?? '') }
-        await update($, numbers, (n) => ({ ...n, tests }))
+        await setNumbers($, (n) => ({ ...n, tests }))
       }
       return ran
     }
@@ -129,7 +88,7 @@ export const register: Register = (on) => {
     const removed = oldDefs.filter((d) => !newDefs.includes(d))
     const reused = isSource(file) ? callsIn(addedLines(before, after), known, newDefs) : []
 
-    await update($, numbers, (n) => ({
+    await setNumbers($, (n) => ({
       ...n,
       reused: union(n.reused, reused),
       created: union(n.created, created),
@@ -144,12 +103,12 @@ export const register: Register = (on) => {
     const used = e.usage
     if (e.agentId !== undefined) {
       // a subagent's cost is already in the session cost the main turn reads, its tokens aren't
-      if (used) await update($, numbers, (n) => ({ ...n, tokens: addTokens(n.tokens, used) }))
+      if (used) await setNumbers($, (n) => ({ ...n, tokens: addTokens(n.tokens, used) }))
       return next(e)
     }
 
     const usage = await $.session.usage()
-    const { removed } = await read($, numbers)
+    const { removed } = await readNumbers($)
 
     // a removed or renamed definition that isn't defined again but still called somewhere
     // shortcut: name match with git grep, so a same-named call in another module counts too
@@ -167,7 +126,7 @@ export const register: Register = (on) => {
       }
     }
 
-    await update($, numbers, (n) => {
+    await setNumbers($, (n) => {
       const cost = usage.cost?.usd ?? n.cost
       // a cost below the baseline means the engine started its ledger over
       const turn = cost >= n.cost ? cost - n.cost : cost
@@ -187,10 +146,17 @@ export const register: Register = (on) => {
     return next(e)
   }).catch(($, e, next) => next(e))
 
+  on('ui.close', { id: PANE }, async ($, e, next) => {
+    await setUi($, (u) => ({ ...u, paneOpen: false }))
+    return next(e)
+  }).catch(($, e, next) => next(e))
+
+  on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => drawPane($, e, { numbers: await readNumbers($), shown: await readShown($), ui: await readUi($) })).catch(($, e, next) => next(e))
+
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
     if (e.props.hasSurvey) return next(e)
     // other mods share this slot and theirs goes below ours. next(e) rejects only when nothing answers beneath
     const below = await next(e).catch(() => undefined)
-    return drawBand($, e, below, { numbers: await read($, numbers), shown: await read($, shown), ui: await read($, ui) })
+    return drawBand($, e, below, { numbers: await readNumbers($), shown: await readShown($), ui: await readUi($) })
   }).catch(($, e, next) => next(e))
 }
