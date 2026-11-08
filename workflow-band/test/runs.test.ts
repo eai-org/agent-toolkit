@@ -23,14 +23,14 @@ test('addRun keeps the newest RUNS_CAP', () => {
   let runs: Run[] = []
   for (let i = 0; i < RUNS_CAP + 5; i++) runs = addRun(runs, run({ at: i }))
   expect(runs.length).toBe(RUNS_CAP)
-  expect(runs[runs.length - 1].at).toBe(RUNS_CAP + 4)
+  expect(runs[runs.length - 1]!.at).toBe(RUNS_CAP + 4)
 })
 
 test('endRuns ends only open runs of the session', () => {
   const runs = [run({}), run({ endedAt: 5 }), run({ session: 's2' })]
   const out = endRuns(runs, 's1', 9)
   expect(out.map((r) => r.endedAt)).toEqual([9, 5, undefined])
-  expect(runs[0].endedAt).toBe(undefined)
+  expect(runs[0]!.endedAt).toBe(undefined)
 })
 
 test('pickTask order', () => {

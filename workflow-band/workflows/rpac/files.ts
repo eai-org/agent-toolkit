@@ -15,15 +15,15 @@ type Parsed = { file: FileInfo; base: string; stem: string; folder: string; suff
 
 const parse = (file: FileInfo): Parsed => {
   const parts = file.path.split('/')
-  const name = parts[parts.length - 1].replace(/\.md$/, '')
+  const name = (parts[parts.length - 1] ?? '').replace(/\.md$/, '')
   const folder = parts[parts.length - 2] ?? ''
   const dot = name.indexOf('.')
   const stem = dot < 0 ? name : name.slice(0, dot)
   const suffix = dot < 0 ? '' : name.slice(dot + 1)
   const v = /^(.+)-v(\d+)$/.exec(stem)
-  let base = v ? v[1] : stem
+  let base = v ? (v[1] ?? '') : stem
   const folderBase = /^(.+)-v\d+$/.exec(folder)
-  if (suffix === 'TICKET' && folderBase && stem === folder) base = folderBase[1]
+  if (suffix === 'TICKET' && folderBase && stem === folder) base = folderBase[1] ?? ''
   return { file, base, stem, folder, suffix, version: v ? Number(v[2]) : 1 }
 }
 

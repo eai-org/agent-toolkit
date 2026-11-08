@@ -8,9 +8,9 @@ test('one folder holds one task, files by suffix', () => {
   const names = ['TICKET', 'REQUIREMENTS', 'PLAN', 'DECISIONS', 'MANUAL-TEST', 'SELF-REVIEW', 'SELF-REVIEW-2', 'HANDOVER', 'PR-REVIEW', 'PR-REVIEW.PLAN']
   const tasks = tasksFrom(names.map((n) => f(`123-x/123-x.${n}.md`)))
   expect(tasks.length).toBe(1)
-  expect(tasks[0].key).toBe('123-x')
-  expect(tasks[0].title).toBe('123-x')
-  expect(rpacFiles(tasks[0])).toEqual({
+  expect(tasks[0]!.key).toBe('123-x')
+  expect(tasks[0]!.title).toBe('123-x')
+  expect(rpacFiles(tasks[0]!)).toEqual({
     ticket: P('123-x/123-x.TICKET.md'),
     requirements: P('123-x/123-x.REQUIREMENTS.md'),
     plan: P('123-x/123-x.PLAN.md'),
@@ -25,7 +25,7 @@ test('one folder holds one task, files by suffix', () => {
 test('a re-fetch joins its task', () => {
   const tasks = tasksFrom([f('123-x/123-x.REQUIREMENTS.md'), f('123-x-v2/123-x-v2.TICKET.md'), f('123-x/123-x.TICKET.md')])
   expect(tasks.length).toBe(1)
-  expect(rpacFiles(tasks[0]).ticket).toBe(P('123-x-v2/123-x-v2.TICKET.md'))
+  expect(rpacFiles(tasks[0]!).ticket).toBe(P('123-x-v2/123-x-v2.TICKET.md'))
 })
 
 test('a ticket set gives one task per ticket, not the parent', () => {
@@ -36,7 +36,7 @@ test('a ticket set gives one task per ticket, not the parent', () => {
 test('an idea refined without a ticket is a task', () => {
   const tasks = tasksFrom([f('idea/idea.REQUIREMENTS.md')])
   expect(tasks.map((t) => t.key)).toEqual(['idea'])
-  expect(rpacFiles(tasks[0]).ticket).toBeUndefined()
+  expect(rpacFiles(tasks[0]!).ticket).toBeUndefined()
 })
 
 test('a folder with only other docs is no task', () => {
@@ -51,7 +51,7 @@ test('tasks are newest first and carry the newest mtime', () => {
 test('an attachment beside a lone ticket keeps the task', () => {
   const tasks = tasksFrom([f('123-x/123-x.TICKET.md'), f('123-x/attachment-1.png')])
   expect(tasks.map((t) => t.key)).toEqual(['123-x'])
-  expect(tasks[0].files.length).toBe(1)
+  expect(tasks[0]!.files.length).toBe(1)
 })
 
 test('a re-fetched ticket set keeps its children and drops the parent, in any order', () => {
@@ -59,7 +59,7 @@ test('a re-fetched ticket set keeps its children and drops the parent, in any or
   for (const files of [input, [...input].reverse()]) {
     const tasks = tasksFrom(files)
     expect(tasks.map((t) => t.key)).toEqual(['101-w'])
-    expect(tasks[0].files.length).toBe(2)
-    expect(rpacFiles(tasks[0]).ticket).toBe(P('100-p-v2/101-w.TICKET.md'))
+    expect(tasks[0]!.files.length).toBe(2)
+    expect(rpacFiles(tasks[0]!).ticket).toBe(P('100-p-v2/101-w.TICKET.md'))
   }
 })
