@@ -1,0 +1,30 @@
+workflow-band/test/rpac.test.ts
+  s_18a029f13d85b6::t_b00d75649c1a87 45,64-65,81
+workflow-band/register.tsx
+  s_18a029f13d85b6::t_a65f8cd824dafb 41-42,49-50,82,93
+workflow-band/workflows/rpac/index.ts
+  s_18a029f13d85b6::t_594e806a5613a9 164,166-167
+  s_18a029f13d85b6::t_29b00f63790ccc 165
+workflow-band/ui/band.tsx
+  s_18a029f13d85b6::t_6d5425cfde6550 42
+workflow-band/test/band.test.tsx
+  s_18a029f13d85b6::t_9cf58d1ad7d679 153-155
+  s_18a029f13d85b6::t_b00d75649c1a87 3,35,45-48,64,73-77,83,90,146-151,156
+  s_18a029f13d85b6::t_416fd16975d6c8 152,157-159
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6640c06df10bb2c20566675d372ffbea72289c1b",
+  "prompts": {},
+  "sessions": {
+    "s_18a029f13d85b6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ade1329a-3650-486e-ada5-1fa26a098151",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "stefanoslig <stefanoslignos@gmail.com>"
+    }
+  }
+}
