@@ -1,0 +1,21 @@
+workflow-band/src/metrics.ts
+  s_18a029f13d85b6::t_94d9b23d6603af 1-158
+workflow-band/test/metrics.test.ts
+  s_18a029f13d85b6::t_94d9b23d6603af 1-73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a4e39e1cd5a2f85b7079dcd1e04c61ae7591ac28",
+  "prompts": {},
+  "sessions": {
+    "s_18a029f13d85b6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ade1329a-3650-486e-ada5-1fa26a098151",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "stefanoslig <stefanoslignos@gmail.com>"
+    }
+  }
+}
