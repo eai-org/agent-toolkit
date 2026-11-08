@@ -34,7 +34,7 @@ const BAND = {
   props: { hasSurvey: false, isWorking: false, maxRows: 12, bodyColumns: 160, scroll: { offset: 0, bodyRows: 12 }, view: {} },
 } as const
 
-export type World = { runs?: Partial<Run>[]; skills?: string[]; noFolder?: boolean; columns?: number; turns?: number; tree?: Record<string, Entry[]>; working?: boolean }
+export type World = { runs?: Partial<Run>[]; skills?: string[]; noFolder?: boolean; columns?: number; turns?: number; tree?: Record<string, Entry[]>; working?: boolean; files?: Record<string, string> }
 
 export async function band($: Engine, on: On, w: World = {}) {
   mock.clock(on, { now: 10 })
@@ -68,7 +68,7 @@ export async function band($: Engine, on: On, w: World = {}) {
     const entries = w.noFolder ? undefined : tree[e.path]
     return (entries ? { value: entries.map((x) => ({ size: 1, mtimeMs: x.kind === 'file' ? 1 : 0, ...x })) } : { deny: 'missing' }) as never
   })
-  on('fs.read', ($, e) => (e.path === PLN ? { value: PLAN } : { deny: 'missing' }) as never)
+  on('fs.read', ($, e) => (e.path === PLN ? { value: PLAN } : w.files?.[e.path] !== undefined ? { value: w.files[e.path] } : { deny: 'missing' }) as never)
   on('command.list', ($, e) => {
     listed.push(e)
     return { value: (w.skills ?? SKILLS).map((name) => ({ name, description: '', source: 'userSettings' })) } as never
