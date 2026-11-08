@@ -1,5 +1,6 @@
 import type { EngineInterface, RenderElement, RenderInput } from 'claude-code'
 import { openFile, runStep } from '../src/actions'
+import { PANE, setUi } from '../src/state'
 import { elapsed, fmtTokens, markdown, percent, totalTokens } from '../src/metrics'
 import type { CompactItem, Numbers, Shown, Status, UiState } from '../types'
 
@@ -87,6 +88,17 @@ export async function drawBand($: EngineInterface, e: RenderInput<'AbovePrompt'>
       (err: unknown) => $.ui.toast(`Copy failed: ${err instanceof Error ? err.message : String(err)}`),
     )
 
+  const expand = async () => {
+    const title = `${s.shown!.name} · ${s.shown!.task.title}`
+    const r = await $.ui.open({ id: PANE, title })
+    if (r.isPlaced) await setUi($, (u) => ({ ...u, paneOpen: true }))
+    else $.ui.toast(`Could not open the pane: ${r.reason}`)
+  }
+  const compact = async () => {
+    await $.ui.close({ id: PANE })
+    await setUi($, (u) => ({ ...u, paneOpen: false }))
+  }
+
   const mine = (
     <Box flexDirection="column" width={width}>
       {steps}
@@ -104,6 +116,7 @@ export async function drawBand($: EngineInterface, e: RenderInput<'AbovePrompt'>
           </Text>
         )}
         <Box flexGrow={1} />
+        {s.shown && (s.ui.paneOpen ? <Button key="compact" plain label="Compact" onPress={compact} /> : <Button key="expand" plain label="Expand" onPress={expand} />)}
         <Button key="copy" plain label="Copy" onPress={copy} />
       </Box>
       {skills}

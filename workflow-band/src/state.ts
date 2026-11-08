@@ -1,0 +1,63 @@
+import { atom, read, update } from 'claude-code'
+import type { EngineInterface } from 'claude-code'
+import { commandName } from './actions'
+import { NO_TOKENS, type Numbers } from './metrics'
+import { pickTask } from './pick'
+import { listFiles, reader, repoOf } from './repo'
+import { runsKey } from './runs'
+import type { Run } from './workflow'
+import type { Shown, UiState } from '../types'
+import { WORKFLOWS } from '../workflows'
+
+export const PANE = 'workflow'
+
+// what /clear starts over
+export const TASK = { spent: 0, turns: 0, turnCosts: [], tokens: NO_TOKENS, busyMs: 0, reused: [], created: [], removed: [], openCallers: [], tests: { state: 'none' as const } }
+const EMPTY: Numbers = { ...TASK, cost: 0, project: '', session: '' }
+const UI: UiState = { paneOpen: false, picking: false }
+
+export const numbers = atom({ plugin: 'agent-toolkit', key: 'numbers' } as const, EMPTY, { shape: 'numbers-1' })
+export const shown = atom({ plugin: 'agent-toolkit', key: 'shown' } as const, null, { shape: 'shown-1' })
+export const ui = atom({ plugin: 'agent-toolkit', key: 'ui' } as const, UI, { shape: 'ui-1' })
+
+export async function refresh($: EngineInterface): Promise<void> {
+  try {
+    const repo = await repoOf($)
+    const stored = await $.store.get(runsKey(repo.root))
+    const runs = Array.isArray(stored) ? (stored as Run[]) : []
+    const where = { session: await $.session.id(), checkout: repo.checkout, pinned: (await read($, ui)).pinned }
+    const io = reader($)
+    for (const wf of WORKFLOWS) {
+      const tasks = await wf.tasks(await listFiles($, repo, wf.roots), io)
+      const task = pickTask(tasks, runs, where)
+      if (!task) continue
+      const view = await wf.view(task, runs, io)
+      const names = await Promise.all(wf.skills.map((skill) => commandName($, skill)))
+      const installed = wf.skills.filter((_, i) => names[i] !== undefined)
+      await update($, shown, () => ({ workflow: wf.id, name: wf.name, repo, task, tasks: tasks.map(({ key, title }) => ({ key, title })), view, installed }))
+      return
+    }
+    await update($, shown, () => null)
+  } catch (err) {
+    $.ui.log(`workflow-band: refresh failed: ${err instanceof Error ? err.message : String(err)}`, { to: 'debug' })
+    await update($, shown, () => null).catch(() => undefined)
+  }
+}
+
+export function setNumbers($: EngineInterface, fn: (n: Numbers) => Numbers) {
+  return update($, numbers, fn)
+}
+
+export function setUi($: EngineInterface, fn: (u: UiState) => UiState) {
+  return update($, ui, fn)
+}
+
+export function readNumbers($: EngineInterface): Promise<Numbers> {
+  return read($, numbers)
+}
+export function readShown($: EngineInterface): Promise<Shown | null> {
+  return read($, shown)
+}
+export function readUi($: EngineInterface): Promise<UiState> {
+  return read($, ui)
+}
