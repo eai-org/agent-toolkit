@@ -1,12 +1,6 @@
-export type Tokens = { input: number; output: number; cacheRead: number; cacheWrite: number }
+import type { Numbers, Tests, Tokens } from '../types'
 
-export type Tests = {
-  state: 'none' | 'pass' | 'fail' | 'stale'
-  passed?: number
-  failed?: number
-}
-
-export type Numbers = { cost: number; spent: number; turns: number; turnCosts: number[]; tokens: Tokens; busyMs: number; project: string; session: string; reused: string[]; created: string[]; removed: string[]; openCallers: string[]; tests: Tests }
+export type { Numbers, Tests, Tokens } from '../types'
 
 export const duration = (minutes: number) =>
   minutes < 60 ? `${minutes}m` : `${Math.floor(minutes / 60)}h ${minutes % 60}m`
