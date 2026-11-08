@@ -1,5 +1,5 @@
 import { expect, test, type Engine } from 'claude-code/testing'
-import { PLN, SKILLS, band } from './world'
+import { PLN, ROOT, SKILLS, STOPPED, band } from './world'
 
 const PANE = {
   plugin: 'agent-toolkit',
@@ -31,7 +31,8 @@ test('expand opens the pane and the band drops its steps', async ($, on) => {
 
 test('the pane lists every step and the current group\'s tasks', async ($, on) => {
   const { pane: p } = await pane($, on)
-  expect(await p.find({ type: 'Text', text: /Harden requirements/ })).toBeDefined()
+  expect(await p.find({ type: 'Text', text: /Refine/ })).toBeDefined()
+  expect(await p.find({ type: 'Text', text: /Harden/ })).toBeUndefined()
   expect(await p.find({ type: 'Text', text: /2\.2 Add reject dialog/ })).toBeDefined()
   expect(await p.find({ type: 'Text', text: /PR 1 Approval API/ })).toBeDefined()
   expect(await p.find({ type: 'Text', text: /1\.1 Add endpoint/ })).toBeUndefined()
@@ -101,5 +102,19 @@ test('a file label keeps every suffix after the task name', async ($, on) => {
   const tree = { [dir]: ['TICKET', 'REQUIREMENTS', 'PLAN', 'PR-REVIEW.PLAN'].map((s) => ({ name: `123-x.${s}.md`, kind: 'file' as const })) }
   const { pane: p } = await pane($, on, { tree })
   expect((await p.find({ key: 'other-0' }))?.text).toBe('PR-REVIEW.PLAN.md')
+  await p.unmount()
+})
+
+test('a row shows every installed action', async ($, on) => {
+  const { pane: p, commands } = await pane($, on)
+  expect((await p.find({ key: 'act-refine-2' }))?.text).toBe('⛨ harden')
+  await p.press({ key: 'act-refine-2' })
+  expect(commands).toEqual([{ command: 'harden-artifact', args: `${ROOT}/123-x/123-x.REQUIREMENTS.md` }])
+  await p.unmount()
+})
+
+test('a stopped row still shows its three actions', async ($, on) => {
+  const { pane: p } = await pane($, on, { runs: STOPPED })
+  expect(await p.find({ key: 'act-task-2.2-3' })).toBeDefined()
   await p.unmount()
 })

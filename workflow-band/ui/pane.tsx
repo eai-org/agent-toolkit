@@ -16,14 +16,13 @@ export async function drawPane($: EngineInterface, e: RenderInput<'Pane'>, s: { 
 
   const line = (r: Row, indent: number) => {
     const actions = r.actions.filter(mine)
-    const shownActions = r.status === 'stopped' ? actions : actions.slice(0, 1)
     return (
       <Box key={r.key} flexDirection="row" gap={1} paddingLeft={indent}>
         <Text wrap="truncate-end" color={r.status === 'current' ? 'suggestion' : r.status === 'stopped' ? 'warning' : undefined} dimColor={r.status === 'todo' || r.status === 'unknown' || r.status === 'skipped'}>
           {ICON[r.status]} {r.label}{r.hardened ? ' ⛨' : ''}
         </Text>
         {r.file && <Button key={`file-${r.key}`} plain label={tail(r.file)} onPress={() => openFile($, r.file!)} />}
-        {shownActions.map((a, i) => (
+        {actions.map((a, i) => (
           <Button key={i ? `act-${r.key}-${i + 1}` : `act-${r.key}`} plain label={a.label} onPress={() => run(a)} />
         ))}
       </Box>
