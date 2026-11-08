@@ -45,7 +45,7 @@ export function tasksFrom(files: FileInfo[]): Task[] {
   const tasks: Task[] = []
   const loose: Parsed[] = []
   for (const [base, ps] of byBase) {
-    if (!ps.some((p) => ['TICKET', 'REQUIREMENTS', 'PLAN'].includes(p.suffix))) {
+    if (!ps.some((p) => ['TICKET', 'REQUIREMENTS'].includes(p.suffix))) {
       loose.push(...ps)
       continue
     }
