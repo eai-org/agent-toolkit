@@ -38,14 +38,16 @@ const union = (a: string[], b: string[]) => [...new Set([...a, ...b])]
 const base = (path: string) => path.replace(/\/+$/, '').split('/').pop() ?? path
 
 // returns the definitions that exist now: what new code can reuse
-async function start($: EngineInterface): Promise<Map<string, string>> {
+// a resumed conversation brings its turns along, a cleared one counts from 0 (its turns() reads 1)
+async function start($: EngineInterface, resumed: boolean): Promise<Map<string, string>> {
   const grep = await $.process.run(['git', 'grep', '--untracked', '-nE', GREP_DEFS]).catch(() => undefined)
   const repo = await $.session.repo().catch(() => null)
   const project = base(repo?.root ?? (await $.session.cwd()))
   const session = await $.session.id()
   // the cost so far is the baseline for the next turn's own cost
   const usage = await $.session.usage().catch(() => undefined)
-  await update($, numbers, (n) => ({ ...n, project, session, cost: usage?.cost?.usd ?? n.cost }))
+  const turns = resumed ? await $.session.turns().catch(() => undefined) : undefined
+  await update($, numbers, (n) => ({ ...n, project, session, cost: usage?.cost?.usd ?? n.cost, turns: turns ?? n.turns }))
   return grep?.exitCode === 0 ? parseDefs(grep.stdout) : new Map()
 }
 
@@ -77,7 +79,7 @@ export const register: Register = (on) => {
   let known = new Map<string, string>()
 
   on('session.start', async ($, e, next) => {
-    known = await start($)
+    known = await start($, true)
     await refresh($)
     return next(e)
   }).catch(($, e, next) => next(e))
@@ -88,7 +90,7 @@ export const register: Register = (on) => {
     const session = await $.session.id()
     const result = await next(e)
     if ((await $.session.id()) !== session) {
-      known = await start($).catch(() => known)
+      known = await start($, e.command !== 'clear').catch(() => known)
       await refresh($)
     }
     return result
