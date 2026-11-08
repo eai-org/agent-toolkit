@@ -14,3 +14,6 @@ CLAUDE.local.md
 
 # Skill test harnesses
 test/**/runs/**
+
+# Workflow band
+.claude-plugin/types/
