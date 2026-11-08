@@ -1,0 +1,25 @@
+workflow-band/src/workflow.ts
+  s_18a029f13d85b6::t_a2ae67eaf1bf0f 1-19
+.gitignore
+  s_18a029f13d85b6::t_63110b3c843c2c 20
+workflow-band/test/plan.test.ts
+  s_18a029f13d85b6::t_63110b3c843c2c 1-24
+workflow-band/workflows/rpac/plan.ts
+  s_18a029f13d85b6::t_a2ae67eaf1bf0f 1-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6b7daec05bd5d48898cbd4c9b2aa5260d832bb70",
+  "prompts": {},
+  "sessions": {
+    "s_18a029f13d85b6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ade1329a-3650-486e-ada5-1fa26a098151",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "stefanoslig <stefanoslignos@gmail.com>"
+    }
+  }
+}
