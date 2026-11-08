@@ -23,7 +23,8 @@ const EXECUTING: Partial<Run>[] = [
 ]
 export const STOPPED: Partial<Run>[] = [{ skill: 'execute-plan-tasks', item: '2.2', endedAt: 5 }]
 const TREE: Record<string, { name: string; kind: 'file' | 'dir' }[]> = {
-  [ROOT]: [{ name: '123-x', kind: 'dir' }],
+  [ROOT]: [{ name: '123-x', kind: 'dir' }, { name: '99-old', kind: 'dir' }],
+  [`${ROOT}/99-old`]: [{ name: '99-old.TICKET.md', kind: 'file' as const }],
   [DIR]: ['TICKET', 'REQUIREMENTS', 'PLAN'].map((s) => ({ name: `123-x.${s}.md`, kind: 'file' as const })),
 }
 
@@ -43,6 +44,7 @@ export async function band($: Engine, on: On, w: World = {}) {
   const commands: { command: string; args?: string }[] = []
   const copied: string[] = []
   const asked: string[] = []
+  const toasts: string[] = []
   let session = 's1'
   on('session.id', () => ({ value: session }))
   on('session.turns', () => ({ value: w.turns ?? 0 }))
@@ -69,7 +71,10 @@ export async function band($: Engine, on: On, w: World = {}) {
     copied.push(e.text)
     return { value: { isCopied: true as const } }
   })
-  on('ui.toast', () => ({ value: undefined }))
+  on('ui.toast', ($, e) => {
+    toasts.push(e.text)
+    return { value: undefined }
+  })
   on('tool.call', { tool: 'AskUserQuestion' }, ($, e) => {
     const question = e.questions[0]?.question ?? ''
     asked.push(question)
@@ -80,6 +85,6 @@ export async function band($: Engine, on: On, w: World = {}) {
   on('session.end', () => ({ sessionId: 's1' }))
   await $.session.start({ cwd: '/r', surface: null } as never)
   const ui = await $.ui.mount({ plugin: 'agent-toolkit', surface: 'terminal', ...BAND, props: { ...BAND.props, bodyColumns: w.columns ?? 160 } })
-  return { ui, argv, commands, copied, asked }
+  return { ui, argv, commands, copied, asked, toasts }
 }
 

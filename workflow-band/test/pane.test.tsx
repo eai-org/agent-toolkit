@@ -50,10 +50,10 @@ test('a row\'s file and skill are one press away', async ($, on) => {
 test('the switcher pins another task', async ($, on) => {
   const { pane: p } = await pane($, on)
   await p.press({ key: 'pick' })
-  expect(await p.find({ key: 'task-123-x' })).toBeDefined()
-  await p.press({ key: 'task-123-x' })
   expect(await p.find({ type: 'Text', text: 'RPAC · 123-x' })).toBeDefined()
-  expect(await p.find({ key: 'task-123-x' })).toBeUndefined()
+  await p.press({ key: 'task-99-old' })
+  expect(await p.find({ type: 'Text', text: 'RPAC · 99-old' })).toBeDefined()
+  expect(await p.find({ key: 'task-99-old' })).toBeUndefined()
   await p.unmount()
 })
 
@@ -72,4 +72,26 @@ test('a missing skill has no button', async ($, on) => {
   expect(await p.find({ key: 'act-split' })).toBeUndefined()
   expect(await p.find({ key: 'act-plan' })).toBeDefined()
   await p.unmount()
+})
+
+test('a pane that cannot open says so', async ($, on) => {
+  on('ui.open', () => {
+    throw new Error('boom')
+  })
+  const { ui, toasts } = await band($, on)
+  await ui.press({ key: 'expand' })
+  expect(toasts).toContain('Could not open the pane')
+  expect(await ui.find({ key: 'run' })).toBeDefined()
+  await ui.unmount()
+})
+
+test('a restarted session drops a pane flag with no pane behind it', async ($, on) => {
+  on('ui.open', () => ({ value: { isPlaced: true } }))
+  on('ui.panes', () => ({ value: [] }))
+  const { ui } = await band($, on)
+  await ui.press({ key: 'expand' })
+  expect(await ui.find({ key: 'run' })).toBeUndefined()
+  await $.session.start({ cwd: '/r', surface: null } as never)
+  expect(await ui.find({ key: 'run' })).toBeDefined()
+  await ui.unmount()
 })

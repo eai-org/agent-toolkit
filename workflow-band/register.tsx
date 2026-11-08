@@ -13,7 +13,7 @@ import {
   parseDefs,
   testCounts,
 } from './src/metrics'
-import { PANE, TASK, readNumbers, readShown, readUi, refresh, setNumbers, setUi } from './src/state'
+import { PANE, TASK, readNumbers, readShown, readUi, refresh, setNumbers, setUi, syncPane } from './src/state'
 import { drawBand } from './ui/band'
 import { drawPane } from './ui/pane'
 
@@ -39,6 +39,7 @@ export const register: Register = (on) => {
 
   on('session.start', async ($, e, next) => {
     known = await start($, true)
+    await syncPane($)
     await refresh($)
     return next(e)
   }).catch(($, e, next) => next(e))
@@ -50,6 +51,7 @@ export const register: Register = (on) => {
     const result = await next(e)
     if ((await $.session.id()) !== session) {
       known = await start($, e.command !== 'clear').catch(() => known)
+      await syncPane($)
       await refresh($)
     }
     return result

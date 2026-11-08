@@ -61,3 +61,9 @@ export function readShown($: EngineInterface): Promise<Shown | null> {
 export function readUi($: EngineInterface): Promise<UiState> {
   return read($, ui)
 }
+
+// the pane flag outlives a reload or /clear, the pane itself may not
+export async function syncPane($: EngineInterface): Promise<void> {
+  const open = await $.ui.panes().then((panes) => panes.some((p) => p.id === PANE && p.isShown), () => false)
+  await update($, ui, (u) => ({ ...u, paneOpen: open }))
+}
