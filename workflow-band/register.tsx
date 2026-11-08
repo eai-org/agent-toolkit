@@ -14,6 +14,7 @@ import {
   testCounts,
 } from './src/metrics'
 import { endRuns, addRun, argsOf, runsKey, skillName } from './src/runs'
+import { readFolders, rootsFor } from './src/config'
 import { listFiles, reader, repoOf } from './src/repo'
 import type { Run } from './src/workflow'
 import { WORKFLOWS } from './workflows'
@@ -89,8 +90,9 @@ export const register: Register = (on) => {
       if (!wf) return result
       const repo = await repoOf($)
       const io = reader($)
+      const folders = await readFolders($, repo)
       const args = argsOf(e.text)
-      const tasks = await wf.tasks(await listFiles($, repo, wf.roots), io)
+      const tasks = await wf.tasks(await listFiles($, repo, rootsFor(wf, folders)), io)
       const current = await readShown($)
       const key = wf.taskOf(skill, args, tasks) ?? (args ? '' : current?.workflow === wf.id ? current.task.key : undefined)
       const task = tasks.find((t) => t.key === key)
@@ -133,7 +135,8 @@ export const register: Register = (on) => {
     if (e.tool !== 'Edit' && e.tool !== 'Write') return next(e)
 
     const file = e.file_path
-    const planning = WORKFLOWS.some((w) => w.roots.some((r) => file.includes(`/${r}/`)))
+    const folders = await readFolders($, await repoOf($))
+    const planning = WORKFLOWS.some((w) => rootsFor(w, folders).some((r) => file.includes(`/${r}/`)))
     const settle = async (ran: Awaited<ReturnType<typeof next>>) => {
       if (planning && ran.deny === undefined && !ran.isError) await refresh($)
       return ran

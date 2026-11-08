@@ -1,6 +1,7 @@
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface } from 'claude-code'
 import { nameIn } from './actions'
+import { readFolders, rootsFor } from './config'
 import { NO_TOKENS, type Numbers } from './metrics'
 import { newest, pickTask } from './pick'
 import { listFiles, reader, repoOf } from './repo'
@@ -27,8 +28,9 @@ export async function refresh($: EngineInterface): Promise<void> {
     const runs = Array.isArray(stored) ? (stored as Run[]) : []
     const where = { session: await $.session.id(), checkout: repo.checkout, pinned: (await read($, ui)).pinned }
     const io = reader($)
+    const folders = await readFolders($, repo)
     for (const wf of WORKFLOWS) {
-      const tasks = await wf.tasks(await listFiles($, repo, wf.roots), io)
+      const tasks = await wf.tasks(await listFiles($, repo, rootsFor(wf, folders)), io)
       const resolved = runs.map((r) =>
         r.task || !wf.skills.includes(r.skill) ? r : { ...r, task: wf.taskOf(r.skill, r.args, tasks) ?? newest(tasks.filter((t) => t.mtimeMs >= r.at))?.key ?? '' },
       )
