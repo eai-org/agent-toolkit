@@ -36,6 +36,7 @@ const find = (rows: Row[], key: string): Row | undefined => {
 }
 
 const SPLIT = ['TICKET', 'REQUIREMENTS', 'PLAN']
+const tick = (...ids: string[]) => ids.reduce((p, id) => p.replace(`[ ] **${id}`, `[x] **${id}`), PLAN)
 
 test('before planning, hardening the requirements is next', async () => {
   const v = await view(['TICKET', 'REQUIREMENTS'])
@@ -90,15 +91,53 @@ test('a run that ended with its task unticked shows stopped', async () => {
     ['harden-artifact', PLN],
     ['create-implementation-plan', REQ],
   ])
+  expect(find(v.rows, 'group-2')?.status).toBe('stopped')
+  expect(find(v.rows, 'execute')?.status).toBe('stopped')
+  expect(v.compact[4]).toMatchObject({ label: 'PR 2/2 · task 2.2', status: 'stopped' })
 })
 
-test('an idea without a ticket skips fetch', async () => {
+test('a task left open before ticked ones is next', async () => {
+  const v = await view(SPLIT, tick('2.3'), [
+    { skill: 'execute-plan-tasks', item: '2.2', endedAt: 5, at: 1 },
+    { skill: 'execute-plan-tasks', item: '2.3', endedAt: 9, at: 6 },
+  ])
+  expect(v.next).toMatchObject({ skill: 'execute-plan-tasks', args: `${PLN} 2.2` })
+  expect(v.compact[4]).toMatchObject({ label: 'PR 2/2 · task 2.2', status: 'current' })
+})
+
+test('a review file with no remembered run covers only the earliest finished group', async () => {
+  const v = await view([...SPLIT, 'SELF-REVIEW', 'HANDOVER'], tick('2.2', '2.3'))
+  expect(find(v.rows, 'self-review-1')?.status).toBe('unknown')
+  expect(find(v.rows, 'handover-1')?.status).toBe('unknown')
+  expect(find(v.rows, 'self-review-2')?.status).toBe('current')
+  expect(find(v.rows, 'handover-2')?.status).toBe('todo')
+  expect(v.next).toMatchObject({ skill: 'self-review', args: '' })
+  expect(find(v.rows, 'execute')?.status).not.toBe('done')
+})
+
+test('hardening the ticket marks nothing hardened', async () => {
+  const v = await view(SPLIT, PLAN, [{ skill: 'harden-artifact', file: P('123-x/123-x.TICKET.md') }])
+  expect(find(v.rows, 'fetch')?.hardened).toBeUndefined()
+  expect(v.compact.some((c) => c.hardened)).toBe(false)
+})
+
+test('an empty Tasks section is split but not executed', async () => {
+  const v = await view(SPLIT, '# Plan\n## Tasks\n')
+  expect(find(v.rows, 'split')?.status).toBe('done')
+  expect(find(v.rows, 'execute')?.status).toBe('todo')
+  expect(v.compact.at(-1)).toMatchObject({ label: 'execute', status: 'todo' })
+})
+
+test('an idea without a ticket skips fetch, and rows missing their input file offer nothing to run', async () => {
   const io = reader({})
   const task = (await rpac.tasks([f('idea/idea.REQUIREMENTS.md')], io))[0]!
   const v = await rpac.view(task, [], io)
   expect(find(v.rows, 'fetch')?.status).toBe('skipped')
   expect(find(v.rows, 'fetch')?.actions).toEqual([])
   expect(v.compact[0]?.label).toBe('requirements')
+  expect(find(v.rows, 'split')?.actions).toEqual([])
+  expect(find(v.rows, 'execute')?.actions).toEqual([])
+  expect(find(v.rows, 'plan')?.actions.map((a) => [a.skill, a.args])).toEqual([['create-implementation-plan', P('idea/idea.REQUIREMENTS.md')]])
 })
 
 test('taskOf finds the task by a checkout-relative path, only for RPAC skills', async () => {
