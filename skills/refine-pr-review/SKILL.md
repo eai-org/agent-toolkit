@@ -195,13 +195,14 @@ available), else to execute directly.
 ### Subagents first
 
 When the harness has subagents and at least one subagent below applies, lead with one sentence
-offering to spawn them now, in this session, with `autoaccept`, naming what each would do and that
+offering to spawn them now, in this session, with `autoaccept`, naming what each would do, that
 it applies its own recommended choices without showing diffs, asking only on a choice that would
-reshape the change ("Recommended: I spawn two subagents now, one applying <requirements-file> and
-running validation, one persisting the two lessons into the project's docs; both apply their own
-picks unasked and stop only on a choice that reshapes the change. Yes, or pick one."); nothing is
-spawned before the yes, and the fenced blocks then follow under "or in a fresh session:". On the
-yes, spawn each as one subagent briefed with nothing else from the session:
+reshape the change, and that the self-improve one waits for the execute one ("Recommended: I spawn
+two subagents now, one applying <requirements-file> and running validation, then, once it is done,
+one persisting the two lessons into the project's docs; both apply their own picks unasked and stop
+only on a choice that reshapes the change. Yes, or pick one."); nothing is spawned before the yes,
+and the fenced blocks then follow under "or in a fresh session:". On the yes, spawn each as one
+subagent briefed with nothing else from the session:
 
 - **Execute** — applies when the change set is the small mechanical kind and the REQUIREMENTS file
   has no Open questions entry, blocking or not. Brief: the REQUIREMENTS path; the branch and head
@@ -212,19 +213,22 @@ yes, spawn each as one subagent briefed with nothing else from the session:
   files changed and the validation result, or `blocked` with what was already applied, the
   decision, its candidate answers and your pick with why; no hand-off text.
 - **Self-improve** — applies whenever Lessons were written and `/self-improve` is available, per
-  its [delegate.md](../self-improve/delegate.md) on the ANSWERS file's `## Lessons` section,
-  whatever the change set's size. A mechanical lesson among them (one self-improve would turn into
-  a lint rule, hook or CI job in this project) stays in that brief when there is no REQUIREMENTS
-  file; otherwise it is left out of it and, once that subagent is spawned, goes to a second
-  self-improve subagent after the execute subagent's `done`, or, the changes going to a separate
-  session, to the "after the execute session" command below, reprinted after the answer for that
-  lesson alone.
+  its [delegate.md](../self-improve/delegate.md) on the ANSWERS file's `## Lessons` section, every
+  lesson in one brief, whatever the change set's size. Spawned after the execute subagent has
+  finished — its `done`, or the user's answer to its `blocked` stopping it — when one was spawned,
+  else at once; the yes to the offer covers that later spawn. A REQUIREMENTS file whose changes no
+  execute subagent finished applying (none spawned, or one stopped) means they go to a separate
+  session:
+  say, when announcing this spawn, that the execute session is to start after its report, since
+  both may edit the same file.
 
 `blocked` → put the decision to the user as one question, recommending the subagent's pick, and
 relaunch with the answer added to the brief — the execute subagent on the tree as it left it, told
-what it already applied; the self-improve one per its delegate.md. Show each report as returned,
-then the ANSWERS reminder; fidelity is the subagent's job — never re-run validation or re-read its
-edits to check.
+what it already applied, or, the user declining the relaunch, stopped there with nothing more
+applied and the execute block re-shown with the report's applied list and the open decision added
+to its prompt; the self-improve one per its delegate.md. Show each report as returned, then the
+ANSWERS reminder; fidelity is the subagent's job — never re-run validation or re-read its edits to
+check.
 
 "Apply the changes directly, for a small mechanical change set:"
 

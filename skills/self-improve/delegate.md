@@ -5,16 +5,18 @@ How another skill runs self-improve in a subagent, and how the subagent behaves 
 ## Caller
 
 Say in one line what you spawn and for which lessons, then spawn one subagent briefed with: the
-lessons — inline, or a file path and the section holding them — each phrased as durable guidance,
-any target settled with the user (scope, form, path), every answer settled by an earlier relaunch,
-the word `autoaccept`, and the instruction to run self-improve — the skill by name, or its
-`SKILL.md` path when the subagent has no skill tool — under this file, passed by path. Nothing else
-from the session.
+lessons the user kept — inline, or a file path and the section holding them — each phrased as
+durable guidance, any target settled with the user (scope, form, path), every answer settled by an
+earlier relaunch, the word `autoaccept`, and the instruction to run self-improve — the skill by
+name, or its `SKILL.md` path when the subagent has no skill tool — under this file, passed by path.
+Nothing else from the session.
 
 Its report is one line per lesson; any `blocked` line → put that decision to the user as one
-question, recommending the subagent's pick, and relaunch with only the blocked lessons and the
-answers added to the brief. Show the lines as returned; the edits' quality is the subagent's job —
-never re-read the targets to check them.
+question, recommending the subagent's pick, and relaunch with only the blocked lessons the user did
+not decline, their answers added to the brief; a declined one is shown as a `declined <lesson>`
+line, nothing else, next to the relaunch's lines, or alone when nothing is relaunched. Show the
+lines as returned; the edits' quality is the subagent's job — never re-read the targets to check
+them.
 
 ## Subagent
 
