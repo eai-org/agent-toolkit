@@ -13,11 +13,12 @@ export function parseTasks(md: string): PlanGroup[] | undefined {
     if (/^##\s/.test(line)) break
     const g = GROUP.exec(line)
     if (g) {
-      groups.push({ n: Number(g[1]), title: g[2], tasks: [] })
+      groups.push({ n: Number(g[1]), title: g[2] ?? '', tasks: [] })
       continue
     }
     const t = TASK.exec(line)
-    if (t && groups.length) groups[groups.length - 1].tasks.push({ id: t[2], title: t[3], done: t[1] !== ' ' })
+    const last = groups[groups.length - 1]
+    if (t && last) last.tasks.push({ id: t[2] ?? '', title: t[3] ?? '', done: t[1] !== ' ' })
   }
   return groups
 }
