@@ -23,9 +23,11 @@ const parse = (file: FileInfo): Parsed => {
   const v = /^(.+)-v(\d+)$/.exec(stem)
   let base = v ? v[1] : stem
   const folderBase = /^(.+)-v\d+$/.exec(folder)
-  if (suffix === 'TICKET' && folderBase) base = folderBase[1]
+  if (suffix === 'TICKET' && folderBase && stem === folder) base = folderBase[1]
   return { file, base, stem, folder, suffix, version: v ? Number(v[2]) : 1 }
 }
+
+const parseAll = (files: FileInfo[]) => files.filter((f) => f.path.endsWith('.md')).map(parse)
 
 const SINGLE: Record<string, keyof RpacFiles> = {
   TICKET: 'ticket', REQUIREMENTS: 'requirements', PLAN: 'plan', DECISIONS: 'decisions', 'MANUAL-TEST': 'manualTest',
@@ -34,14 +36,14 @@ const SINGLE: Record<string, keyof RpacFiles> = {
 export function tasksFrom(files: FileInfo[]): Task[] {
   const byBase = new Map<string, Parsed[]>()
   const basesIn = new Map<string, Set<string>>()
-  for (const p of files.map(parse)) {
+  for (const p of parseAll(files)) {
     byBase.set(p.base, [...(byBase.get(p.base) ?? []), p])
     basesIn.set(p.folder, (basesIn.get(p.folder) ?? new Set()).add(p.base))
   }
   const tasks: Task[] = []
   for (const [base, ps] of byBase) {
     if (!ps.some((p) => ['TICKET', 'REQUIREMENTS', 'PLAN'].includes(p.suffix))) continue
-    const parent = ps.every((p) => p.suffix === 'TICKET' && p.stem === p.folder) && (basesIn.get(ps[0].folder)?.size ?? 0) > 1
+    const parent = ps.every((p) => p.suffix === 'TICKET' && p.stem === p.folder) && ps.some((p) => (basesIn.get(p.folder)?.size ?? 0) > 1)
     if (parent) continue
     tasks.push({ key: base, title: base, files: ps.map((p) => p.file), mtimeMs: Math.max(...ps.map((p) => p.file.mtimeMs)) })
   }
@@ -51,7 +53,7 @@ export function tasksFrom(files: FileInfo[]): Task[] {
 export function rpacFiles(task: Task): RpacFiles {
   const out: RpacFiles = { selfReviews: [], handovers: [], other: [] }
   const best: Record<string, number> = {}
-  for (const p of task.files.map(parse)) {
+  for (const p of parseAll(task.files)) {
     const slot = SINGLE[p.suffix]
     if (slot === 'ticket' || slot === 'requirements' || slot === 'plan') {
       if (p.version > (best[slot] ?? 0)) { best[slot] = p.version; out[slot] = p.file.path }
