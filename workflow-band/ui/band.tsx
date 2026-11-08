@@ -39,7 +39,7 @@ export async function drawBand($: EngineInterface, e: RenderInput<'AbovePrompt'>
   const shown = s.ui.paneOpen ? null : s.shown
   const next = shown?.view.next
   const run = next && shown.installed.includes(next.skill) ? next : undefined
-  const end = shown?.view.stopped ? `⚠ task ${shown.view.stopped} stopped` : run ? `▶ Run ${run.skill}` : ''
+  const end = shown?.view.stopped ? `⚠ task ${shown.view.stopped} stopped` : run ? `▶ Run ${run.label}` : ''
   let row = shown ? pieces(shown, false) : []
   if (shown && width !== undefined) {
     const room = width - (end ? end.length + 1 : 0)

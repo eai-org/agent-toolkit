@@ -161,6 +161,9 @@ export const rpac: Workflow = {
       )
     }
 
-    return { rows, compact, next: next?.actions[0], stopped, other: [...(f.decisions ? [f.decisions] : []), ...f.other] }
+    // the band's run button names the step, the pane's row buttons the skill
+    const first = next?.actions[0]
+    const run = first && next && { ...first, label: next.key.startsWith('task-') ? `task ${next.key.slice(5)}` : next.label.toLowerCase() }
+    return { rows, compact, next: run, stopped, other: [...(f.decisions ? [f.decisions] : []), ...f.other] }
   },
 }

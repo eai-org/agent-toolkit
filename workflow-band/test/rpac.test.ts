@@ -42,7 +42,7 @@ test('before planning, hardening the requirements is next', async () => {
   const v = await view(['TICKET', 'REQUIREMENTS'])
   expect(find(v.rows, 'fetch')?.status).toBe('done')
   expect(find(v.rows, 'refine')?.status).toBe('done')
-  expect(v.next).toMatchObject({ skill: 'harden-artifact', args: REQ })
+  expect(v.next).toMatchObject({ skill: 'harden-artifact', args: REQ, label: 'harden requirements' })
 })
 
 test('an optional step passed over is skipped', async () => {
@@ -61,7 +61,8 @@ test('executing shows the group and task', async () => {
   expect(find(v.rows, 'refine')?.hardened).toBe(true)
   expect(find(v.rows, 'plan')?.hardened).toBe(true)
   expect(v.compact.filter((c) => c.hardened).map((c) => c.label)).toEqual(['requirements', 'plan'])
-  expect(v.next).toMatchObject({ skill: 'execute-plan-tasks', args: `${PLN} 2.2` })
+  expect(v.next).toMatchObject({ skill: 'execute-plan-tasks', args: `${PLN} 2.2`, label: 'task 2.2' })
+  expect(find(v.rows, 'task-2.2')?.actions[0]?.label).toBe('▶ execute-plan-tasks')
   expect(v.compact.map((c) => c.label)).toEqual(['ticket', 'requirements', 'plan', 'split', 'PR 2/2 · task 2.2', 'self-review', 'handover'])
   expect(v.compact.map((c) => c.status)).toEqual(['done', 'done', 'done', 'done', 'current', 'todo', 'todo'])
 })
@@ -77,7 +78,7 @@ test('files with no remembered run are unknown, not guessed', async () => {
 
 test('a finished group without a review file asks for the review', async () => {
   const v = await view(SPLIT, PLAN.replace('[x] **2.1', '[ ] **2.1'))
-  expect(v.next).toMatchObject({ skill: 'self-review', args: '' })
+  expect(v.next).toMatchObject({ skill: 'self-review', args: '', label: 'self-review' })
 })
 
 test('a run that ended with its task unticked shows stopped', async () => {

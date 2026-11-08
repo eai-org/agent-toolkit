@@ -1,5 +1,6 @@
 import type { On } from 'claude-code'
 import { expect, mock, test, type Engine } from 'claude-code/testing'
+import { RUN_HERE } from '../src/actions'
 import type { Run } from '../src/workflow'
 
 const PLAN = [
@@ -31,7 +32,7 @@ const BAND = {
   props: { hasSurvey: false, isWorking: false, maxRows: 12, bodyColumns: 160, scroll: { offset: 0, bodyRows: 12 }, view: {} },
 } as const
 
-type World = { runs?: Partial<Run>[]; skills?: string[]; noFolder?: boolean; columns?: number }
+type World = { runs?: Partial<Run>[]; skills?: string[]; noFolder?: boolean; columns?: number; turns?: number }
 
 async function band($: Engine, on: On, w: World = {}) {
   mock.clock(on)
@@ -41,7 +42,10 @@ async function band($: Engine, on: On, w: World = {}) {
   const argv: string[][] = []
   const commands: { command: string; args?: string }[] = []
   const copied: string[] = []
-  on('session.id', () => ({ value: 's1' }))
+  const asked: string[] = []
+  let session = 's1'
+  on('session.id', () => ({ value: session }))
+  on('session.turns', () => ({ value: w.turns ?? 0 }))
   on('session.cwd', () => ({ value: '/r' }))
   on('session.repo', () => ({ value: { root: '/r' } }) as never)
   on('session.usage', () => ({ value: { startedAt: 0, cost: { usd: 0 } } }) as never)
@@ -57,6 +61,7 @@ async function band($: Engine, on: On, w: World = {}) {
   on('fs.read', ($, e) => (e.path === PLN ? { value: PLAN } : { deny: 'missing' }) as never)
   on('command.list', () => ({ value: (w.skills ?? SKILLS).map((name) => ({ name, description: '', source: 'userSettings' })) }) as never)
   on('command.run', ($, e) => {
+    if (['clear', 'resume', 'branch'].includes(e.command)) session = `${session}+${e.command}`
     commands.push({ command: e.command, args: e.args })
     return { text: '' }
   })
@@ -65,19 +70,24 @@ async function band($: Engine, on: On, w: World = {}) {
     return { value: { isCopied: true as const } }
   })
   on('ui.toast', () => ({ value: undefined }))
+  on('tool.call', { tool: 'AskUserQuestion' }, ($, e) => {
+    const question = e.questions[0]?.question ?? ''
+    asked.push(question)
+    return { result: { questions: e.questions, answers: { [question]: RUN_HERE } }, text: '' } as never
+  })
   on('session.start', ($, e) => ({ cwd: e.cwd }))
   on('turn.complete', () => ({ text: '' }))
   on('session.end', () => ({ sessionId: 's1' }))
   await $.session.start({ cwd: '/r', surface: null } as never)
   const ui = await $.ui.mount({ plugin: 'agent-toolkit', surface: 'terminal', ...BAND, props: { ...BAND.props, bodyColumns: w.columns ?? 160 } })
-  return { ui, argv, commands, copied }
+  return { ui, argv, commands, copied, asked }
 }
 
 test('the steps row shows the shown task and the run button', async ($, on) => {
   const { ui, commands } = await band($, on)
   expect(await ui.find({ type: 'Text', text: 'ticket' })).toBeDefined()
   expect(await ui.find({ type: 'Text', text: 'PR 2/2 · task 2.2' })).toBeDefined()
-  expect((await ui.find({ key: 'run' }))?.text).toContain('▶ Run')
+  expect((await ui.find({ key: 'run' }))?.text).toBe('▶ Run task 2.2')
   await ui.press({ key: 'run' })
   expect(commands).toEqual([{ command: 'execute-plan-tasks', args: `${PLN} 2.2` }])
   await ui.unmount()
@@ -130,6 +140,20 @@ test('a main turn counts and /clear starts the count over', async ($, on) => {
   expect(await ui.find({ type: 'Text', text: '1 turn' })).toBeDefined()
   await $.session.end({ reason: 'clear', sessionId: 's1' } as never)
   expect(await ui.find({ type: 'Text', text: '0 turns' })).toBeDefined()
+  await ui.unmount()
+})
+
+test('a resumed conversation asks before it runs, and /clear counts from 0', async ($, on) => {
+  const { ui, asked, commands } = await band($, on, { turns: 5 })
+  expect(await ui.find({ type: 'Text', text: '5 turns' })).toBeDefined()
+  await ui.press({ key: 'run' })
+  expect(asked.length).toBe(1)
+  expect(commands).toEqual([{ command: 'execute-plan-tasks', args: `${PLN} 2.2` }])
+  await $.session.end({ reason: 'clear', sessionId: 's1' } as never)
+  await $.command.run({ command: 'clear', args: '' } as never)
+  expect(await ui.find({ type: 'Text', text: '0 turns' })).toBeDefined()
+  await $.command.run({ command: 'resume', args: '' } as never)
+  expect(await ui.find({ type: 'Text', text: '5 turns' })).toBeDefined()
   await ui.unmount()
 })
 
