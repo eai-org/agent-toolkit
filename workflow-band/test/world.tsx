@@ -39,7 +39,12 @@ export async function band($: Engine, on: On, w: World = {}) {
   mock.clock(on)
   mock.env(on, {})
   const runs = (w.runs ?? EXECUTING).map((r) => ({ skill: 's', args: '', task: '123-x', at: 1, session: 's1', checkout: '/r', ...r }))
-  mock.store(on, { 'runs:/r': runs })
+  const saved: Record<string, unknown> = { 'runs:/r': runs }
+  on('store.get', ($, e) => ({ value: saved[e.key] }) as never)
+  on('store.set', ($, e) => {
+    saved[e.key] = e.value
+    return { value: undefined }
+  })
   const argv: string[][] = []
   const commands: { command: string; args?: string }[] = []
   const copied: string[] = []
@@ -83,8 +88,13 @@ export async function band($: Engine, on: On, w: World = {}) {
   on('session.start', ($, e) => ({ cwd: e.cwd }))
   on('turn.complete', () => ({ text: '' }))
   on('session.end', () => ({ sessionId: 's1' }))
+  on('skill.prompt', ($, e) => ({ text: e.text }))
+  on('ui.render', ($, e) => {
+    const { Text } = $.ui.resolve(e)
+    return <Text>prompt only</Text>
+  })
   await $.session.start({ cwd: '/r', surface: null } as never)
   const ui = await $.ui.mount({ plugin: 'agent-toolkit', surface: 'terminal', ...BAND, props: { ...BAND.props, bodyColumns: w.columns ?? 160 } })
-  return { ui, argv, commands, copied, asked, toasts }
+  return { ui, saved, argv, commands, copied, asked, toasts }
 }
 

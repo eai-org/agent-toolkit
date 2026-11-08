@@ -14,11 +14,11 @@ export const PANE = 'workflow'
 // what /clear starts over
 export const TASK = { spent: 0, turns: 0, turnCosts: [], tokens: NO_TOKENS, busyMs: 0, reused: [], created: [], removed: [], openCallers: [], tests: { state: 'none' as const } }
 const EMPTY: Numbers = { ...TASK, cost: 0, project: '', session: '' }
-const UI: UiState = { paneOpen: false, picking: false }
+const UI: UiState = { paneOpen: false, picking: false, hidden: false }
 
 export const numbers = atom({ plugin: 'agent-toolkit', key: 'numbers' } as const, EMPTY, { shape: 'numbers-1' })
 export const shown = atom({ plugin: 'agent-toolkit', key: 'shown' } as const, null, { shape: 'shown-1' })
-export const ui = atom({ plugin: 'agent-toolkit', key: 'ui' } as const, UI, { shape: 'ui-1' })
+export const ui = atom({ plugin: 'agent-toolkit', key: 'ui' } as const, UI, { shape: 'ui-2' })
 
 export async function refresh($: EngineInterface): Promise<void> {
   try {

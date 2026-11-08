@@ -13,7 +13,7 @@ export type Numbers = { cost: number; spent: number; turns: number; turnCosts: n
 export type Repo = { root: string; checkout: string }
 
 export type Shown = { workflow: string; name: string; repo: Repo; task: Task; tasks: { key: string; title: string }[]; view: TaskView; installed: string[] }
-export type UiState = { paneOpen: boolean; picking: boolean; pinned?: string }
+export type UiState = { paneOpen: boolean; picking: boolean; hidden: boolean; pinned?: string }
 
 declare module 'claude-code' {
   interface PluginState {
