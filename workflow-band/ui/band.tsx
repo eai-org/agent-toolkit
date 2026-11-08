@@ -90,13 +90,21 @@ export async function drawBand($: EngineInterface, e: RenderInput<'AbovePrompt'>
 
   const expand = async () => {
     const title = `${s.shown!.name} · ${s.shown!.task.title}`
-    const r = await $.ui.open({ id: PANE, title })
-    if (r.isPlaced) await setUi($, (u) => ({ ...u, paneOpen: true }))
-    else $.ui.toast(`Could not open the pane: ${r.reason}`)
+    try {
+      const r = await $.ui.open({ id: PANE, title })
+      if (r.isPlaced) await setUi($, (u) => ({ ...u, paneOpen: true }))
+      else $.ui.toast(`Could not open the pane: ${r.reason}`)
+    } catch {
+      $.ui.toast('Could not open the pane')
+    }
   }
   const compact = async () => {
-    await $.ui.close({ id: PANE })
-    await setUi($, (u) => ({ ...u, paneOpen: false }))
+    try {
+      await $.ui.close({ id: PANE })
+      await setUi($, (u) => ({ ...u, paneOpen: false }))
+    } catch {
+      $.ui.toast('Could not close the pane')
+    }
   }
 
   const mine = (

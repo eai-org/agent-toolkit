@@ -43,13 +43,13 @@ export async function drawPane($: EngineInterface, e: RenderInput<'Pane'>, s: { 
 
   const title = `${shown.name} · ${shown.task.title}`
   const pick = (key: string) =>
-    setUi($, (u) => ({ ...u, pinned: key, picking: false })).then(() => refresh($))
+    setUi($, (u) => ({ ...u, pinned: key, picking: false })).then(() => refresh($)).catch(() => $.ui.toast('Could not switch the task'))
 
   return (
     <Box flexDirection="column" width={e.props.bodyColumns}>
       <Box flexDirection="row" gap={1}>
         <Text bold wrap="truncate-end">{title}</Text>
-        <Button key="pick" plain label="▾" onPress={() => setUi($, (u) => ({ ...u, picking: !u.picking }))} />
+        <Button key="pick" plain label="▾" onPress={() => setUi($, (u) => ({ ...u, picking: !u.picking })).catch(() => $.ui.toast('Could not switch the task'))} />
       </Box>
       {s.ui.picking && shown.tasks.map((t) => <Button key={`task-${t.key}`} plain label={t.title} onPress={() => pick(t.key)} />)}
       {shown.view.rows.flatMap((r) => (r.key === 'execute' && r.rows ? [<Text key="execute" wrap="truncate-end">{ICON[r.status]} {r.label}</Text>, ...groups(r.rows)] : [line(r, 0)]))}
