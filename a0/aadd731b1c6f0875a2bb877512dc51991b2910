@@ -1,0 +1,34 @@
+workflow-band/test/runs-wiring.test.tsx
+  s_18a029f13d85b6::t_4a17fa99204355 6,9,11,19,21,32,37,40,45
+  s_18a029f13d85b6::t_1e29fbc2ea2e54 14
+  s_18a029f13d85b6::t_a68ce97aec7db7 22
+  s_18a029f13d85b6::t_e6f24d6623edd3 1-5,7-8,10,12-13,15-18,20,23-26,28-31,33-36,38-39,41-44,46-52
+  s_18a029f13d85b6::t_3e76b7e6cf1b61 27
+workflow-band/register.tsx
+  s_18a029f13d85b6::t_a68ce97aec7db7 16-19,46-48,67-101,104-110,128-132,135,140,214
+workflow-band/test/world.tsx
+  s_18a029f13d85b6::t_46485ebdcf93fc 42-44,46
+  s_18a029f13d85b6::t_4a17fa99204355 45,47,98
+  s_18a029f13d85b6::t_e6f24d6623edd3 91
+  s_18a029f13d85b6::t_ecdb2e67c16811 92-95
+workflow-band/src/state.ts
+  s_18a029f13d85b6::t_a68ce97aec7db7 17,21
+workflow-band/types.d.ts
+  s_18a029f13d85b6::t_a68ce97aec7db7 16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a0aadd731b1c6f0875a2bb877512dc51991b2910",
+  "prompts": {},
+  "sessions": {
+    "s_18a029f13d85b6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ade1329a-3650-486e-ada5-1fa26a098151",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "stefanoslig <stefanoslignos@gmail.com>"
+    }
+  }
+}
