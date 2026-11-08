@@ -39,7 +39,8 @@ export async function drawBand($: EngineInterface, e: RenderInput<'AbovePrompt'>
 
   const shown = s.ui.paneOpen ? null : s.shown
   const next = shown?.view.next
-  const run = next && shown.installed.includes(next.skill) ? next : undefined
+  // while a turn runs, the next step is the one running
+  const run = next && shown.installed.includes(next.skill) && !e.props.isWorking ? next : undefined
   const end = shown?.view.stopped ? `⚠ task ${shown.view.stopped} stopped` : run ? `▶ Run ${run.label}` : ''
   let row = shown ? pieces(shown, false) : []
   if (shown && width !== undefined) {
@@ -70,7 +71,7 @@ export async function drawBand($: EngineInterface, e: RenderInput<'AbovePrompt'>
       {shown.view.stopped ? (
         <Text color="warning">{end}</Text>
       ) : (
-        run && <Button key="run" plain label={end} onPress={() => runStep($, run, n.turns > 0).catch(() => $.ui.toast(`Could not run /${run.skill}`))} />
+        run && <Button key="run" plain label={end} onPress={() => runStep($, run, n.turns > 0 || n.talking).catch(() => $.ui.toast(`Could not run /${run.skill}`))} />
       )}
     </Box>
   )

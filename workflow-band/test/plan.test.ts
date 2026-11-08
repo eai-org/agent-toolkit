@@ -22,3 +22,13 @@ test('reads groups and ticks from the Tasks section only', async () => {
 test('a plan without a Tasks section is not split', async () => {
   expect(parseTasks('# Plan\n- [ ] AC-1 a\n')).toBeUndefined()
 })
+
+test('a fenced block is neither the Tasks section nor part of it', async () => {
+  const lines = PLAN.split('\n')
+  const at = lines.indexOf('### Group 2 - Approval screen') + 1
+  const fenced = [
+    lines[0]!, 'Template:', '```markdown', '## Tasks', '### Group 9 — Template', '- [ ] **9.1 Example task** — x', '```',
+    ...lines.slice(1, at), '```', '## Example', '- [ ] **2.9 Fenced task** — x', '```', ...lines.slice(at),
+  ].join('\n')
+  expect(parseTasks(fenced)).toEqual(parseTasks(PLAN))
+})

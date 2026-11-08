@@ -63,3 +63,10 @@ test('a re-fetched ticket set keeps its children and drops the parent, in any or
     expect(rpacFiles(tasks[0]!).ticket).toBe(P('100-p-v2/101-w.TICKET.md'))
   }
 })
+
+test('a loose doc joins the only task in its folder, not a folder of several', () => {
+  const one = tasksFrom([f('snag/snag.PLAN.md'), f('snag/figma-notes.md')])
+  expect(rpacFiles(one[0]!).other).toEqual([P('snag/figma-notes.md')])
+  const many = tasksFrom([f('100-p/101-w.TICKET.md'), f('100-p/102-a.TICKET.md'), f('100-p/notes.md')])
+  expect(many.flatMap((t) => rpacFiles(t).other)).toEqual([])
+})

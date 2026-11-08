@@ -96,7 +96,7 @@ tasks, the task's other files, and a ▾ task switcher. It follows the task the 
 ran on (this session, then this checkout, then the repo), else the newest under `.agents/plans/`.
 
 `/workflow-band off` hides it, `/workflow-band on` brings it back, across sessions. Claude Code
-2.1.290 or later, plugin install only (`install.sh` and agentwheel don't install it).
+2.1.319 or later, plugin install only (`install.sh` and agentwheel don't install it).
 Numbers adapted from [ponytail's band](https://github.com/DietrichGebert/ponytail) (MIT, copyright 2026 DietrichGebert).
 
 ### Review assistants

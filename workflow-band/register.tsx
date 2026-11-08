@@ -34,7 +34,7 @@ async function start($: EngineInterface, resumed: boolean): Promise<Map<string, 
   // the cost so far is the baseline for the next turn's own cost
   const usage = await $.session.usage().catch(() => undefined)
   const turns = resumed ? await $.session.turns().catch(() => undefined) : undefined
-  await setNumbers($, (n) => ({ ...n, project, session, cost: usage?.cost?.usd ?? n.cost, turns: turns ?? n.turns }))
+  await setNumbers($, (n) => ({ ...n, project, session, cost: usage?.cost?.usd ?? n.cost, turns: turns ?? n.turns, talking: n.talking || (turns ?? 0) > 0 }))
   return grep?.exitCode === 0 ? parseDefs(grep.stdout) : new Map()
 }
 
@@ -74,9 +74,16 @@ export const register: Register = (on) => {
     return { text: hidden ? 'Workflow band hidden. /workflow-band on brings it back.' : 'Workflow band shown.' }
   }).catch(($, e, next) => next(e))
 
+  // a turn still running counts as a conversation too: turns only rise at turn.complete
+  on('prompt.submit', async ($, e, next) => {
+    await setNumbers($, (n) => ({ ...n, talking: true }))
+    return next(e)
+  }).catch(($, e, next) => next(e))
+
   on('skill.prompt', async ($, e, next) => {
     const result = await next(e)
     try {
+      await setNumbers($, (n) => ({ ...n, talking: true }))
       const skill = skillName(e.skill)
       const wf = WORKFLOWS.find((w) => w.skills.includes(skill))
       if (!wf) return result
@@ -85,10 +92,11 @@ export const register: Register = (on) => {
       const args = argsOf(e.text)
       const tasks = await wf.tasks(await listFiles($, repo, wf.roots), io)
       const current = await readShown($)
-      const key = wf.taskOf(skill, args, tasks) ?? (current?.workflow === wf.id ? current.task.key : undefined)
+      const key = wf.taskOf(skill, args, tasks) ?? (args ? '' : current?.workflow === wf.id ? current.task.key : undefined)
       const task = tasks.find((t) => t.key === key)
-      if (!task) return result
-      const run = await wf.annotate({ skill, args, task: task.key, at: await $.clock.now(), session: await $.session.id(), checkout: repo.checkout }, task, io)
+      if (!task && key !== '') return result
+      const plain = { skill, args, task: task?.key ?? '', at: await $.clock.now(), session: await $.session.id(), checkout: repo.checkout }
+      const run = task ? await wf.annotate(plain, task, io) : plain
       const stored = await $.store.get(runsKey(repo.root))
       await $.store.set(runsKey(repo.root), addRun(Array.isArray(stored) ? (stored as Run[]) : [], run))
       await setUi($, (u) => ({ ...u, pinned: undefined }))

@@ -8,7 +8,7 @@ export type TaskView = { rows: Row[]; compact: CompactItem[]; next?: Action; sto
 
 export type Tokens = { input: number; output: number; cacheRead: number; cacheWrite: number }
 export type Tests = { state: 'none' | 'pass' | 'fail' | 'stale'; passed?: number; failed?: number }
-export type Numbers = { cost: number; spent: number; turns: number; turnCosts: number[]; tokens: Tokens; busyMs: number; project: string; session: string; reused: string[]; created: string[]; removed: string[]; openCallers: string[]; tests: Tests }
+export type Numbers = { cost: number; spent: number; turns: number; talking: boolean; turnCosts: number[]; tokens: Tokens; busyMs: number; project: string; session: string; reused: string[]; created: string[]; removed: string[]; openCallers: string[]; tests: Tests }
 
 export type Repo = { root: string; checkout: string }
 

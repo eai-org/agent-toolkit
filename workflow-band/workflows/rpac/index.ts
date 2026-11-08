@@ -54,7 +54,11 @@ export const rpac: Workflow = {
   taskOf(skill, args, tasks) {
     if (!SKILLS.includes(skillName(skill))) return undefined
     const ts = tokens(args)
-    return (tasks.find((t) => t.files.some((f) => ts.some((tok) => matches(f.path, tok)))) ?? tasks.find((t) => t.key === ts[0]))?.key
+    return (
+      tasks.find((t) => t.files.some((f) => ts.some((tok) => matches(f.path, tok)))) ??
+      tasks.find((t) => t.key === ts[0]) ??
+      tasks.find((t) => ts.includes(TICKET_ID.exec(t.key)?.[1] ?? ''))
+    )?.key
   },
 
   async annotate(run, task, io) {
@@ -98,7 +102,7 @@ export const rpac: Workflow = {
         status: status(s),
         file,
         hardened: file && hardenable && hardened.has(file) ? true : undefined,
-        actions: s.key === 'fetch' && !f.ticket ? [] : actions(s),
+        actions: (s.key === 'fetch' && !f.ticket) || (s.key === 'execute' && !groups) ? [] : actions(s),
       }
     })
 

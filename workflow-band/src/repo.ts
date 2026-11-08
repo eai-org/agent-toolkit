@@ -39,8 +39,6 @@ export async function listFiles($: EngineInterface, repo: Repo, roots: readonly 
   return out.flat()
 }
 
-export const shown = (path: string, checkout: string) => (path.startsWith(`${checkout}/`) ? path.slice(checkout.length + 1) : path)
-
 export function reader($: EngineInterface): Reader {
   return { read: async (path) => String(await $.fs.read(path)) }
 }

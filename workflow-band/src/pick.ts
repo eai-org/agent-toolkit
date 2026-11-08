@@ -6,6 +6,9 @@ export type Where = { session: string; checkout: string; pinned?: string }
 const byRecency = (runs: Run[]): Run[] =>
   runs.map((r, i) => ({ r, i })).sort((a, b) => b.r.at - a.r.at || b.i - a.i).map((x) => x.r)
 
+export const newest = (tasks: Task[]): Task | undefined =>
+  tasks.reduce<Task | undefined>((best, t) => (!best || t.mtimeMs > best.mtimeMs ? t : best), undefined)
+
 export const pickTask = (tasks: Task[], runs: Run[], where: Where): Task | undefined => {
   const find = (key: string) => tasks.find((t) => t.key === key)
   const pinned = where.pinned === undefined ? undefined : find(where.pinned)
@@ -16,5 +19,5 @@ export const pickTask = (tasks: Task[], runs: Run[], where: Where): Task | undef
       const t = find(r.task)
       if (t) return t
     }
-  return tasks.reduce<Task | undefined>((best, t) => (!best || t.mtimeMs > best.mtimeMs ? t : best), undefined)
+  return newest(tasks)
 }

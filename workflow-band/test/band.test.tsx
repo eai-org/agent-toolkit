@@ -1,5 +1,4 @@
 import { expect, test } from 'claude-code/testing'
-import { RUN_HERE as _unused } from '../src/actions'
 import { SKILLS, PLN, STOPPED, band } from './world'
 
 test('the steps row shows the shown task and the run button', async ($, on) => {
@@ -82,5 +81,31 @@ test('copy hands the numbers over as Markdown', async ($, on) => {
   expect(copied.length).toBe(1)
   expect(copied[0]).toContain('| Cost |')
   expect(copied[0]).toContain('## 123-x')
+  await ui.unmount()
+})
+
+test('a prompt before the first turn finishes asks before it runs', async ($, on) => {
+  const { ui, asked } = await band($, on)
+  await $.prompt.submit({ text: 'hi' } as never)
+  await ui.press({ key: 'run' })
+  expect(asked.length).toBe(1)
+  await $.session.end({ reason: 'clear', sessionId: 's1' } as never)
+  await ui.press({ key: 'run' })
+  expect(asked.length).toBe(1)
+  await ui.unmount()
+})
+
+test('no run button while a turn is running', async ($, on) => {
+  const { ui } = await band($, on, { working: true })
+  expect(await ui.find({ key: 'steps' })).toBeDefined()
+  expect(await ui.find({ key: 'run' })).toBeUndefined()
+  await ui.unmount()
+})
+
+test('a refresh lists the commands once', async ($, on) => {
+  const { ui, listed } = await band($, on)
+  const before = listed.length
+  await $.turn.complete({ answer: '', durationMs: 1 } as never)
+  expect(listed.length - before).toBe(1)
   await ui.unmount()
 })

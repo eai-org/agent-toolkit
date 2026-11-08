@@ -5,7 +5,12 @@ const GROUP = /^###\s+Group\s+(\d+)\s*[—–-]\s*(.+?)\s*$/
 const TASK = /^- \[( |x|X)\]\s+\*\*(\S+)\s+(.+?)\*\*/
 
 export function parseTasks(md: string): PlanGroup[] | undefined {
-  const lines = md.split(/\r?\n/)
+  let fenced = false
+  const lines = md.split(/\r?\n/).filter((l) => {
+    const fence = l.startsWith('```')
+    if (fence) fenced = !fenced
+    return !fence && !fenced
+  })
   const start = lines.findIndex((l) => /^##\s+Tasks\s*$/.test(l))
   if (start < 0) return undefined
   const groups: PlanGroup[] = []

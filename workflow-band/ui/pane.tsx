@@ -4,14 +4,14 @@ import { refresh, setUi } from '../src/state'
 import type { Action, Numbers, Row, Shown, Status, UiState } from '../types'
 
 const ICON: Record<Status, string> = { done: '✓', current: '◉', todo: '○', skipped: '○', unknown: '?', stopped: '⚠' }
-const tail = (path: string) => path.split('/').pop()!.replace(/^.*?\.(?=[A-Z-]+\.md$)/, '')
+const tail = (path: string) => path.split('/').pop()!.replace(/^[^.]*\.(?=[A-Z.-]+\.md$)/, '')
 
 export async function drawPane($: EngineInterface, e: RenderInput<'Pane'>, s: { numbers: Numbers; shown: Shown | null; ui: UiState }): Promise<RenderElement> {
   const { Box, Text, Button } = $.ui.resolve(e)
   const shown = s.shown
   if (!shown) return <Text dimColor>No task under .agents/plans/ yet.</Text>
 
-  const run = (a: Action) => runStep($, a, s.numbers.turns > 0).catch(() => $.ui.toast(`Could not run /${a.skill}`))
+  const run = (a: Action) => runStep($, a, s.numbers.turns > 0 || s.numbers.talking).catch(() => $.ui.toast(`Could not run /${a.skill}`))
   const mine = (a: Action) => shown.installed.includes(a.skill)
 
   const line = (r: Row, indent: number) => {

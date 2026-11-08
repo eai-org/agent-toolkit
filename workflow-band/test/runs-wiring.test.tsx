@@ -1,6 +1,6 @@
 import { expect, test } from 'claude-code/testing'
 import type { Run } from '../src/workflow'
-import { band } from './world'
+import { ROOT, band } from './world'
 
 const OTHER = '/r/.agents/plans/99-old/99-old.TICKET.md'
 const stored = (saved: Record<string, unknown>) => (saved['runs:/r'] ?? []) as Run[]
@@ -23,13 +23,38 @@ test('a run without a path goes to the shown task', async ($, on) => {
   await ui.unmount()
 })
 
-test('other skills and bad paths are ignored', async ($, on) => {
-  const { ui, saved } = await band($, on, { noFolder: true, runs: [] })
+test('other skills are ignored and a path matching no task stays off the shown task', async ($, on) => {
+  const { ui, saved } = await band($, on, { runs: [] })
+  expect((await ui.find({ key: 'run' }))?.text).toBe('▶ Run task 2.2')
   const a = await $.skill.prompt({ skill: 'grill-me', text: 'x' } as never)
   const b = await $.skill.prompt({ skill: 'refine-ticket', text: 'x\n\nARGUMENTS: /elsewhere/x.md' } as never)
   expect(a.text).toBe('x')
   expect(b.text).toBe('x\n\nARGUMENTS: /elsewhere/x.md')
-  expect(stored(saved)).toEqual([])
+  expect(stored(saved).map((r) => [r.skill, r.task])).toEqual([['refine-ticket', '']])
+  expect((await ui.find({ key: 'run' }))?.text).toBe('▶ Run task 2.2')
+  await ui.unmount()
+})
+
+test('a ticket fetched before its folder exists shows once the folder appears', async ($, on) => {
+  const { ui, saved, tree } = await band($, on)
+  await $.skill.prompt({ skill: 'fetch-ticket', text: 'x\n\nARGUMENTS: 555' } as never)
+  expect(stored(saved).at(-1)).toMatchObject({ skill: 'fetch-ticket', task: '', session: 's1', checkout: '/r' })
+  expect(await ui.find({ type: 'Text', text: '◉ requirements' })).toBeUndefined()
+  tree[ROOT] = [...tree[ROOT]!, { name: '555-y', kind: 'dir' }]
+  tree[`${ROOT}/555-y`] = [{ name: '555-y.TICKET.md', kind: 'file', mtimeMs: 20 }]
+  await $.turn.complete({ answer: '', durationMs: 1 } as never)
+  expect(await ui.find({ type: 'Text', text: '◉ requirements' })).toBeDefined()
+  await ui.unmount()
+})
+
+test('a refined idea shows the task created after it', async ($, on) => {
+  const { ui, saved, tree } = await band($, on)
+  await $.skill.prompt({ skill: 'refine-ticket', text: 'x\n\nARGUMENTS: add dark mode' } as never)
+  expect(stored(saved).at(-1)).toMatchObject({ skill: 'refine-ticket', task: '' })
+  tree[ROOT] = [...tree[ROOT]!, { name: 'dark-mode', kind: 'dir' }]
+  tree[`${ROOT}/dark-mode`] = [{ name: 'dark-mode.REQUIREMENTS.md', kind: 'file', mtimeMs: 20 }]
+  await $.turn.complete({ answer: '', durationMs: 1 } as never)
+  expect((await ui.find({ key: 'run' }))?.text).toBe('▶ Run harden requirements')
   await ui.unmount()
 })
 
