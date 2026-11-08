@@ -84,18 +84,48 @@ test('an unlisted skill toasts', async () => {
   expect(t.toasts).toEqual(["split-plan-tasks isn't installed"])
 })
 
-test('openFile picks the opener per platform and toasts on failure', async () => {
-  const mac = fake({ uname: 'Darwin' })
-  await openFile(mac.$, '/r/a.md')
-  expect(mac.argv.pop()).toEqual(['open', '/r/a.md'])
-  const linux = fake()
+// `code` stands for VS Code's CLI; `codeFails` makes it exit non-zero or throw.
+function opener(f: Fake & { codeFails?: 'exit' | 'throw'; openerFails?: boolean }) {
+  const t = fake(f)
+  const inner = t.$.process.run
+  ;(t.$.process as any).run = async (a: string[]) => {
+    if (a[0] === 'code') {
+      t.argv.push(a)
+      if (f.codeFails === 'throw') throw new Error('ENOENT')
+      return { exitCode: f.codeFails ? 127 : 0, stdout: '', stderr: '' }
+    }
+    if (f.openerFails && a[0] !== 'uname') {
+      t.argv.push(a)
+      return { exitCode: 1, stdout: '', stderr: 'no' }
+    }
+    return inner(a)
+  }
+  return t
+}
+
+test('openFile uses the VS Code CLI first and nothing else when it works', async () => {
+  const t = opener({ uname: 'Darwin' })
+  await openFile(t.$, '/r/a.md')
+  expect(t.argv).toEqual([['code', '-r', '/r/a.md']])
+  expect(t.toasts).toEqual([])
+})
+
+test('openFile falls back to the OS opener per platform when code fails', async () => {
+  for (const codeFails of ['exit', 'throw'] as const) {
+    const mac = opener({ uname: 'Darwin', codeFails })
+    await openFile(mac.$, '/r/a.md')
+    expect(mac.argv.pop()).toEqual(['open', '/r/a.md'])
+  }
+  const linux = opener({ codeFails: 'exit' })
   await openFile(linux.$, '/r/a.md')
   expect(linux.argv.pop()).toEqual(['xdg-open', '/r/a.md'])
-  const win = fake({ os: 'Windows_NT' })
+  const win = opener({ os: 'Windows_NT', codeFails: 'exit' })
   await openFile(win.$, 'C:\\a.md')
   expect(win.argv.pop()).toEqual(['cmd', '/c', 'start', '', 'C:\\a.md'])
-  const bad = fake()
-  ;(bad.$.process as any).run = async () => ({ exitCode: 1, stdout: '', stderr: 'no' })
+})
+
+test('openFile toasts when code and the OS opener both fail', async () => {
+  const bad = opener({ uname: 'Darwin', codeFails: 'exit', openerFails: true })
   await openFile(bad.$, '/r/a.md')
   expect(bad.toasts).toEqual(['Could not open /r/a.md'])
 })

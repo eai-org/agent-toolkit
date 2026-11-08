@@ -15,7 +15,7 @@ test('the steps row shows the shown task and the run button', async ($, on) => {
 test('a done step opens its file', async ($, on) => {
   const { ui, argv } = await band($, on)
   await ui.press({ key: 'item-plan' })
-  expect(argv).toContainEqual(['open', PLN])
+  expect(argv).toContainEqual(['code', '-r', PLN])
   await ui.unmount()
 })
 

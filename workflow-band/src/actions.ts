@@ -19,8 +19,9 @@ export async function runStep($: EngineInterface, action: Action, hasConversatio
 }
 
 export async function openFile($: EngineInterface, path: string): Promise<void> {
-  const windows = (await $.env.get('OS')) === 'Windows_NT'
   try {
+    if ((await $.process.run(['code', '-r', path]).catch(() => null))?.exitCode === 0) return
+    const windows = (await $.env.get('OS')) === 'Windows_NT'
     const mac = !windows && (await $.process.run(['uname'])).stdout.trim() === 'Darwin'
     const r = await $.process.run(windows ? ['cmd', '/c', 'start', '', path] : [mac ? 'open' : 'xdg-open', path])
     if (r.exitCode !== 0) throw new Error(r.stderr)
