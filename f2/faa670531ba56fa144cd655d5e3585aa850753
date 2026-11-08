@@ -1,0 +1,63 @@
+workflow-band/test/band.test.tsx
+  s_18a029f13d85b6::t_c0cc1fc1ef5fb5 86-111
+workflow-band/test/pane.test.tsx
+  s_18a029f13d85b6::t_c0cc1fc1ef5fb5 98-105
+workflow-band/test/runs-wiring.test.tsx
+  s_18a029f13d85b6::t_c0cc1fc1ef5fb5 3,26-28,33-57
+workflow-band/workflows/rpac/index.ts
+  s_18a029f13d85b6::t_1ae1bcb82de00d 57-61
+  s_18a029f13d85b6::t_967b3b1098e87f 105
+workflow-band/workflows/rpac/files.ts
+  s_18a029f13d85b6::t_967b3b1098e87f 30-31,46,48-51,56-60
+  s_18a029f13d85b6::t_13a11f34887817 61
+workflow-band/test/world.tsx
+  s_18a029f13d85b6::t_26b726db3b5ab6 25-26,37,40,54-55,68-69,72-75,98,104-105
+workflow-band/src/pick.ts
+  s_18a029f13d85b6::t_1ae1bcb82de00d 9-11,22
+workflow-band/test/actions.test.ts
+  s_18a029f13d85b6::t_c0cc1fc1ef5fb5 4,13,20-21,45,74-79
+workflow-band/src/state.ts
+  s_18a029f13d85b6::t_f5a6af2a52d226 15,19
+  s_18a029f13d85b6::t_1ae1bcb82de00d 3,5,32-35,37-39
+workflow-band/test/metrics.test.ts
+  s_18a029f13d85b6::t_ffbf89989e146b 8
+workflow-band/test/plan.test.ts
+  s_18a029f13d85b6::t_c0cc1fc1ef5fb5 25-34
+workflow-band/test/files.test.ts
+  s_18a029f13d85b6::t_c0cc1fc1ef5fb5 66-72
+workflow-band/ui/pane.tsx
+  s_18a029f13d85b6::t_967b3b1098e87f 7
+  s_18a029f13d85b6::t_f5a6af2a52d226 14
+workflow-band/test/rpac.test.ts
+  s_18a029f13d85b6::t_c0cc1fc1ef5fb5 125-129,150,153-154
+workflow-band/types.d.ts
+  s_18a029f13d85b6::t_f5a6af2a52d226 11
+workflow-band/ui/band.tsx
+  s_18a029f13d85b6::t_f5a6af2a52d226 42-43,74
+workflow-band/register.tsx
+  s_18a029f13d85b6::t_f5a6af2a52d226 37,77-82,86,98
+  s_18a029f13d85b6::t_1ae1bcb82de00d 95,97,99
+README.md
+  s_18a029f13d85b6::t_24c6eb9e1fd99d 99
+workflow-band/src/actions.ts
+  s_18a029f13d85b6::t_1ae1bcb82de00d 6-8,10,18
+workflow-band/workflows/rpac/plan.ts
+  s_18a029f13d85b6::t_37beaaa427943c 9-13
+  s_18a029f13d85b6::t_967b3b1098e87f 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f2faa670531ba56fa144cd655d5e3585aa850753",
+  "prompts": {},
+  "sessions": {
+    "s_18a029f13d85b6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ade1329a-3650-486e-ada5-1fa26a098151",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "stefanoslig <stefanoslignos@gmail.com>"
+    }
+  }
+}
