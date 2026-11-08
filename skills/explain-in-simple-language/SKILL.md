@@ -1,19 +1,19 @@
 ---
 name: explain-in-simple-language
-description: Explain code, a decision, a recap, or a question to the user, or write a document a human reads, so a fluent but often non-native reader understands it on the first read. Use when explaining or asking the user anything, when writing a review, report, or brief a human reads (never text sent under the user's name), or when the user asks for simpler words or says they did not understand.
+description: Explain code, a decision, a recap, or a question to the user, or write a document a human reads, so a fluent but often non-native reader understands it on the first read. Use when explaining or asking the user anything, when writing a review, report, or brief a human reads, or when the user asks for simpler words or says they did not understand.
 license: MIT
 metadata:
-  version: "1.1"
+  version: "1.2"
 ---
 
 # Explain in simple language
 
 Comprehension is the only goal of the wording: the reader understands on the first read. Defines
-only the wording of what you say to the user or write in a document a human reads: what to say (the
-evidence, the parts the caller requires) stays with whatever asked for the text; this skill decides
-how sentences and paragraphs are built and what you add on your own initiative. Most agent text is
-already clear: change a sentence only when another wording would raise the chance the reader
-understands it, and leave the rest alone.
+only the wording of text a human reads: what to say (the evidence, the parts the caller requires)
+and the voice (whether the text should read as if a person typed it) stay with whatever asked for
+the text; this skill decides how sentences and paragraphs are built and what you add on your own
+initiative. Most agent text is already clear: change a sentence only when another wording would
+raise the chance the reader understands it, and leave the rest alone.
 
 ## The reader
 
@@ -25,11 +25,15 @@ up to your desk understand this?
 
 ## Rules
 
-- **Name things concretely.** Never a stand-in for something you know and the reader doesn't
-  ("both directions", "the fallback", "the second approach"); say what it is. Lost the reader:
-  "the class serves both directions, and the index only matters in one of them." Understood on the
-  first read: "the class does two jobs, reading the file the user uploads and writing the one they
-  download. The index only matters for the reading job." Longer, and better.
+- **Name things concretely.** Never a stand-in for something you know and the reader doesn't: a
+  reference ("both directions", "the fallback", "the second approach"), a term you coined where
+  the subject already has a name ("the baseline" for the saved count), or shorthand for a case the
+  reader didn't watch you work out ("a pick closes its finding"); say what it is, in their words.
+  Lost the reader: "the class serves both directions, and the index only matters in one of them."
+  Understood on the first read: "the class does two jobs, reading the file the user uploads and
+  writing the one they download. The index only matters for the reading job." Longer, and better.
+- **Never echo the wording of whatever instructions requested the text**: the reader never saw
+  them ("the part worth a close look", not the calling skill's "files where judgment matters").
 - **Only what you saw.** Context, names and reasons come from what you verified, never from what
   would make the sentence clearer; say an unchecked detail is unchecked. Clarity never beats
   accuracy.
@@ -52,9 +56,3 @@ up to your desk understand this?
   concrete case and drop the term or reference that lost them. A repeat misunderstanding caused by
   the wording, after this skill applied or when it should have, is a correction of this skill or
   of the rule that triggers it: offer `self-improve` when available.
-
-## Not about voice
-
-AI traits are neither hidden nor encouraged: dashes, polish, and elegance are fine while the text
-stays easy to understand. Text other people read as if the user typed it (PR comments, commits,
-chat with colleagues) is out of scope and keeps its own voice.

@@ -75,6 +75,9 @@
         "handover": {
           "requires": ["skills/use-conversational-language"]
         },
+        "use-conversational-language": {
+          "requires": ["skills/explain-in-simple-language"]
+        },
         "self-review": {
           "requires": ["skills/fresh-eyes-review"]
         },
