@@ -1,0 +1,26 @@
+workflow-band/src/actions.ts
+  s_18a029f13d85b6::t_b5b39d7915940f 1-30
+workflow-band/src/repo.ts
+  s_18a029f13d85b6::t_b5b39d7915940f 1-20,22-42
+  s_18a029f13d85b6::t_3cf47207221fd5 21,43-45
+workflow-band/test/actions.test.ts
+  s_18a029f13d85b6::t_e30071c4bea11d 6-10,12-43,46,48-113,116-118,121-123,126-127,130-131
+  s_18a029f13d85b6::t_f2de5a0b253820 1
+  s_18a029f13d85b6::t_b5b39d7915940f 2-5,11,44-45,47,114-115,119-120,124-125,128-129,132
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b27d45cdac499f62d6150f3329c9d4ddcaf01fee",
+  "prompts": {},
+  "sessions": {
+    "s_18a029f13d85b6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ade1329a-3650-486e-ada5-1fa26a098151",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "stefanoslig <stefanoslignos@gmail.com>"
+    }
+  }
+}
