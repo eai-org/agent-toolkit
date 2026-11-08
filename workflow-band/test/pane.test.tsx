@@ -95,3 +95,11 @@ test('a restarted session drops a pane flag with no pane behind it', async ($, o
   expect(await ui.find({ key: 'run' })).toBeDefined()
   await ui.unmount()
 })
+
+test('a file label keeps every suffix after the task name', async ($, on) => {
+  const dir = '/r/.agents/plans/123-x'
+  const tree = { [dir]: ['TICKET', 'REQUIREMENTS', 'PLAN', 'PR-REVIEW.PLAN'].map((s) => ({ name: `123-x.${s}.md`, kind: 'file' as const })) }
+  const { pane: p } = await pane($, on, { tree })
+  expect((await p.find({ key: 'other-0' }))?.text).toBe('PR-REVIEW.PLAN.md')
+  await p.unmount()
+})

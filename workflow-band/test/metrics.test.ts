@@ -5,7 +5,7 @@ import {
 } from '../src/metrics'
 
 const BASE: Numbers = {
-  cost: 31.9, spent: 3.1, turns: 6, turnCosts: [0.42], tokens: { input: 5000, output: 85_000, cacheRead: 1_100_000, cacheWrite: 10_000 },
+  cost: 31.9, spent: 3.1, turns: 6, talking: true, turnCosts: [0.42], tokens: { input: 5000, output: 85_000, cacheRead: 1_100_000, cacheWrite: 10_000 },
   busyMs: 1_560_000, project: 'shop', session: '4c69e3db-57a0', reused: ['to_cents'], created: [],
   removed: [], openCallers: [], tests: { state: 'pass', passed: 14 },
 }

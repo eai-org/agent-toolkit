@@ -27,6 +27,8 @@ const parse = (file: FileInfo): Parsed => {
   return { file, base, stem, folder, suffix, version: v ? Number(v[2]) : 1 }
 }
 
+const dir = (path: string) => path.slice(0, path.lastIndexOf('/'))
+
 const parseAll = (files: FileInfo[]) => files.filter((f) => f.path.endsWith('.md')).map(parse)
 
 const SINGLE: Record<string, keyof RpacFiles> = {
@@ -41,11 +43,21 @@ export function tasksFrom(files: FileInfo[]): Task[] {
     basesIn.set(p.folder, (basesIn.get(p.folder) ?? new Set()).add(p.base))
   }
   const tasks: Task[] = []
+  const loose: Parsed[] = []
   for (const [base, ps] of byBase) {
-    if (!ps.some((p) => ['TICKET', 'REQUIREMENTS', 'PLAN'].includes(p.suffix))) continue
+    if (!ps.some((p) => ['TICKET', 'REQUIREMENTS', 'PLAN'].includes(p.suffix))) {
+      loose.push(...ps)
+      continue
+    }
     const parent = ps.every((p) => p.suffix === 'TICKET' && p.stem === p.folder) && ps.some((p) => (basesIn.get(p.folder)?.size ?? 0) > 1)
     if (parent) continue
     tasks.push({ key: base, title: base, files: ps.map((p) => p.file), mtimeMs: Math.max(...ps.map((p) => p.file.mtimeMs)) })
+  }
+  for (const p of loose) {
+    const owners = tasks.filter((t) => t.files.some((f) => dir(f.path) === dir(p.file.path)))
+    if (owners.length !== 1) continue
+    owners[0]!.files.push(p.file)
+    owners[0]!.mtimeMs = Math.max(owners[0]!.mtimeMs, p.file.mtimeMs)
   }
   return tasks.sort((a, b) => b.mtimeMs - a.mtimeMs)
 }

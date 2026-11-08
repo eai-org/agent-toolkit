@@ -22,7 +22,8 @@ const EXECUTING: Partial<Run>[] = [
   { skill: 'handover', group: 1 },
 ]
 export const STOPPED: Partial<Run>[] = [{ skill: 'execute-plan-tasks', item: '2.2', endedAt: 5 }]
-const TREE: Record<string, { name: string; kind: 'file' | 'dir' }[]> = {
+export type Entry = { name: string; kind: 'file' | 'dir'; mtimeMs?: number }
+const TREE: Record<string, Entry[]> = {
   [ROOT]: [{ name: '123-x', kind: 'dir' }, { name: '99-old', kind: 'dir' }],
   [`${ROOT}/99-old`]: [{ name: '99-old.TICKET.md', kind: 'file' as const }],
   [DIR]: ['TICKET', 'REQUIREMENTS', 'PLAN'].map((s) => ({ name: `123-x.${s}.md`, kind: 'file' as const })),
@@ -33,10 +34,10 @@ const BAND = {
   props: { hasSurvey: false, isWorking: false, maxRows: 12, bodyColumns: 160, scroll: { offset: 0, bodyRows: 12 }, view: {} },
 } as const
 
-export type World = { runs?: Partial<Run>[]; skills?: string[]; noFolder?: boolean; columns?: number; turns?: number }
+export type World = { runs?: Partial<Run>[]; skills?: string[]; noFolder?: boolean; columns?: number; turns?: number; tree?: Record<string, Entry[]>; working?: boolean }
 
 export async function band($: Engine, on: On, w: World = {}) {
-  mock.clock(on)
+  mock.clock(on, { now: 10 })
   mock.env(on, {})
   const runs = (w.runs ?? EXECUTING).map((r) => ({ skill: 's', args: '', task: '123-x', at: 1, session: 's1', checkout: '/r', ...r }))
   const saved: Record<string, unknown> = { 'runs:/r': runs }
@@ -50,6 +51,8 @@ export async function band($: Engine, on: On, w: World = {}) {
   const copied: string[] = []
   const asked: string[] = []
   const toasts: string[] = []
+  const listed: unknown[] = []
+  const tree = { ...TREE, ...w.tree }
   let session = 's1'
   on('session.id', () => ({ value: session }))
   on('session.turns', () => ({ value: w.turns ?? 0 }))
@@ -62,11 +65,14 @@ export async function band($: Engine, on: On, w: World = {}) {
     return { value: { exitCode: e.argv[1] === 'grep' ? 1 : 0, stdout, stderr: '' } } as never
   })
   on('fs.list', ($, e) => {
-    const entries = w.noFolder ? undefined : TREE[e.path]
-    return (entries ? { value: entries.map((x) => ({ ...x, size: 1, mtimeMs: x.kind === 'file' ? 1 : 0 })) } : { deny: 'missing' }) as never
+    const entries = w.noFolder ? undefined : tree[e.path]
+    return (entries ? { value: entries.map((x) => ({ size: 1, mtimeMs: x.kind === 'file' ? 1 : 0, ...x })) } : { deny: 'missing' }) as never
   })
   on('fs.read', ($, e) => (e.path === PLN ? { value: PLAN } : { deny: 'missing' }) as never)
-  on('command.list', () => ({ value: (w.skills ?? SKILLS).map((name) => ({ name, description: '', source: 'userSettings' })) }) as never)
+  on('command.list', ($, e) => {
+    listed.push(e)
+    return { value: (w.skills ?? SKILLS).map((name) => ({ name, description: '', source: 'userSettings' })) } as never
+  })
   on('command.run', ($, e) => {
     if (['clear', 'resume', 'branch'].includes(e.command)) session = `${session}+${e.command}`
     commands.push({ command: e.command, args: e.args })
@@ -89,12 +95,13 @@ export async function band($: Engine, on: On, w: World = {}) {
   on('turn.complete', () => ({ text: '' }))
   on('session.end', () => ({ sessionId: 's1' }))
   on('skill.prompt', ($, e) => ({ text: e.text }))
+  on('prompt.submit', ($, e) => ({ text: e.text }))
   on('ui.render', ($, e) => {
     const { Text } = $.ui.resolve(e)
     return <Text>prompt only</Text>
   })
   await $.session.start({ cwd: '/r', surface: null } as never)
-  const ui = await $.ui.mount({ plugin: 'agent-toolkit', surface: 'terminal', ...BAND, props: { ...BAND.props, bodyColumns: w.columns ?? 160 } })
-  return { ui, saved, argv, commands, copied, asked, toasts }
+  const ui = await $.ui.mount({ plugin: 'agent-toolkit', surface: 'terminal', ...BAND, props: { ...BAND.props, bodyColumns: w.columns ?? 160, isWorking: w.working ?? false } })
+  return { ui, saved, argv, commands, copied, asked, toasts, tree, listed }
 }
 

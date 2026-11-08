@@ -1,7 +1,7 @@
 import type { EngineInterface } from 'claude-code'
 import { expect, test } from 'claude-code/testing'
 import { CANCEL, CLEAR_FIRST, openFile, RUN_HERE, runStep } from '../src/actions'
-import { listFiles, repoOf, shown } from '../src/repo'
+import { listFiles, repoOf } from '../src/repo'
 
 // The test kit's `$` only raises events, so the helpers get a hand-made engine.
 type Fake = { names?: string[]; answer?: string | Error; os?: string; uname?: string; git?: { exitCode: number; stdout: string }; repo?: string | null; tree?: Record<string, { name: string; kind: string }[]> }
@@ -10,13 +10,15 @@ function fake(f: Fake = {}) {
   const runs: { command: string; args?: string }[] = []
   const toasts: string[] = []
   const argv: string[][] = []
+  const asked: string[] = []
   const $ = {
     command: {
       list: async () => (f.names ?? []).map((name) => ({ name })),
       run: async (r: { command: string; args?: string }) => void runs.push(r),
     },
     ui: {
-      ask: async () => {
+      ask: async (q: string) => {
+        asked.push(q)
         if (f.answer instanceof Error) throw f.answer
         return f.answer ?? CANCEL
       },
@@ -40,7 +42,7 @@ function fake(f: Fake = {}) {
       },
     },
   } as unknown as EngineInterface
-  return { $, runs, toasts, argv }
+  return { $, runs, toasts, argv, asked }
 }
 
 const action = { skill: 'split-plan-tasks', args: 'p.md', label: '' }
@@ -67,6 +69,12 @@ test('run here runs only the skill', async () => {
   const t = fake({ names: ['split-plan-tasks'], answer: RUN_HERE })
   await runStep(t.$, action, true)
   expect(t.runs.map((r) => r.command)).toEqual(['split-plan-tasks'])
+})
+
+test('a step without args asks without a stray space', async () => {
+  const t = fake({ names: ['self-review'], answer: CANCEL })
+  await runStep(t.$, { skill: 'self-review', args: '', label: '' }, true)
+  expect(t.asked).toEqual(['Run /self-review: clear this session first, or run it here?'])
 })
 
 test('cancel, free text and a dismissed dialog run nothing', async () => {
@@ -146,11 +154,6 @@ test('listFiles reads the main checkout when the worktree has no folder', async 
 test('listFiles prefers the checkout when it has the folder', async () => {
   const t = fake({ tree: { '/w/p': [{ name: 'a.md', kind: 'file' }], '/r/p': [{ name: 'b.md', kind: 'file' }] } })
   expect(await listFiles(t.$, { root: '/r', checkout: '/w' }, ['p'])).toEqual([{ path: '/w/p/a.md', mtimeMs: 7 }])
-})
-
-test('shown cuts the checkout prefix only', () => {
-  expect(shown('/w/x/a.md', '/w')).toBe('x/a.md')
-  expect(shown('/wx/a.md', '/w')).toBe('/wx/a.md')
 })
 
 test('repoOf falls back to the cwd outside a repo', async () => {

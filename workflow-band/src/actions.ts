@@ -3,9 +3,11 @@ import type { Action } from './workflow'
 
 export const CLEAR_FIRST = 'Clear first, then run (Recommended)', RUN_HERE = 'Run here', CANCEL = 'Cancel'
 
+export const nameIn = (names: string[], skill: string): string | undefined =>
+  names.find((n) => n === skill) ?? names.find((n) => n.endsWith(`:${skill}`))
+
 export async function commandName($: EngineInterface, skill: string): Promise<string | undefined> {
-  const names = (await $.command.list()).map((c) => c.name)
-  return names.find((n) => n === skill) ?? names.find((n) => n.endsWith(`:${skill}`))
+  return nameIn((await $.command.list()).map((c) => c.name), skill)
 }
 
 export async function runStep($: EngineInterface, action: Action, hasConversation: boolean): Promise<void> {
@@ -13,7 +15,7 @@ export async function runStep($: EngineInterface, action: Action, hasConversatio
   if (!name) return $.ui.toast(`${action.skill} isn't installed`)
   const run = () => $.command.run({ command: name, args: action.args })
   if (!hasConversation) return void (await run())
-  const answer = await $.ui.ask(`Run /${name} ${action.args}: clear this session first, or run it here?`, [CLEAR_FIRST, RUN_HERE, CANCEL]).catch(() => CANCEL)
+  const answer = await $.ui.ask(`Run /${name}${action.args ? ` ${action.args}` : ''}: clear this session first, or run it here?`, [CLEAR_FIRST, RUN_HERE, CANCEL]).catch(() => CANCEL)
   if (answer === CLEAR_FIRST) await $.command.run({ command: 'clear' })
   if (answer === CLEAR_FIRST || answer === RUN_HERE) await run()
 }
