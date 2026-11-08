@@ -1,0 +1,23 @@
+workflow-band/test/files.test.ts
+  s_18a029f13d85b6::t_295d14a8f513b6 46-53,55,76
+workflow-band/workflows/rpac/files.ts
+  s_18a029f13d85b6::t_6bbc6e5c47e226 48
+workflow-band/test/rpac.test.ts
+  s_18a029f13d85b6::t_295d14a8f513b6 159
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5867e4aca93fe27a413f82fbb0b60bb6ffd95cff",
+  "prompts": {},
+  "sessions": {
+    "s_18a029f13d85b6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ade1329a-3650-486e-ada5-1fa26a098151",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "stefanoslig <stefanoslignos@gmail.com>"
+    }
+  }
+}
