@@ -18,5 +18,9 @@
     "planning",
     "memory",
     "workflow"
-  ]
+  ],
+  "hooks": [
+    "./workflow-band/hooks.json"
+  ],
+  "types": "./workflow-band/types.d.ts"
 }
