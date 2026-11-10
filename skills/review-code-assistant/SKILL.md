@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.14"
+  version: "1.15"
 ---
 
 # Review code assistant
@@ -163,7 +163,8 @@ long text, and no "here" or "this call" standing in for something the user hasn'
   the explanation beneath it, then the optional suggested comment. Put a full-width heavy rule (a
   row of ~40 `━`) above each finding and one more after the last, so the list is bracketed top and
   bottom and the eye can jump between comments. One issue per finding: an unrelated second point
-  on the same lines gets its own. For example:
+  on the same lines gets its own, and so does the same point at another place that needs its own
+  suggested comment, never a "same at X" note in the first. For example:
 
   ````
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
