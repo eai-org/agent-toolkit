@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.4"
+  version: "1.5"
 ---
 
 # Fresh-eyes review
@@ -56,15 +56,21 @@ artifacts.
    code, rules, or docs — though matching surrounding code is not correctness: verify any pattern
    the change extends or mirrors is itself sound, since completing a broken rollout inherits its
    breakage; ambiguities a reader without context would trip on; when an intent statement was
-   given, whether the change does what it says; and omissions — what the change should have touched
-   and didn't: an altered contract (file format, payload, schema, config or CLI surface) has
-   counterparts that must move with it — templates, samples, fixtures, seed data, docs. Find those
-   by content, not location: they often sit outside the changed tree and its stack, and a literal a
-   changed file copies from a shipped artifact (a header row, a sample payload) names one. A
-   deferral the submission itself states — a PR description or commit subject carried verbatim — is
-   a claim to test, not scope conceded. Tough but grounded, aimed at mistakes that matter: every
-   finding names its location and a concrete failure scenario; style nits, speculation, and padding
-   are out of scope, and zero findings is a valid outcome. Besides what the invocation asks, it
+   given, whether the change does what it says, and overreach — a hunk serving no part of it: an
+   unasked refactor, a speculative option or setting, defensive code for a state that cannot occur,
+   complexity beyond the need; vacuous tests — one the change adds or edits that would pass without
+   it: an always-true assertion, a mock asserting its own stub, a test never reaching the changed
+   path, an assertion loosened or deleted until the test passes; and omissions — what the change
+   should have touched and didn't: an altered contract (file format, payload, schema, config or CLI
+   surface) has counterparts that must move with it — templates, samples, fixtures, seed data,
+   docs. Find those by content, not location: they often sit outside the changed tree and its
+   stack, and a literal a changed file copies from a shipped artifact (a header row, a sample
+   payload) names one. A deferral the submission itself states — a PR description or commit
+   subject carried verbatim — is a claim to test, not scope conceded. Tough but grounded, aimed at
+   mistakes that matter: every finding names its location and its evidence — a concrete failure
+   scenario, the intent an overreaching hunk serves no part of, or a vacuous test shown passing
+   without the change; style nits, speculation, and padding are out of scope, and zero findings is
+   a valid outcome. Besides what the invocation asks, it
    returns its findings numbered and what in scope it did not read, by name (or that it read
    everything). Out of scope bounds what is reported, never what is investigated: a pre-existing
    anomaly in the mechanism the change touches is a reason to audit it. If the harness cannot
@@ -74,7 +80,7 @@ artifacts.
    compared against that baseline, holds nothing the review wrote: created files removed, or
    reported when something else may have written them (another session, a watcher); modified and
    deleted ones reported.
-4. **Report back.** Relay every finding intact — location and failure scenario included — plus
+4. **Report back.** Relay every finding intact — location and evidence included — plus
    whatever else the reviewer was instructed to return; add the session's own assessment when
    useful, but never silently drop or soften a finding. What to do with the findings is the
    caller's decision, not this skill's. Done when every reviewer finding appears in the report.

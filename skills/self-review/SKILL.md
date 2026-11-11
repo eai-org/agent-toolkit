@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.2"
+  version: "1.3"
 ---
 
 # Self-review
@@ -90,8 +90,9 @@ it runs without its confirmation step — with:
   change newly relies on, and the submission itself, whose metadata block (step 4) the prompt must
   carry verbatim; and leftovers — debug prints, commented-out code, stray TODOs, accidentally
   committed files;
-- the grounded bar: a finding exists only with a nameable concrete failure, violated rule, or
-  redundancy — hedged speculation is out, zero findings is a valid outcome;
+- the grounded bar: a finding exists only with a nameable concrete failure, violated rule,
+  redundancy, hunk serving no part of the intent, or test shown passing without the change —
+  hedged speculation is out, zero findings is a valid outcome;
 - an instruction to the reviewer to report back the harness and model it ran on.
 
 Done when the reviewer has returned its findings — possibly none — its provenance, and its

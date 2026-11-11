@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.15"
+  version: "1.16"
 ---
 
 # Review code assistant
@@ -87,6 +87,11 @@ nothing produces no output.
   general bad practice. Relevant, not "these two lines look vaguely similar".
 - **Intent mismatch** — does the diff actually do what the title and description claim; anything
   missing, and a title that oversells or hides a behaviour change.
+- **Overreach** — a hunk serving no part of the stated intent: an unasked refactor, a speculative
+  option or setting, defensive code for a state that cannot occur, complexity beyond the need.
+- **Vacuous tests** — a test the change adds or edits that would pass without it: an always-true
+  assertion, a mock asserting its own stub, a test never reaching the changed path, an assertion
+  loosened or deleted until the test passes.
 - **Still needed** — the target may have gained the same fix since the branch forked; a change
   that no longer applies is itself a finding. Check with
   `git log --oneline <merge-base>..<target-ref> -- <changed paths>` and read any hit that touches
@@ -117,12 +122,16 @@ The core rule. A comment may exist only when it points to concrete evidence of o
    non-exported const in the class's own file that only aliases one class field is collapsible, or
    the same expression repeated across a template, collapsed into one named derivation; an exported
    or separate-file const is fine, it may be reused elsewhere.)
+4. **It does more than the intent asks** — you can name the hunk and the stated intent it serves
+   no part of.
+5. **A test is vacuous** — you can show it passing without the change, by running it on the
+   pre-change code or by reading (an assertion that holds whatever the code returns).
 
-If you cannot name the evidence — the exact bug, rule, or redundancy — do not comment. Hedge
-phrases that signal a guess with no evidence ("there might be", "this could potentially",
-"consider whether") are a smell and a classic AI tell: with real evidence, state it plainly;
-without it, stay silent. (This bans raising findings you can't back — not phrasing a well-grounded
-**Suggested comment** to the author as a polite question; see Output.)
+If you cannot name the evidence — the exact bug, rule, redundancy, overreach, or vacuous test — do
+not comment. Hedge phrases that signal a guess with no evidence ("there might be", "this could
+potentially", "consider whether") are a smell and a classic AI tell: with real evidence, state it
+plainly; without it, stay silent. (This bans raising findings you can't back — not phrasing a
+well-grounded **Suggested comment** to the author as a polite question; see Output.)
 
 One exception: a genuine clarifying question to the author — rare, only when the diff is truly
 ambiguous about intent or correctness and the answer changes whether it is right. Never a routine
