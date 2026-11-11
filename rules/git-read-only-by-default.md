@@ -16,6 +16,11 @@ force variants (`--force`, `--force-with-lease`); submodule, worktree, and confi
 This rule gates the effect, not the tool: it covers not just `git` but anything achieving the
 same result (`gh`, forge APIs, web UIs), and forge-side writes like opening or merging a PR.
 
+Run each gated write as its own command, even when one instruction names several ("commit and
+push"), so each is approved or refused alone: never bundle two in a chain (`&&`, `;`), subshell,
+or script you write or pick yourself. Staging the files a commit takes is part of that commit. A
+script or tool the user names to run is one action: run it as is.
+
 Exempt: a throwaway repo the agent creates (test fixture, temp clone), while writes stay inside it.
 They escape by default: a git command whose target directory is not a repo walks up into the
 session's repo. So fence such a script with `GIT_CEILING_DIRECTORIES`, verify the target is that
