@@ -3,7 +3,7 @@ name: create-implementation-plan
 description: Turn a refined requirements document into a structured implementation PLAN.md a fresh session can execute. Planning only — decides the "how", not the "what". Invoke manually only.
 license: MIT
 metadata:
-  version: "1.20"
+  version: "1.21"
 ---
 
 # Create Implementation Plan
@@ -38,7 +38,10 @@ design, not a separate phase that runs before planning starts.
    check cheap: `git diff <commit>..HEAD -- <cited paths>`). If the requirements gate
    implementation on missing data or upstream work, verify that gate independently — stale gating
    claims are a common failure mode and easily inflate into a plan's first step when the data is
-   in fact already addressable.
+   in fact already addressable. Check, read-only, which open PRs and recently active branches
+   touch the files the plan will edit (those the requirements cite, and again any step 3 adds);
+   each overlap goes in the How of the step editing that file, with how that step keeps the later
+   rebase small.
 
 3. **Work out the approach.** This is the core of the task: design the "how" — what existing code to
    reuse, what to introduce, where each change goes, and the order of operations that avoids broken
@@ -60,7 +63,16 @@ design, not a separate phase that runs before planning starts.
    the new component's target and prescribe only what fits, citing the file for shape; "copy X
    verbatim" is a decision settled line by line, never by the file's existence. A technical claim
    a step rests on ("X needs exactly Y") is verified against a doc, a compile or a test, never
-   read off what the prior art happens to do.
+   read off what the prior art happens to do. A command a step tells the session to run is such a
+   claim. Run it first, as written, from the directory the step names, on today's code, when it
+   is cheap and safe: it only reads or validates (a lint, a test, a build), writes nothing shared
+   (a database, a service), and is small (one package or module, a minute or two; every package
+   in a repo, or a large project as a whole, is too much). One that fails for a cause the planned
+   changes would not fix (an unrelated module that fails to build, missing test data) is rescoped
+   in that step's How with its reason, never left for the session to discover. One that changes
+   state (a generator, a migration, a deploy), costs more than that, or runs on something an
+   earlier step creates is never run while planning: check only that it resolves (the tool is
+   installed, the flag exists).
 
    **Deletions tend to cascade.** When a step deletes code, look for what that code was the last
    user of (a module, helper, template, constant, package) by searching for each one's other users,

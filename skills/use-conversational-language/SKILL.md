@@ -40,6 +40,10 @@ Hard rules:
   with the plainest everyday word.
 - Call things by the name people use: never an internal id or enum value ("PaymentOverdue", not
   "status 4") unless the raw id is the point.
+- Never state or imply a made-up event: a meeting, a discussion, anything the reader saw or was
+  told. The agent's work (plans, notes, unsent drafts) counts as the person's own ("I looked into
+  it") but never reached the reader, and its process words name something else to them
+  ("refinement" to a PO is the team meeting).
 - Quoted text, titles, names and fixed lines the caller requires (trailers, template footers) keep
   their wording, dashes and emoji included.
 
