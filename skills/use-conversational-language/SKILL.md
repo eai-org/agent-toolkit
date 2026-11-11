@@ -3,7 +3,7 @@ name: use-conversational-language
 description: Voice rules for text published under a person's name and read as if a person typed it, such as chat messages to colleagues, PR comments and descriptions, commit messages, review replies, and code comments. Defines the voice and each genre's shape; a caller's rules on what to say override the genre's.
 license: MIT
 metadata:
-  version: "1.12"
+  version: "1.13"
 ---
 
 # Use conversational language
@@ -41,6 +41,10 @@ Hard rules:
   didn't watch you work out ("a pick closes its finding"): spell the case out in their words.
 - Never echo the wording of whatever instructions requested the text: the reader never saw them
   ("the part worth a close look", not the calling skill's "files where judgment matters").
+- Never state or imply a made-up event: a meeting, a discussion, anything the reader saw or was
+  told. The agent's work (plans, notes, unsent drafts) counts as the person's own ("I looked into
+  it") but never reached the reader, and its process words name something else to them
+  ("refinement" to a PO is the team meeting).
 - Quoted text, titles, names and fixed lines the caller requires (trailers, template footers) keep
   their wording, dashes and emoji included.
 
