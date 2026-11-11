@@ -3,13 +3,13 @@ name: create-implementation-plan
 description: Turn a refined requirements document into a structured implementation PLAN.md a fresh session can execute. Planning only — decides the "how", not the "what". Invoke manually only.
 license: MIT
 metadata:
-  version: "1.21"
+  version: "1.22"
 ---
 
 # Create Implementation Plan
 
-**Planning only** — no code changes, no execution. You produce one document: an implementation plan
-that is the contract for a later execution session.
+**Planning only** — no code changes, no implementing. You produce one document: an implementation
+plan that is the contract for a later execution session.
 
 This is the **"how", not the "what"**. The "what" was settled in an earlier refinement step and
 lives in the requirements document you're given; do not redefine scope. But you **must flag** any
@@ -66,13 +66,13 @@ design, not a separate phase that runs before planning starts.
    read off what the prior art happens to do. A command a step tells the session to run is such a
    claim. Run it first, as written, from the directory the step names, on today's code, when it
    is cheap and safe: it only reads or validates (a lint, a test, a build), writes nothing shared
-   (a database, a service), and is small (one package or module, a minute or two; every package
-   in a repo, or a large project as a whole, is too much). One that fails for a cause the planned
-   changes would not fix (an unrelated module that fails to build, missing test data) is rescoped
-   in that step's How with its reason, never left for the session to discover. One that changes
-   state (a generator, a migration, a deploy), costs more than that, or runs on something an
-   earlier step creates is never run while planning: check only that it resolves (the tool is
-   installed, the flag exists).
+   (a database, a service), and is small (one package or module, expected to finish in a minute or
+   two; every package in a repo, or a large project as a whole, is too much). One that fails for a
+   cause the planned changes would not fix (an unrelated module that fails to build, missing test
+   data) is rescoped in that step's How with its reason, never left for the session to discover. One
+   that changes state (a generator, a migration, a deploy), costs more than that, or runs on
+   something an earlier step creates is never run while planning: check only that it resolves (the
+   tool is installed, the flag exists).
 
    **Deletions tend to cascade.** When a step deletes code, look for what that code was the last
    user of (a module, helper, template, constant, package) by searching for each one's other users,
@@ -185,7 +185,9 @@ something is a decision or a mechanical detail, put it in.
 
 ## Boundaries
 
-- Do **not** modify any source files. The only file you write is the plan.
+- Do **not** modify any source files. The only file you write is the plan; the checks run while
+  working out the approach may leave side outputs (a build folder, a cache) only in scratch space or
+  git-ignored paths; one that would write elsewhere is not run.
 - Do **not** start implementing.
 - When preparing the plan from a `*.REQUIREMENTS.md` file, you normally shouldn't need to go back to
   the `*.TICKET.md` — close any gaps with the user instead. Never assume a requirement; ask.
