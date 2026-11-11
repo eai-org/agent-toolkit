@@ -112,8 +112,8 @@ In the toolkit:
 - Rules are decoupled from skills and always opt-in, because they are always-on and opinionated
   (e.g. `git-read-only-by-default`).
 - Human-facing output must read human: PR replies and commit messages sound like a colleague wrote
-  them (`use-conversational-language`, enforced by the `write-realistic-texts` rule), because in
-  mixed teams trust depends on it.
+  them (`use-conversational-language`, layered on `explain-in-simple-language` and enforced by
+  the `write-realistic-texts` rule), because in mixed teams trust depends on it.
 
 ## The litmus test
 

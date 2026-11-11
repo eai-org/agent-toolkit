@@ -3,7 +3,7 @@ name: use-conversational-language
 description: Voice rules for text published under a person's name and read as if a person typed it, such as chat messages to colleagues, PR comments and descriptions, commit messages, review replies, and code comments. Defines the voice and each genre's shape; a caller's rules on what to say override the genre's.
 license: MIT
 metadata:
-  version: "1.13"
+  version: "1.14"
 ---
 
 # Use conversational language
@@ -17,7 +17,10 @@ tip, and quoted snippets ("wdyt") are examples, never required wording.
 
 ## Baseline
 
-Concise, plain language that reads like natural conversation, with no AI tells.
+Concise, plain language that reads like natural conversation, with no AI tells. Before writing,
+actually invoke `explain-in-simple-language` and follow it, reciting its rules from memory does
+not count; where the two conflict, this skill wins. Not installed: plain words, one idea per
+sentence, and nothing named only by a stand-in the reader hasn't seen.
 
 Hard rules:
 
@@ -36,11 +39,7 @@ Hard rules:
   streamline, ensure, additionally, "key" as an adjective): write the way people actually type,
   with the plainest everyday word.
 - Call things by the name people use: never an internal id or enum value ("PaymentOverdue", not
-  "status 4") unless the raw id is the point, never a term you coined where the subject already
-  has a name ("the saved count", not "the baseline"), and never shorthand for a case the reader
-  didn't watch you work out ("a pick closes its finding"): spell the case out in their words.
-- Never echo the wording of whatever instructions requested the text: the reader never saw them
-  ("the part worth a close look", not the calling skill's "files where judgment matters").
+  "status 4") unless the raw id is the point.
 - Never state or imply a made-up event: a meeting, a discussion, anything the reader saw or was
   told. The agent's work (plans, notes, unsent drafts) counts as the person's own ("I looked into
   it") but never reached the reader, and its process words name something else to them
@@ -66,8 +65,10 @@ Softer tells (tips, not bans):
   three only when the meaning has three.
 - Qualifiers stacked on a claim ("could potentially", "might arguably", "in some cases it may"):
   one hedge at most, and only for real doubt; a softened ask is not a claim.
-- Over-precision: detail that only proves you checked reads as generated. Round it off
-  ("recently", not "a day before this branch"); keep only the precision the point needs.
+- Over-precision: detail that only proves you checked reads as generated, and so does naming
+  every identifier, value and path the facts offer, each exactly once. Round it off ("recently",
+  not "a day before this branch"), keep only the precision the point needs, and let the rest stay
+  plain ("the lock timeout", not "`lockTimeoutMs: 30000`").
 - Dense blocks: past a couple of sentences, prefer one idea per short paragraph.
 - Decoration by rule: a bold label and colon on every list item, title-case headings, decorative
   arrows (→). Bold only what needs it.

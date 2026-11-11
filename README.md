@@ -132,11 +132,11 @@ Wording for what the agent writes to people, whether the user in the session or 
 
 - **[explain-in-simple-language](./skills/explain-in-simple-language/SKILL.md)** — word
   explanations, recaps, questions to the user, and documents humans read so they are understood
-  on the first read,
-  without dumbing them down or hiding that an agent wrote them.
+  on the first read, without dumbing them down; voice stays with the caller.
 - **[use-conversational-language](./skills/use-conversational-language/SKILL.md)** — the voice for
-  text that should read as if a person typed it, used by the review skills for comments and
-  replies and by rules for texts other people read and code comments.
+  text that should read as if a person typed it, layered on explain-in-simple-language; used by
+  the review skills for comments and replies and by rules for texts other people read and code
+  comments.
 
 ### Code checks
 
@@ -301,6 +301,7 @@ flowchart TD
   execute -. when available .-> harden
   self_review -. when available .-> handover["handover"]
   handover --> express
+  express --> simple
   simple_rule["write-simple-explanations rule"] --> simple["explain-in-simple-language"]
   refine -. when available .-> simple
   plan -. when available .-> simple
