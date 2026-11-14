@@ -31,7 +31,7 @@ const dir = (path: string) => path.slice(0, path.lastIndexOf('/'))
 
 const parseAll = (files: FileInfo[]) => files.filter((f) => f.path.endsWith('.md')).map(parse)
 
-const SINGLE: Record<string, keyof RpacFiles> = {
+const SINGLE: Record<string, 'ticket' | 'requirements' | 'plan' | 'decisions' | 'manualTest'> = {
   TICKET: 'ticket', REQUIREMENTS: 'requirements', PLAN: 'plan', DECISIONS: 'decisions', 'MANUAL-TEST': 'manualTest',
 }
 
@@ -49,10 +49,12 @@ export function tasksFrom(files: FileInfo[]): Task[] {
       loose.push(...ps)
       continue
     }
-    const parent = ps.every((p) => p.suffix === 'TICKET' && p.stem === p.folder) && ps.some((p) => (basesIn.get(p.folder)?.size ?? 0) > 1)
-    if (parent) continue
+    // an epic's own ticket, in a folder it shares with its child tickets, is not a task
+    const sharesFolder = ps.some((p) => (basesIn.get(p.folder)?.size ?? 0) > 1)
+    if (sharesFolder && ps.every((p) => p.suffix === 'TICKET' && p.stem === p.folder)) continue
     tasks.push({ key: base, title: base, files: ps.map((p) => p.file), mtimeMs: Math.max(...ps.map((p) => p.file.mtimeMs)) })
   }
+  // a file with no task of its own joins the only task in its folder
   for (const p of loose) {
     const owners = tasks.filter((t) => t.files.some((f) => dir(f.path) === dir(p.file.path)))
     if (owners.length !== 1) continue
@@ -66,13 +68,18 @@ export function rpacFiles(task: Task): RpacFiles {
   const out: RpacFiles = { selfReviews: [], handovers: [], other: [] }
   const best: Record<string, number> = {}
   for (const p of parseAll(task.files)) {
+    const path = p.file.path
     const slot = SINGLE[p.suffix]
     if (slot === 'ticket' || slot === 'requirements' || slot === 'plan') {
-      if (p.version > (best[slot] ?? 0)) { best[slot] = p.version; out[slot] = p.file.path }
-    } else if (slot) out[slot as 'decisions' | 'manualTest'] = p.file.path
-    else if (/^SELF-REVIEW(-\d+)?$/.test(p.suffix)) out.selfReviews.push(p.file.path)
-    else if (/^HANDOVER(-\d+)?$/.test(p.suffix)) out.handovers.push(p.file.path)
-    else out.other.push(p.file.path)
+      // the highest version wins
+      if (p.version > (best[slot] ?? 0)) {
+        best[slot] = p.version
+        out[slot] = path
+      }
+    } else if (slot) out[slot] = path
+    else if (/^SELF-REVIEW(-\d+)?$/.test(p.suffix)) out.selfReviews.push(path)
+    else if (/^HANDOVER(-\d+)?$/.test(p.suffix)) out.handovers.push(path)
+    else out.other.push(path)
   }
   return out
 }

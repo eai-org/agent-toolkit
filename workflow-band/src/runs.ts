@@ -1,3 +1,4 @@
+import type { EngineInterface } from 'claude-code'
 import type { Run } from './workflow'
 
 export const RUNS_CAP = 200
@@ -16,3 +17,8 @@ export const endRuns = (runs: Run[], session: string, at: number): Run[] =>
   runs.map((r) => (r.session === session && r.endedAt === undefined ? { ...r, endedAt: at } : r))
 
 export const runsKey = (repo: string): string => `runs:${repo}`
+
+export async function readRuns($: EngineInterface, repo: string): Promise<Run[]> {
+  const stored = await $.store.get(runsKey(repo))
+  return Array.isArray(stored) ? (stored as Run[]) : []
+}

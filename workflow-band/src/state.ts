@@ -1,11 +1,11 @@
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface } from 'claude-code'
-import { nameIn } from './actions'
+import { errorText, nameIn } from './actions'
 import { readFolders, rootsFor } from './config'
 import { NO_TOKENS, type Numbers } from './metrics'
 import { newest, pickTask } from './pick'
 import { listFiles, reader, repoOf } from './repo'
-import { runsKey } from './runs'
+import { readRuns } from './runs'
 import type { Run } from './workflow'
 import type { Shown, UiState } from '../types'
 import { WORKFLOWS } from '../workflows'
@@ -21,30 +21,34 @@ export const numbers = atom({ plugin: 'agent-toolkit', key: 'numbers' } as const
 export const shown = atom({ plugin: 'agent-toolkit', key: 'shown' } as const, null, { shape: 'shown-1' })
 export const ui = atom({ plugin: 'agent-toolkit', key: 'ui' } as const, UI, { shape: 'ui-2' })
 
+// the task to show: the first workflow that has one
+async function findShown($: EngineInterface): Promise<Shown | null> {
+  const repo = await repoOf($)
+  const runs = await readRuns($, repo.root)
+  const where = { session: await $.session.id(), checkout: repo.checkout, pinned: (await read($, ui)).pinned }
+  const io = reader($)
+  const folders = await readFolders($, repo)
+  for (const wf of WORKFLOWS) {
+    const tasks = await wf.tasks(await listFiles($, repo, rootsFor(wf, folders)), io)
+    // a run recorded before its task had files gets the task its arguments name, else the newest one changed since
+    const taskFor = (r: Run) => wf.taskOf(r.skill, r.args, tasks) ?? newest(tasks.filter((t) => t.mtimeMs >= r.at))?.key ?? ''
+    const resolved = runs.map((r) => (r.task || !wf.skills.includes(r.skill) ? r : { ...r, task: taskFor(r) }))
+    const task = pickTask(tasks, resolved, where)
+    if (!task) continue
+    const view = await wf.view(task, resolved, io)
+    const names = (await $.command.list()).map((c) => c.name)
+    const installed = wf.skills.filter((skill) => nameIn(names, skill) !== undefined)
+    return { workflow: wf.id, name: wf.name, repo, task, tasks: tasks.map(({ key, title }) => ({ key, title })), view, installed }
+  }
+  return null
+}
+
 export async function refresh($: EngineInterface): Promise<void> {
   try {
-    const repo = await repoOf($)
-    const stored = await $.store.get(runsKey(repo.root))
-    const runs = Array.isArray(stored) ? (stored as Run[]) : []
-    const where = { session: await $.session.id(), checkout: repo.checkout, pinned: (await read($, ui)).pinned }
-    const io = reader($)
-    const folders = await readFolders($, repo)
-    for (const wf of WORKFLOWS) {
-      const tasks = await wf.tasks(await listFiles($, repo, rootsFor(wf, folders)), io)
-      const resolved = runs.map((r) =>
-        r.task || !wf.skills.includes(r.skill) ? r : { ...r, task: wf.taskOf(r.skill, r.args, tasks) ?? newest(tasks.filter((t) => t.mtimeMs >= r.at))?.key ?? '' },
-      )
-      const task = pickTask(tasks, resolved, where)
-      if (!task) continue
-      const view = await wf.view(task, resolved, io)
-      const names = (await $.command.list()).map((c) => c.name)
-      const installed = wf.skills.filter((skill) => nameIn(names, skill) !== undefined)
-      await update($, shown, () => ({ workflow: wf.id, name: wf.name, repo, task, tasks: tasks.map(({ key, title }) => ({ key, title })), view, installed }))
-      return
-    }
-    await update($, shown, () => null)
+    const found = await findShown($)
+    await update($, shown, () => found)
   } catch (err) {
-    $.ui.log(`workflow-band: refresh failed: ${err instanceof Error ? err.message : String(err)}`, { to: 'debug' })
+    $.ui.log(`workflow-band: refresh failed: ${errorText(err)}`, { to: 'debug' })
     await update($, shown, () => null).catch(() => undefined)
   }
 }

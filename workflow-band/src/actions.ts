@@ -3,6 +3,8 @@ import type { Action } from './workflow'
 
 export const CLEAR_FIRST = 'Clear first, then run (Recommended)', RUN_HERE = 'Run here', CANCEL = 'Cancel'
 
+export const errorText = (err: unknown): string => (err instanceof Error ? err.message : String(err))
+
 export const nameIn = (names: string[], skill: string): string | undefined =>
   names.find((n) => n === skill) ?? names.find((n) => n.endsWith(`:${skill}`))
 
@@ -31,7 +33,10 @@ export async function openFile($: EngineInterface, path: string): Promise<void> 
     // the extension leaves the focus in the terminal, so the next click on the band still lands
     const viaIde = async () => !(await $.mcp.call('ide', 'openFile', { filePath: path, makeFrontmost: false })).isError
     // the link needs no `code` CLI on PATH
-    if ((await $.env.get('TERM_PROGRAM')) === 'vscode' && ((await viaIde().catch(() => false)) || (await open(vscodeLink(path))))) return
+    if ((await $.env.get('TERM_PROGRAM')) === 'vscode') {
+      if (await viaIde().catch(() => false)) return
+      if (await open(vscodeLink(path))) return
+    }
     if (!(await open(path))) throw new Error(path)
   } catch {
     $.ui.toast(`Could not open ${path}`)

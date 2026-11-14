@@ -19,15 +19,18 @@ export async function repoOf($: EngineInterface): Promise<Repo> {
   }
 }
 
+type Entries = Awaited<ReturnType<EngineInterface['fs']['list']>>
+
+const mdFiles = (dir: string, entries: Entries): FileInfo[] =>
+  entries.filter((e) => e.kind === 'file' && e.name.endsWith('.md')).map((e) => ({ path: `${dir}/${e.name}`, mtimeMs: e.mtimeMs }))
+
+// the folder and one level of subfolders
 async function mdIn($: EngineInterface, dir: string): Promise<FileInfo[]> {
   const entries = await $.fs.list(dir).catch(() => undefined)
   if (!entries) return []
-  const files = entries.filter((e) => e.kind === 'file' && e.name.endsWith('.md')).map((e) => ({ path: `${dir}/${e.name}`, mtimeMs: e.mtimeMs }))
-  const nested = await Promise.all(entries.filter((e) => e.kind === 'dir').map((e) => $.fs.list(`${dir}/${e.name}`).then(
-    (sub) => sub.filter((f) => f.kind === 'file' && f.name.endsWith('.md')).map((f) => ({ path: `${dir}/${e.name}/${f.name}`, mtimeMs: f.mtimeMs })),
-    () => [],
-  )))
-  return [...files, ...nested.flat()]
+  const subdirs = entries.filter((e) => e.kind === 'dir').map((e) => `${dir}/${e.name}`)
+  const nested = await Promise.all(subdirs.map((sub) => $.fs.list(sub).then((inside) => mdFiles(sub, inside), () => [])))
+  return [...mdFiles(dir, entries), ...nested.flat()]
 }
 
 export async function listFiles($: EngineInterface, repo: Repo, roots: readonly string[]): Promise<FileInfo[]> {
