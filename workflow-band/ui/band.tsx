@@ -4,16 +4,18 @@ import { PANE, setUi } from '../src/state'
 import { elapsed, fmtTokens, markdown, percent, totalTokens } from '../src/metrics'
 import type { CompactItem, Numbers, Shown, Status, UiState } from '../types'
 
-const ICON: Record<Status, string> = { done: '✓', current: '◉', todo: '○', skipped: '○', unknown: '?', stopped: '⚠' }
+const ICON: Record<Status, string> = { done: '☑', current: '▣', todo: '☐', skipped: '☐', unknown: '?', stopped: '⚠' }
+const TONE: Partial<Record<Status, 'success' | 'suggestion' | 'warning'>> = { done: 'success', current: 'suggestion', stopped: 'warning' }
 
 type Piece = { text: string; item?: CompactItem }
 
 const cells = (pieces: Piece[]) => pieces.reduce((n, p) => n + p.text.length, 0)
 
 const pieces = (s: Shown, short: boolean): Piece[] => [
+  { text: '◆ ' },
   { text: `${s.name} ` },
   ...s.view.compact.flatMap((item, i) => {
-    const text = short && item.status === 'done' ? ICON.done : `${ICON[item.status]} ${item.label}${item.hardened ? ' ⛨' : ''}`
+    const text = short && item.status === 'done' ? ICON.done : `${ICON[item.status]} ${item.label}`
     return [...(i ? [{ text: ' ─ ' }] : []), { text, item }]
   }),
 ]
@@ -54,13 +56,15 @@ export async function drawBand($: EngineInterface, e: RenderInput<'AbovePrompt'>
     <Box key="steps" flexDirection="row" width={width}>
       {row.map(({ text, item }, i) =>
         item?.status === 'done' && item.file ? (
-          <Button key={`item-${item.key}`} plain label={text} hover={scope(item)} onPress={() => openFile($, item.file!)} />
+          <Button key={`item-${item.key}`} plain label={text} hover={scope(item)} onPress={() => openFile($, item.file!)}><Text color="success">{text}</Text></Button>
+        ) : item?.status === 'stopped' ? (
+          <Button key={`item-${item.key}`} plain label={text} hover={scope(item)} onPress={() => expand()}><Text color="warning">{text}</Text></Button>
         ) : (
           <Text
             wrap="truncate-end"
-            bold={i === 0}
-            color={item?.status === 'current' ? 'suggestion' : item?.status === 'stopped' ? 'warning' : undefined}
-            dimColor={item ? item.status === 'todo' || item.status === 'unknown' : i > 0}
+            bold={i === 1}
+            color={i === 0 ? 'claude' : item && TONE[item.status]}
+            dimColor={item ? item.status === 'todo' || item.status === 'unknown' : i > 1}
             hover={scope(item)}
           >
             {text}

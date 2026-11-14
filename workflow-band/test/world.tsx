@@ -14,10 +14,8 @@ export const ROOT = '/r/.agents/plans'
 const DIR = `${ROOT}/123-x`
 const REQ = `${DIR}/123-x.REQUIREMENTS.md`
 export const PLN = `${DIR}/123-x.PLAN.md`
-export const SKILLS = ['fetch-ticket', 'refine-ticket', 'harden-artifact', 'create-implementation-plan', 'create-manual-test-instructions', 'split-plan-tasks', 'execute-plan-tasks', 'self-review', 'handover']
+export const SKILLS = ['fetch-ticket', 'refine-ticket', 'create-implementation-plan', 'create-manual-test-instructions', 'split-plan-tasks', 'execute-plan-tasks', 'self-review', 'handover']
 const EXECUTING: Partial<Run>[] = [
-  { skill: 'harden-artifact', file: REQ },
-  { skill: 'harden-artifact', file: PLN },
   { skill: 'self-review', group: 1 },
   { skill: 'handover', group: 1 },
 ]

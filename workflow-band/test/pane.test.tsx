@@ -29,10 +29,23 @@ test('expand opens the pane and the band drops its steps', async ($, on) => {
   await ui.unmount()
 })
 
+test('a stopped step opens the pane', async ($, on) => {
+  const opened: unknown[] = []
+  on('ui.open', (_, e) => {
+    opened.push(e)
+    return { value: { isPlaced: true } }
+  })
+  const { ui } = await band($, on, { runs: STOPPED })
+  await ui.press({ key: 'item-group-2' })
+  expect(opened).toEqual([{ id: 'workflow', title: 'RPAC · 123-x' }])
+  expect(await ui.find({ key: 'compact' })).toBeDefined()
+  await ui.unmount()
+})
+
 test('the pane lists every step and the current group\'s tasks', async ($, on) => {
   const { pane: p } = await pane($, on)
   expect(await p.find({ type: 'Text', text: /Refine/ })).toBeDefined()
-  expect(await p.find({ type: 'Text', text: /Harden/ })).toBeUndefined()
+  expect(await p.find({ type: 'Text', text: '▣ Execute 3/5' })).toBeDefined()
   expect(await p.find({ type: 'Text', text: /2\.2 Add reject dialog/ })).toBeDefined()
   expect(await p.find({ type: 'Text', text: /PR 1 Approval API/ })).toBeDefined()
   expect(await p.find({ type: 'Text', text: /1\.1 Add endpoint/ })).toBeUndefined()
@@ -55,6 +68,9 @@ test('the switcher pins another task', async ($, on) => {
   await p.press({ key: 'task-99-old' })
   expect(await p.find({ type: 'Text', text: 'RPAC · 99-old' })).toBeDefined()
   expect(await p.find({ key: 'task-99-old' })).toBeUndefined()
+  await p.press({ key: 'pick' })
+  await p.press({ key: 'task-123-x' })
+  expect(await p.find({ type: 'Text', text: 'RPAC · 123-x' })).toBeDefined()
   await p.unmount()
 })
 
@@ -69,9 +85,9 @@ test('compacting closes the pane and brings the steps row back', async ($, on) =
 })
 
 test('a missing skill has no button', async ($, on) => {
-  const { pane: p } = await pane($, on, { skills: SKILLS.filter((s) => s !== 'split-plan-tasks') })
-  expect(await p.find({ key: 'act-split' })).toBeUndefined()
-  expect(await p.find({ key: 'act-plan' })).toBeDefined()
+  const { pane: p } = await pane($, on, { skills: SKILLS.filter((s) => s !== 'self-review') })
+  expect(await p.find({ key: 'act-self-review-2' })).toBeUndefined()
+  expect(await p.find({ key: 'act-handover-2' })).toBeDefined()
   await p.unmount()
 })
 
@@ -107,14 +123,23 @@ test('a file label keeps every suffix after the task name', async ($, on) => {
 
 test('a row shows every installed action', async ($, on) => {
   const { pane: p, commands } = await pane($, on)
-  expect((await p.find({ key: 'act-refine-2' }))?.text).toBe('⛨ harden')
-  await p.press({ key: 'act-refine-2' })
-  expect(commands).toEqual([{ command: 'harden-artifact', args: `${ROOT}/123-x/123-x.REQUIREMENTS.md` }])
+  expect((await p.find({ key: 'act-manual-test' }))?.text).toBe('▶ create-manual-test-instructions')
+  await p.press({ key: 'act-manual-test' })
+  expect(commands).toEqual([{ command: 'create-manual-test-instructions', args: `${ROOT}/123-x/123-x.REQUIREMENTS.md` }])
   await p.unmount()
 })
 
-test('a stopped row still shows its three actions', async ($, on) => {
+test('a done row has no run button', async ($, on) => {
+  const { pane: p } = await pane($, on)
+  expect(await p.find({ key: 'act-plan' })).toBeUndefined()
+  expect(await p.find({ key: 'act-task-2.1' })).toBeUndefined()
+  expect(await p.find({ key: 'file-plan' })).toBeDefined()
+  await p.unmount()
+})
+
+test('a stopped row still shows its two actions', async ($, on) => {
   const { pane: p } = await pane($, on, { runs: STOPPED })
-  expect(await p.find({ key: 'act-task-2.2-3' })).toBeDefined()
+  expect(await p.find({ key: 'act-task-2.2-2' })).toBeDefined()
+  expect(await p.find({ key: 'act-task-2.2-3' })).toBeUndefined()
   await p.unmount()
 })

@@ -3,7 +3,7 @@ import type { FileInfo, Task, TaskView } from '../types'
 export type { Action, CompactItem, FileInfo, Row, Status, Task, TaskView } from '../types'
 
 export type Reader = { read: (path: string) => Promise<string> }
-export type Run = { skill: string; args: string; task: string; at: number; session: string; checkout: string; endedAt?: number; item?: string; group?: number; file?: string }
+export type Run = { skill: string; args: string; task: string; at: number; session: string; checkout: string; endedAt?: number; item?: string; group?: number }
 export type Workflow = {
   id: string
   name: string

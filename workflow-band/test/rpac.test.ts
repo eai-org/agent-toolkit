@@ -38,37 +38,28 @@ const find = (rows: Row[], key: string): Row | undefined => {
 const SPLIT = ['TICKET', 'REQUIREMENTS', 'PLAN']
 const tick = (...ids: string[]) => ids.reduce((p, id) => p.replace(`[ ] **${id}`, `[x] **${id}`), PLAN)
 
-const keys = (rows: Row[]): string[] => rows.flatMap((r) => [r.key, ...keys(r.rows ?? [])])
-
-test('after refine, plan is next and the refine row offers hardening', async () => {
+test('after refine, plan is next', async () => {
   const v = await view(['TICKET', 'REQUIREMENTS'])
   expect(find(v.rows, 'fetch')?.status).toBe('done')
   expect(find(v.rows, 'refine')?.status).toBe('done')
   expect(v.next).toMatchObject({ skill: 'create-implementation-plan', args: REQ, label: 'plan' })
-  expect(find(v.rows, 'refine')?.actions.map((a) => [a.label, a.args])).toEqual([['▶ refine-ticket', P('123-x/123-x.TICKET.md')], ['⛨ harden', REQ]])
+  expect(find(v.rows, 'refine')?.actions.map((a) => [a.label, a.args])).toEqual([['▶ refine-ticket', P('123-x/123-x.TICKET.md')]])
   expect(find(v.rows, 'plan')?.actions.map((a) => a.label)).toEqual(['▶ create-implementation-plan'])
 })
 
-test('after plan, split is next and no row is about hardening', async () => {
+test('after plan, split is next', async () => {
   const v = await view(SPLIT, '# Plan\n- [ ] AC-1 a\n')
   expect(v.next).toMatchObject({ skill: 'split-plan-tasks', args: PLN, label: 'split' })
   expect(find(v.rows, 'plan')?.actions.map((a) => [a.skill, a.args, a.label])).toEqual([
     ['create-implementation-plan', REQ, '▶ create-implementation-plan'],
-    ['harden-artifact', PLN, '⛨ harden'],
   ])
-  expect(keys((await view(SPLIT)).rows).filter((k) => k.startsWith('harden-'))).toEqual([])
 })
 
 test('executing shows the group and task', async () => {
   const v = await view(SPLIT, PLAN, [
-    { skill: 'harden-artifact', file: REQ },
-    { skill: 'harden-artifact', file: PLN },
     { skill: 'self-review', group: 1 },
     { skill: 'handover', group: 1 },
   ])
-  expect(find(v.rows, 'refine')?.hardened).toBe(true)
-  expect(find(v.rows, 'plan')?.hardened).toBe(true)
-  expect(v.compact.filter((c) => c.hardened).map((c) => c.label)).toEqual(['requirements', 'plan'])
   expect(v.next).toMatchObject({ skill: 'execute-plan-tasks', args: `${PLN} 2.2`, label: 'task 2.2' })
   expect(find(v.rows, 'task-2.2')?.actions[0]?.label).toBe('▶ execute-plan-tasks')
   expect(v.compact.map((c) => c.label)).toEqual(['ticket', 'requirements', 'plan', 'split', 'PR 2/2 · task 2.2', 'self-review', 'handover'])
@@ -79,8 +70,6 @@ test('files with no remembered run are unknown, not guessed', async () => {
   const v = await view([...SPLIT, 'SELF-REVIEW', 'HANDOVER'])
   expect(find(v.rows, 'self-review-1')?.status).toBe('unknown')
   expect(find(v.rows, 'handover-1')?.status).toBe('unknown')
-  expect(v.compact.some((c) => c.hardened)).toBe(false)
-  expect(find(v.rows, 'refine')?.hardened).toBeUndefined()
   expect(v.next).toMatchObject({ skill: 'execute-plan-tasks', args: `${PLN} 2.2` })
 })
 
@@ -97,7 +86,6 @@ test('a run that ended with its task unticked shows stopped', async () => {
   expect(v.next).toBeUndefined()
   expect(row?.actions.map((a) => [a.skill, a.args])).toEqual([
     ['execute-plan-tasks', `${PLN} 2.2`],
-    ['harden-artifact', PLN],
     ['create-implementation-plan', REQ],
   ])
   expect(find(v.rows, 'group-2')?.status).toBe('stopped')
@@ -124,12 +112,6 @@ test('a review file with no remembered run covers only the earliest finished gro
   expect(find(v.rows, 'execute')?.status).not.toBe('done')
 })
 
-test('hardening the ticket marks nothing hardened', async () => {
-  const v = await view(SPLIT, PLAN, [{ skill: 'harden-artifact', file: P('123-x/123-x.TICKET.md') }])
-  expect(find(v.rows, 'fetch')?.hardened).toBeUndefined()
-  expect(v.compact.some((c) => c.hardened)).toBe(false)
-})
-
 test('an unsplit plan offers nothing to execute', async () => {
   const v = await view(SPLIT, '# Plan\n- [ ] AC-1 a\n')
   expect(find(v.rows, 'execute')?.actions).toEqual([])
@@ -148,7 +130,7 @@ test('an idea without a ticket skips fetch, and rows missing their input file of
   const v = await rpac.view(task, [], io)
   expect(find(v.rows, 'fetch')?.status).toBe('skipped')
   expect(find(v.rows, 'fetch')?.actions).toEqual([])
-  expect(find(v.rows, 'refine')?.actions.map((a) => a.label)).toEqual(['⛨ harden'])
+  expect(find(v.rows, 'refine')?.actions).toEqual([])
   expect(v.compact[0]?.label).toBe('requirements')
   expect(find(v.rows, 'split')?.actions).toEqual([])
   expect(find(v.rows, 'execute')?.actions).toEqual([])
@@ -164,10 +146,9 @@ test('taskOf finds the task by a checkout-relative path, only for RPAC skills', 
   expect(rpac.taskOf('other-skill', '.agents/plans/123-x/123-x.PLAN.md', tasks)).toBeUndefined()
 })
 
-test('annotate fills the task item, group and hardened file', async () => {
+test('annotate fills the task item and group', async () => {
   const io = reader({ [PLN]: PLAN })
   const task = (await rpac.tasks(SPLIT.map((s) => f(`123-x/123-x.${s}.md`)), io))[0]!
   expect((await rpac.annotate(run({ skill: 'execute-plan-tasks', args: PLN }), task, io)).item).toBe('2.2')
   expect((await rpac.annotate(run({ skill: 'self-review' }), task, io)).group).toBe(1)
-  expect((await rpac.annotate(run({ skill: 'harden-artifact', args: '.agents/plans/123-x/123-x.PLAN.md' }), task, io)).file).toBe(PLN)
 })

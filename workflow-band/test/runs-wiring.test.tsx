@@ -11,7 +11,7 @@ test('a typed run is remembered and moves the band', async ($, on) => {
   const runs = stored(saved)
   expect(runs).toHaveLength(1)
   expect(runs[0]).toMatchObject({ skill: 'refine-ticket', task: '99-old', session: 's1', checkout: '/r' })
-  expect(await ui.find({ type: 'Text', text: '◉ requirements' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: '▣ requirements' })).toBeDefined()
   await ui.unmount()
 })
 
@@ -39,11 +39,11 @@ test('a ticket fetched before its folder exists shows once the folder appears', 
   const { ui, saved, tree } = await band($, on)
   await $.skill.prompt({ skill: 'fetch-ticket', text: 'x\n\nARGUMENTS: 555' } as never)
   expect(stored(saved).at(-1)).toMatchObject({ skill: 'fetch-ticket', task: '', session: 's1', checkout: '/r' })
-  expect(await ui.find({ type: 'Text', text: '◉ requirements' })).toBeUndefined()
+  expect(await ui.find({ type: 'Text', text: '▣ requirements' })).toBeUndefined()
   tree[ROOT] = [...tree[ROOT]!, { name: '555-y', kind: 'dir' }]
   tree[`${ROOT}/555-y`] = [{ name: '555-y.TICKET.md', kind: 'file', mtimeMs: 20 }]
   await $.turn.complete({ answer: '', durationMs: 1 } as never)
-  expect(await ui.find({ type: 'Text', text: '◉ requirements' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: '▣ requirements' })).toBeDefined()
   await ui.unmount()
 })
 

@@ -28,8 +28,10 @@ export async function openFile($: EngineInterface, path: string): Promise<void> 
     const mac = !windows && (await $.process.run(['uname'])).stdout.trim() === 'Darwin'
     const open = (target: string) =>
       $.process.run(windows ? ['cmd', '/c', 'start', '', target] : [mac ? 'open' : 'xdg-open', target]).then((r) => r.exitCode === 0, () => false)
+    // the extension leaves the focus in the terminal, so the next click on the band still lands
+    const viaIde = async () => !(await $.mcp.call('ide', 'openFile', { filePath: path, makeFrontmost: false })).isError
     // the link needs no `code` CLI on PATH
-    if ((await $.env.get('TERM_PROGRAM')) === 'vscode' && (await open(vscodeLink(path)))) return
+    if ((await $.env.get('TERM_PROGRAM')) === 'vscode' && ((await viaIde().catch(() => false)) || (await open(vscodeLink(path))))) return
     if (!(await open(path))) throw new Error(path)
   } catch {
     $.ui.toast(`Could not open ${path}`)

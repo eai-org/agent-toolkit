@@ -2,8 +2,8 @@ export type FileInfo = { path: string; mtimeMs: number }
 export type Task = { key: string; title: string; files: FileInfo[]; mtimeMs: number }
 export type Status = 'done' | 'current' | 'todo' | 'skipped' | 'unknown' | 'stopped'
 export type Action = { skill: string; args: string; label: string }
-export type Row = { key: string; label: string; status: Status; file?: string; hardened?: boolean; actions: Action[]; rows?: Row[] }
-export type CompactItem = { key: string; label: string; status: Status; file?: string; skill?: string; hardened?: boolean }
+export type Row = { key: string; label: string; status: Status; file?: string; actions: Action[]; rows?: Row[] }
+export type CompactItem = { key: string; label: string; status: Status; file?: string; skill?: string }
 export type TaskView = { rows: Row[]; compact: CompactItem[]; next?: Action; stopped?: string; other: string[] }
 
 export type Tokens = { input: number; output: number; cacheRead: number; cacheWrite: number }

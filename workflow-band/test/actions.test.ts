@@ -115,6 +115,15 @@ test('inside VS Code a file opens through a vscode:// link', async () => {
   expect(t.toasts).toEqual([])
 })
 
+test('inside VS Code a connected extension opens the file and no link is used', async () => {
+  const t = opener({ uname: 'Darwin', term: 'vscode' })
+  const calls: unknown[][] = []
+  ;(t.$ as any).mcp = { call: async (...a: unknown[]) => (calls.push(a), { content: [], isError: false }) }
+  await openFile(t.$, '/r/a b.md')
+  expect(calls).toEqual([['ide', 'openFile', { filePath: '/r/a b.md', makeFrontmost: false }]])
+  expect(t.argv).toEqual([])
+})
+
 test('outside VS Code, or when the link fails, the OS opener gets the path', async () => {
   const plain = opener({ uname: 'Darwin' })
   await openFile(plain.$, '/r/a b.md')
