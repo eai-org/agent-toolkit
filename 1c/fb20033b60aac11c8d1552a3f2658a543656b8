@@ -1,0 +1,37 @@
+workflow-band/src/runs.ts
+  s_f2de87f2f06528::t_7ffd63926a0b42 1,20-24
+workflow-band/src/state.ts
+  s_f2de87f2f06528::t_7ffd63926a0b42 3,8,24-45,48-49,51
+workflow-band/ui/status.ts
+  s_f2de87f2f06528::t_5348179a8e9d52 1-4
+workflow-band/workflows/rpac/files.ts
+  s_f2de87f2f06528::t_7ffd63926a0b42 34,52-54,57,71,74-82
+workflow-band/ui/band.tsx
+  s_f2de87f2f06528::t_6c7f7f3d12e7c9 2,5-6,12,34-49,57-81,87-108,113,129,142
+workflow-band/ui/pane.tsx
+  s_f2de87f2f06528::t_d92402163edce3 4-5,7,10-15,22-25,28-29,35,43,47-50,54-56,64,67
+workflow-band/register.tsx
+  s_f2de87f2f06528::t_973242a4dfe154 15,17-18,27-29,32-47,51-53,58-65,69-135,137,147,160,170,176,182,184,187,191,194,200,209,211-214,217-218,220,231,239,250,255,257,263-264
+workflow-band/workflows/rpac/index.ts
+  s_f2de87f2f06528::t_98881e3bc71c22 4,32-33,41-43,48-104,138,141,147,151,153-159,161,168-169,173-174,176,181-184,188
+workflow-band/src/actions.ts
+  s_f2de87f2f06528::t_7ffd63926a0b42 6-7,36-39
+workflow-band/src/repo.ts
+  s_f2de87f2f06528::t_7ffd63926a0b42 22-27,31-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1cfb20033b60aac11c8d1552a3f2658a543656b8",
+  "prompts": {},
+  "sessions": {
+    "s_f2de87f2f06528": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "80e3a95b-dcc1-425f-9bdb-1d31844c3d2d",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "stefanoslig <stefanoslignos@gmail.com>"
+    }
+  }
+}
