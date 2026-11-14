@@ -1,0 +1,63 @@
+workflow-band/workflows/rpac/index.ts
+  s_7d14688bcbfb50::t_c457ad8c76999b 20-21,29,43,67,87-93,119
+workflow-band/ui/pane.tsx
+  s_40757cdc04b7cc::t_a690f9042623d9 11
+  s_7d14688bcbfb50::t_4a4e135f8b8eb0 19
+  s_7d14688bcbfb50::t_957461ee77f518 6-7,22,38,40,47
+  s_7d14688bcbfb50::t_c457ad8c76999b 23,44-46,48-49,61
+  s_7d14688bcbfb50::t_0595fffd48884f 56
+  s_40757cdc04b7cc::t_86f881d2eec7b2 57
+README.md
+  s_7d14688bcbfb50::t_d0736827f3de6a 92-97
+  s_7d14688bcbfb50::t_957461ee77f518 90-91
+workflow-band/test/runs-wiring.test.tsx
+  s_7d14688bcbfb50::t_957461ee77f518 14,42,46
+workflow-band/test/pane.test.tsx
+  s_40757cdc04b7cc::t_87f730c042b996 71-73
+  s_40757cdc04b7cc::t_4ba20c43d0fd8c 32-44
+  s_7d14688bcbfb50::t_4a4e135f8b8eb0 88-90,126-136
+  s_7d14688bcbfb50::t_c457ad8c76999b 140,142-143
+  s_7d14688bcbfb50::t_957461ee77f518 48
+workflow-band/test/actions.test.ts
+  s_40757cdc04b7cc::t_8eea7bd64abe74 118-126
+workflow-band/test/rpac.test.ts
+  s_7d14688bcbfb50::t_c457ad8c76999b 41,46,50,133,149
+workflow-band/test/world.tsx
+  s_7d14688bcbfb50::t_c457ad8c76999b 17
+workflow-band/src/workflow.ts
+  s_7d14688bcbfb50::t_c457ad8c76999b 6
+workflow-band/src/actions.ts
+  s_40757cdc04b7cc::t_94f55b48f700c1 31-32,34
+workflow-band/types.d.ts
+  s_7d14688bcbfb50::t_c457ad8c76999b 5-6
+workflow-band/ui/band.tsx
+  s_7d14688bcbfb50::t_0595fffd48884f 15,65-67
+  s_7d14688bcbfb50::t_c457ad8c76999b 18
+  s_7d14688bcbfb50::t_f4161bb2970564 59
+  s_40757cdc04b7cc::t_cd0c7bac784d90 60-61
+  s_7d14688bcbfb50::t_957461ee77f518 7-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fc4fb9392f8a66e67d27e2fe02f8ad018e19bebb",
+  "prompts": {},
+  "sessions": {
+    "s_40757cdc04b7cc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d7a078a8-a56f-4832-ae85-7184edb1d4e4",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "stefanoslig <stefanoslignos@gmail.com>"
+    },
+    "s_7d14688bcbfb50": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f2fc9397-687a-4ed7-99af-97cb48265be2",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "stefanoslig <stefanoslignos@gmail.com>"
+    }
+  }
+}
