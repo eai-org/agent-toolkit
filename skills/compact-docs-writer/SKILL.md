@@ -79,7 +79,9 @@ collapses in every pass.
    - Restructured files an agent navigates by (an entry file and the docs it links)? When the
      harness has subagents, offer a fresh-reader test in the presentation: read-only subagents on
      a cheaper model answer realistic task questions from the docs alone ("you must add X: what do
-     you read first, where does it go?"); each miss goes back into the draft.
+     you read first, where does it go?"), starting at the drafted entry file in a scratch tree of
+     the drafts and every unchanged doc their links reach, at repo-relative paths; each miss goes
+     back into the draft.
 3. **Present & confirm.** Show the change as a unified diff inside a fenced `diff` code block —
    every removed line prefixed `-`, every added line `+`, so they render red/green — and when a
    long line changes by only a few words, add a word-level view (`[-removed-]{+added+}`)

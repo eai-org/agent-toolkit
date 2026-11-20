@@ -163,12 +163,14 @@ disclosed doc).
      phase reads only a document derived from the edited one, the addition reaches that one too.
    - Spawns a subagent, reviewer or fork? Its brief and its return are defined: what it receives,
      what it reports back (paths written, verdicts, blockers, edits made, what it did not check),
-     and that it hands nothing off itself.
+     and that it hands nothing off itself. It, or a check, reads a not-yet-applied draft laid out
+     in scratch at its repo-relative paths with the files it links, never the working-tree
+     originals.
    - Creating: hand a fresh agent (a subagent when the tool offers one, else a prompt the user
-     runs in a clean session) only the draft and one realistic input; have it walk the draft dry,
-     writing, committing and posting nothing, narrating step by step and listing each point where
-     the text is ambiguous, contradictory or silent. Each point loops back to draft; done when the
-     run reports none. Improving: offer the run, never require it.
+     runs in a clean session) only the draft, laid out as above, and one realistic input; have it
+     walk the draft dry, writing, committing and posting nothing, narrating step by step and
+     listing each point where the text is ambiguous, contradictory or silent. Each point loops
+     back to draft; done when the run reports none. Improving: offer the run, never require it.
    - No new or grown inline chunk meets the split test (progressive disclosure)?
    - Steps end on checkable, exhaustive completion criteria?
    - [scripts/check-skill.sh](scripts/check-skill.sh) `<skill-dir>` passes? While the draft sits

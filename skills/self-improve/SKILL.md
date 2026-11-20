@@ -62,9 +62,10 @@ Signals the agent was corrected in a way worth persisting: the user rejects or r
 the agent took under a skill or doc.
 
 **Only persist a *durable* lesson** — one that generalizes and will recur. Skip one-off,
-task-specific tweaks that won't apply next time; persisting those pollutes the docs. The same fix
-the user made in two places or sessions is durable, not a local choice. Whenever unsure whether it
-generalizes, ask the user.
+task-specific tweaks that won't apply next time; persisting those pollutes the docs. The same
+correction the user made separately in two places or sessions is durable, not a local choice; one
+change spanning several spots (a rename in a declaration and its callers) counts once. Whenever
+unsure whether it generalizes, ask the user.
 
 ## Workflow
 
