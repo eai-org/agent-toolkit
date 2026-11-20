@@ -4,7 +4,7 @@ description: Author or refine a skill for maximum token economy without losing i
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
-  version: "1.25"
+  version: "1.26"
 ---
 
 # Compact skill creator
@@ -123,8 +123,9 @@ disclosed doc).
    branch of the skill's design tree, resolving dependencies between decisions one at a time —
    never fire a fixed batch of questions once and then draft. Cover at least the purpose, **trigger
    type**, and any unavoidable coupling, plus whatever each answer opens up. Ask one question at a
-   time, each with your recommended answer, worded via `explain-in-simple-language` when
-   available; if a question can be answered by exploring the codebase, explore instead of asking.
+   time, each with your recommended answer and its reason, worded via `explain-in-simple-language`
+   when available; if the codebase or the user's own edits can answer a question, explore instead
+   of asking.
    A skill reading what other skills produce, or stepping into their hand-offs, takes its input
    types, the options its own hand-off carries on, and the files it must never write from a search
    of every such skill — never from the one pipeline in mind.

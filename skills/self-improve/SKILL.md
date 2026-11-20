@@ -4,7 +4,7 @@ description: Capture durable user feedback into the governing skill, doc or chec
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
-  version: "1.14"
+  version: "1.15"
 ---
 
 # Self-improve
@@ -16,8 +16,8 @@ approves. The skill proposes; the user stays in control of every change. Three w
 - **Manual** — the user invokes `/self-improve` to deliberately improve a skill or doc.
 - **Self-triggered** — the agent notices it was corrected on something a skill, doc or check
   governs (or should). Don't silently correct and move on, but don't derail the task either: note
-  the lesson, finish what the user asked for, and offer to persist it at the next natural
-  breakpoint.
+  each lesson, finish what the user asked for, and offer to persist them once, as one list, when
+  that task is done and the corrections have stopped; an offer left unanswered is not repeated.
 - **Driven by another skill** — a caller hands over lessons already phrased as durable guidance
   (directly, through its launch command pasted by the user, or to a subagent it spawns per
   [delegate.md](delegate.md)), sometimes with all or part of a target it settled with the user
@@ -62,13 +62,20 @@ Signals the agent was corrected in a way worth persisting: the user rejects or r
 the agent took under a skill or doc.
 
 **Only persist a *durable* lesson** — one that generalizes and will recur. Skip one-off,
-task-specific tweaks that won't apply next time; persisting those pollutes the docs.
-Whenever unsure whether it generalizes, ask the user.
+task-specific tweaks that won't apply next time; persisting those pollutes the docs. The same fix
+the user made in two places or sessions is durable, not a local choice. Whenever unsure whether it
+generalizes, ask the user.
 
 ## Workflow
 
 1. **Capture the lesson.** State, in one line, the general rule the feedback implies — not the
    surface incident ("Mock external HTTP in unit tests," not "the agent mocked the wrong call").
+   A reason the user did not state is inferred from what they changed and kept, marked inferred,
+   and confirmed through the proposal, not asked first. Test the wording: it covers other forms of
+   the same slip (a count → also an ordinal, a numbered file name), states the action that
+   prevents it and not only its subject, keeps a procedure's how (command, format, script), would
+   not be wrong if copied into the output it governs, and is as firm as the user's words ("never"
+   or "always" only where they said it, "consider" where they did).
 2. **Locate the target.** Settle scope first: would the lesson hold in another project? No → a
    project doc, rule or wrapper, never a shared generic skill. Yes → the governing skill or doc,
    shared ones included, edited at its canonical source when the installed copy is a symlink or

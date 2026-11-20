@@ -3,7 +3,7 @@ name: refine-ticket
 description: Refine a development ticket — or brainstorm a raw idea — into a validated, self-contained REQUIREMENTS document — the "what", verified against the codebase. Invoke manually only.
 license: MIT
 metadata:
-  version: "1.22"
+  version: "1.23"
 ---
 
 # Refine ticket
@@ -113,13 +113,13 @@ Never a `-vN` REQUIREMENTS copy beside a ticket of another base; never asked aga
 After gathering and code-verifying, **grill** the user — interview relentlessly, never guessing
 what they could clarify — to close every remaining decision:
 
-- One question at a time, each with your recommended answer, worded so that "yes" accepts it, via
-  `explain-in-simple-language` when available.
-- Facts are yours to find (codebase, docs, tool output): look them up, never ask. Decisions are
-  the user's. Never bundle a code-answerable sub-question into a grill: "Which name, type, shape,
-  or pattern fits?" is code-answerable — match the closest existing analogue, and let that
-  verified convention outrank the ticket's contrary suggestion. Grill only on what genuinely
-  remains (product intent, cross-task timing).
+- One question at a time, each with your recommended answer and its reason, worded so that "yes"
+  accepts it, via `explain-in-simple-language` when available.
+- Facts are yours to find (codebase, docs, tool output, what the user's own edits show): look them
+  up, never ask. Decisions are the user's. Never bundle a code-answerable sub-question into a
+  grill: "Which name, type, shape, or pattern fits?" is code-answerable — match the closest
+  existing analogue, and let that verified convention outrank the ticket's contrary suggestion.
+  Grill only on what genuinely remains (product intent, cross-task timing).
 - Walk each branch of the decision tree, resolving dependencies between decisions, until there is
   shared understanding and no open branch that blocks implementation.
 

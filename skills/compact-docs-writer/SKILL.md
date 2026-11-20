@@ -4,7 +4,7 @@ description: Draft, rewrite, or refine a doc for maximum token economy without l
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
-  version: "1.8"
+  version: "1.9"
 ---
 
 # Compact docs writer
@@ -28,6 +28,13 @@ The **no-op test** licenses one more deletion. Ask of each sentence, in isolatio
 change the agent's behaviour versus its default?"* If not, it's a no-op — the agent already acts
 this way, so removing it loses nothing: delete the whole sentence rather than trimming words from
 it.
+
+**Durable only.** No state that changes as work moves on (status, progress, a decision's date,
+current counts, "so far" lists) outside a doc that exists to record it (a decision record, a
+changelog, a progress log), and no rule or name for a case that has not come up: a draft adds none
+and writes a decision as the rule it sets; state already in the doc is proposed for a move to where
+the project keeps state. ("Auth: `src/auth/`", not "Auth: `src/auth/` (12 files; reviewed in full
+on 3 Mar)".)
 
 Compaction counts words and information density, not whitespace. Blank lines between distinct chunks
 cost effectively nothing and aid the human reader, so keep them where they help; never collapse a
@@ -69,6 +76,10 @@ collapses in every pass.
    - [scripts/check-doc.sh](scripts/check-doc.sh) passes on the draft, run with
      `CHECK_DOC_AS=<target path>` while it sits in scratch? Wrap and link conventions a script
      can hold; fix every failure.
+   - Restructured files an agent navigates by (an entry file and the docs it links)? When the
+     harness has subagents, offer a fresh-reader test in the presentation: read-only subagents on
+     a cheaper model answer realistic task questions from the docs alone ("you must add X: what do
+     you read first, where does it go?"); each miss goes back into the draft.
 3. **Present & confirm.** Show the change as a unified diff inside a fenced `diff` code block —
    every removed line prefixed `-`, every added line `+`, so they render red/green — and when a
    long line changes by only a few words, add a word-level view (`[-removed-]{+added+}`)

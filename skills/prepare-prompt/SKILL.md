@@ -3,7 +3,7 @@ name: prepare-prompt
 description: Prepare a prompt that hands this session's work to a fresh agent session — to continue it, check it, or pick up what was left open. Use when asked for a prompt or brief for the next session.
 license: MIT
 metadata:
-  version: "1.1"
+  version: "1.2"
 ---
 
 # Prepare prompt
@@ -41,6 +41,9 @@ them.
 
 What stays and what goes:
 
+- What the next session can find itself (which commits, files or sessions hold the evidence)
+  stays its job: the prompt names the task and where to look, and this session runs no search for
+  it; a result this session already holds is a fact like any other.
 - A fact the next session builds on takes one line, never how it was reached. Anything it will
   redo anyway, and any narration of this session, goes. A ruled-out approach (part 4) is a fact in
   its own right, not narration, and may share the line of the decision that replaced it
@@ -69,13 +72,16 @@ every revision reprints the whole block.
 
 ## Check before printing
 
-- Every path, id and command in the prompt exists or works — verified by a read-only lookup, not
-  remembered.
+- Every path, id and command the prompt names exists or works — verified by a read-only lookup,
+  not remembered; nothing it leaves to the next session to find is looked up here.
 - Every fact stated as settled was verified in this session or stated by the user; an inference
   is marked as one ("probably", "unverified") or cut.
 - Nothing narrates this session (a ruled-out approach is not narration); for a checking job, nothing
   states this session's conclusion about the thing checked, nor a ruled-out approach.
-- A session holding only this text can act without asking what was meant.
+- A session holding only this text can act without asking what was meant. For a long prompt, when
+  the harness has subagents, prefer proving it: a fresh read-only subagent reads it cold with the
+  files it points to and lists what it would have to ask before acting; an answer this session
+  holds goes into the prompt unless a rule above keeps it out, one it lacks to the user.
 
 Done when all four hold.
 
