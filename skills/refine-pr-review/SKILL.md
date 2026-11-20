@@ -3,7 +3,7 @@ name: refine-pr-review
 description: Triage a fetched PR review with the user, comment by comment, drafting each reply and producing a REQUIREMENTS file for the accepted code changes. Takes the PR-REVIEW file produced by fetch-pr-review, or a PR URL. Invoke manually only.
 license: MIT
 metadata:
-  version: "1.12"
+  version: "1.13"
 ---
 
 # Refine PR review
@@ -70,7 +70,7 @@ keeps its verdict and reply unless it brings evidence the earlier one lacked, an
 accepted below. An earlier round without ANSWERS was never triaged: its comments join this triage,
 each row's Notes saying `joined from round K`, its status read from the latest `## Since round`
 block listing it. A `-N` file with no touched thread (a Since block only) → say there is nothing
-to triage, list the status changes, write no ANSWERS or REQUIREMENTS file, print no launch command,
+to triage, list the status changes, write no ANSWERS or REQUIREMENTS file, print no hand-off,
 stop. This round's ANSWERS file or REQUIREMENTS file already exists (and the REQUIREMENTS file is
 not the input) → one question before triage, covering both: **update in place** (recommended —
 existing rows stand, their verdicts and replies kept unless the user changes them or a comment
@@ -181,28 +181,27 @@ row numbers; none → no section.
 ## Next step
 
 State the output paths (project-relative). Remind the user the ANSWERS file is theirs to post
-manually once the fixes land. No REQUIREMENTS file → no launch command, only that reminder (and
+manually once the fixes land. No REQUIREMENTS file → no hand-off block, only that reminder (and
 the self-improve subagent or line below when Lessons were written). While the REQUIREMENTS file
 holds a **blocking** Open questions entry, print no execute or plan command and no subagent offer,
 only who must answer it and the command for once the answer is in:
 `/refine-pr-review <requirements-file>`. Otherwise hand off by the size of the accepted change set,
-leading with your recommendation but giving each option as its own fenced block under the label
-quoted below, holding a single copy-pasteable launch command (vendor-agnostic — `claude` below is
-only the example). The recommendation names only options printed below: without
-create-implementation-plan, a substantial change set is recommended to harden first (when
-available), else to execute directly.
+leading with your recommendation, then each option as its own fenced block under the label quoted
+below, holding the bare prompt, after one line saying to run one in a fresh session or after
+clearing this one (`/clear` is only the example). The recommendation names only options printed
+below: without create-implementation-plan, a substantial change set is recommended to harden first
+(when available), else to execute directly.
 
 ### Subagents first
 
-When the harness has subagents and at least one subagent below applies, lead with one sentence
-offering to spawn them now, in this session, with `autoaccept`, naming what each would do, that
-it applies its own recommended choices without showing diffs, asking only on a choice that would
-reshape the change, and that the self-improve one waits for the execute one ("Recommended: I spawn
-two subagents now, one applying <requirements-file> and running validation, then, once it is done,
-one persisting the two lessons into the project's docs; both apply their own picks unasked and stop
-only on a choice that reshapes the change. Yes, or pick one."); nothing is spawned before the yes,
-and the fenced blocks then follow under "or in a fresh session:". On the yes, spawn each as one
-subagent briefed with nothing else from the session:
+When the harness has subagents and at least one subagent below applies, lead with one short
+sentence offering to spawn them now, in this session, with `autoaccept`, naming what each would do,
+that it applies its own recommended choices without showing diffs, asking only on a choice that
+would reshape the change, and that the self-improve one waits for the execute one ("Recommended: I
+spawn subagents to apply <requirements-file> and run validation, then persist the 2 lessons; they
+pick on their own, without diffs, and stop only on a scope change. Yes, or pick one."); nothing is
+spawned before the yes, and the line before the blocks then starts "Or". On the yes, spawn each as
+one subagent briefed with nothing else from the session:
 
 - **Execute** — applies when the change set is the small mechanical kind and the REQUIREMENTS file
   has no Open questions entry, blocking or not. Brief: the REQUIREMENTS path; the branch and head
@@ -230,34 +229,29 @@ to its prompt; the self-improve one per its delegate.md. Show each report as ret
 ANSWERS reminder; fidelity is the subagent's job — never re-run validation or re-read its edits to
 check.
 
-"Apply the changes directly, for a small mechanical change set:"
+"Apply the changes, for a small mechanical change set:"
 
 ```
-claude --name execute-review-<slug> "Apply <requirements-file>, then run the project's validation (lint, tests, build)"
+Apply <requirements-file>, then run the project's validation (lint, tests, build)
 ```
 
-`/create-implementation-plan` available — "or plan first, for a substantial change set (cross-file
-rework, design decisions):"
+`/create-implementation-plan` available — "or plan first, for cross-file rework or design
+decisions:"
 
 ```
-claude --name create-plan-<slug> "/create-implementation-plan <requirements-file>"
+/create-implementation-plan <requirements-file>
 ```
 
-`/harden-artifact` available — "or harden the requirements first, recommended for a substantial
-change set:"
+`/harden-artifact` available — "or harden the requirements first, for a substantial change set:"
 
 ```
-claude --name harden-requirements-<slug> "/harden-artifact <requirements-file>"
+/harden-artifact <requirements-file>
 ```
 
-Lessons written and `/self-improve` available — "Persist the lessons:", or, under an execute
-command above, "Persist the lessons after the execute session:", since a mechanical lesson may edit
-a lint config or CI job the execution also touches:
+Lessons written and `/self-improve` available — "Persist the lessons:", or, under an execute block
+above, "Then, once the changes are applied, persist the lessons:", since a mechanical lesson may
+edit a lint config or CI job the execution also touches:
 
 ```
-claude --name self-improve-<slug> "/self-improve Persist the lessons listed under Lessons in <answers-file>"
+/self-improve Persist the lessons listed under Lessons in <answers-file>
 ```
-
-Then offer the alternative: one line offering to clear the current session (vendor-agnostic —
-`/clear` is only the example) and run the next phase here, then the same labelled blocks with the
-bare prompts, under the same gates.

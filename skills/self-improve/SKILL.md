@@ -4,7 +4,7 @@ description: Capture durable user feedback into the governing skill, doc or chec
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
-  version: "1.15"
+  version: "1.16"
 ---
 
 # Self-improve
@@ -19,7 +19,7 @@ approves. The skill proposes; the user stays in control of every change. Three w
   the lesson, finish what the user asked for, and offer to persist it at the next natural
   breakpoint.
 - **Driven by another skill** — a caller hands over lessons already phrased as durable guidance
-  (directly, through its launch command pasted by the user, or to a subagent it spawns per
+  (directly, through its hand-off prompt pasted by the user, or to a subagent it spawns per
   [delegate.md](delegate.md)), sometimes with all or part of a target it settled with the user
   (scope, form, path — possibly a new file or a merge into an existing one). Skip
   step 1; skip step 2 for a lesson whose target the caller settled fully, run it for the rest

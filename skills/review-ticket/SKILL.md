@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.8"
+  version: "1.9"
 ---
 
 # Review ticket
@@ -213,26 +213,25 @@ part included) with the answer that settled it and its citation, and each cheap 
 question bar dropped, with the default assumed.
 
 Close by handing off each next phase as its own fenced block under the label quoted below, holding
-one copy-pasteable launch command in the syntax of the agent tool in use (`claude` is only the
-example), session named `<phase>-<slug>`.
-A block only when its skill is available; the refine blocks only with no blockers, one per ticket in
-the set's suggested execution order, each label naming its ticket:
+the bare prompt, after one line saying to run one in a fresh session or after clearing this one
+(`/clear` is only the example). A block only when its skill is available; the refine blocks only
+with no blockers, one per ticket in the set's suggested execution order, each label naming its
+ticket:
 
 "Verify your understanding of the set first:"
 
 ```
-claude --name verify-<slug> "/verify-understanding <review-file>"
+/verify-understanding <review-file>
 ```
 
 "Refine <ticket>:" (the first starting "or" when the verify block precedes it)
 
 ```
-claude --name refine-<slug> "/refine-ticket <ticket-file>"
+/refine-ticket <ticket-file>
 ```
 
-Then the alternative: one line offering the tool's clear command (`/clear` is only the example),
-then the same labelled blocks with the bare slash commands. When Today already seems to deliver the
-After, also suggest `/check-ticket-implementation <ticket-file>`, only when that skill is available.
+When Today already seems to deliver the After, also suggest
+`/check-ticket-implementation <ticket-file>`, only when that skill is available.
 
 ## Boundaries
 

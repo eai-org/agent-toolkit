@@ -26,26 +26,24 @@ Never put a `:` in a skill description — `: ` in the unquoted value breaks str
 
 refine-ticket, refine-pr-review, create-implementation-plan and create-manual-test-instructions
 say "Invoke manually only" in the description and carry no `disable-model-invocation` flag on
-purpose: sibling skills and `--name` launches must be able to start them. Do not add the flag.
+purpose: sibling skills must be able to start them. Do not add the flag.
 
 ## Next-phase hand-off
 
-A skill that ends by handing work to another skill prints each next-phase option as its own fenced
-block holding one copy-pasteable launch command — the syntax of the agent in use, `claude` only the
-example, session named `<phase>-<slug>` — under a label line saying what the option is and when to
-pick it; among alternatives, labels after the first printed start "or" ("Execute the plan:", then
-"or split it into tasks first, for small reviewable increments:"), while a further step rather than
-an alternative keeps a plain label, and a lone option needs none. Then the alternative: one line
-offering to clear the current session (`/clear`, again only the example) and run the next phase
-there, followed by the same labelled blocks with the bare prompts, same order. An option naming an
-optional sibling is printed only when that skill is available.
+A skill that ends by handing work to another skill prints each next-phase option once, as its own
+fenced block holding the bare prompt (`/refine-ticket <path>`), never an agent launch command, under
+a short label saying what the option is and when to pick it; among alternatives, labels after the
+first printed start "or" ("Execute the plan:", then "or split it into tasks first, for small
+reviewable increments:"), while a further step rather than an alternative keeps a plain label, and
+a lone option needs none. One line before the blocks says to run one in a fresh session or after
+clearing this one (`/clear` only the example). An option naming an optional sibling is printed only
+when that skill is available.
 
 When the harness has subagents and a next phase needs no decision the user has not taken (a small
-mechanical change set, no open question), the skill may lead with one sentence offering to run that
-phase as subagents from the current session, each with a defined brief, a report of its result
-(`done`, or one line per item it handled) or `blocked`, and the skill-level `autoaccept` on;
-nothing is spawned before the user's yes, and the launch-command blocks then follow under "or in a
-fresh session:".
+mechanical change set, no open question), the skill may lead with one short sentence offering to
+run that phase as subagents from the current session, each with a defined brief, a report of its
+result (`done`, or one line per item it handled) or `blocked`, and the skill-level `autoaccept`
+on; nothing is spawned before the user's yes, and the line before the blocks then starts "Or".
 
 ## Markdown
 

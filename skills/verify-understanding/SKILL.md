@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.4"
+  version: "1.5"
 ---
 
 # Verify understanding
@@ -29,8 +29,7 @@ given review at most context; none → the overtaken handling stands. The `.REQU
 newest ticket file's base (none: the ticket's latest across `-vN` versions) is read for its
 Overrides, which win over the ticket text.
 Given a ticket file and no review, never improvise one: say a review is needed and stop, handing
-off `/review-ticket <ticket-file>` as a launch command named `review-<slug>` (format at the close)
-when review-ticket is available.
+off `/review-ticket <ticket-file>` (format at the close) when review-ticket is available.
 
 ## The conversation
 
@@ -52,10 +51,8 @@ Done when the user has correctly produced — corrections absorbed — the journ
 exists, and every input ticket's contribution: enough to start implementing. Close with a short
 wrap-up naming anything that stayed shaky, then, only when refine-ticket is available, hand off
 refining each ticket, in the set's suggested execution order, as its own fenced block under a label
-naming the ticket, holding one copy-pasteable launch command in the syntax of the agent tool in use
-(`claude` is only the example): `claude --name refine-<slug> "/refine-ticket <ticket-file>"`; then
-the alternative: one line offering the tool's clear command (`/clear` is only the example), then
-the same labelled blocks with `/refine-ticket <ticket-file>`.
+naming the ticket, holding `/refine-ticket <ticket-file>`, after one line saying to run one in a
+fresh session or after clearing this one (`/clear` is only the example).
 
 ## Boundaries
 
