@@ -98,9 +98,8 @@ check handed to the user never holds the task's tick back, while a manual-only A
 stays unticked even when its tasks are ticked; both are listed as pending the user's check. Then
 print the files touched, any deviation logged, any fail-first test's failure seen in one line, and
 the task's *Commit* subject (absent → propose one in the repo's style) to commit once the change is
-reviewed. Finally hand off the next unticked
-task as its own fenced block under the label "Next task:", holding the bare prompt, after one line
-saying to run it in a fresh session or after clearing this one (`/clear` is only the example):
+reviewed. Finally hand off the next unticked task as its own fenced block under the label "Next
+task:", holding the bare prompt:
 
 ```
 /execute-plan-tasks <plan-path> <next-task-id>
@@ -115,12 +114,15 @@ replaces the next-task block:
 /self-review
 ```
 
-When no task is left, say in place of the next-task blocks that the plan is done, or, while an
+When no task is left, say in place of the next-task block that the plan is done, or, while an
 AC is pending the user's check, that its tasks are done and acceptance is pending.
 
+One line before the blocks says to run one in a fresh session or after clearing this one (`/clear`
+is only the example).
+
 Done when the touched files, any fail-first test's failure seen, the commit subject, the checks
-pending the user, the `/self-review` block when a group completed and it is available, and either
-the next-task block or the no-task-left line are printed.
+pending the user, the `/self-review` block when a group completed and it is available, either the
+next-task block or the no-task-left line, and the line before any block are printed.
 
 ## Stop to re-plan
 
@@ -137,8 +139,8 @@ Report, in order:
    each with whether it is worth keeping and a one-line why; one recording an approach that then
    failed is not, since a later run reads it as outranking the plan. Leave them all in place,
    never revert on your own.
-3. A recommendation to revisit the plan, as next-phase hand-off blocks in Close's form, each
-   printed only when its skill is available:
+3. A recommendation to revisit the plan, as next-phase hand-off blocks in Close's form, the line
+   before them included, each printed only when its skill is available:
    - "Re-plan from the requirements, when the task's approach has to change:", on the plan's
      upstream (`<upstream-path>`): its name with `.PLAN` replaced by `.REQUIREMENTS` when that
      exists, else with `.PLAN` removed when that exists. Printed → warn ahead of the blocks that
@@ -164,9 +166,9 @@ Report, in order:
    edits not worth keeping before starting it; a redone task → also that it stays ticked, so later
    runs take it as done until they untick it.
 
-Done when what happened, every edit with its keep verdict, the recommendation — each printed
-block, the re-plan one warned, and each in-words line its case calls for — and the closing advice
-are printed.
+Done when what happened, every edit with its keep verdict, the recommendation — the printed blocks
+with the line before them, the re-plan one warned, and each in-words line its case calls for — and
+the closing advice are printed.
 
 ## Boundaries
 

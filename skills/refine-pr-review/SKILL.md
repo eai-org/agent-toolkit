@@ -187,10 +187,10 @@ holds a **blocking** Open questions entry, print no execute or plan command and 
 only who must answer it and the command for once the answer is in:
 `/refine-pr-review <requirements-file>`. Otherwise hand off by the size of the accepted change set,
 leading with your recommendation, then each option as its own fenced block under the label quoted
-below, holding the bare prompt, after one line saying to run one in a fresh session or after
-clearing this one (`/clear` is only the example). The recommendation names only options printed
-below: without create-implementation-plan, a substantial change set is recommended to harden first
-(when available), else to execute directly.
+below, holding the bare prompt. The recommendation names only options printed below: without
+create-implementation-plan, a substantial change set is recommended to harden first (when
+available), else to execute directly. One line before any block printed below says to run one in a
+fresh session or after clearing this one (`/clear` is only the example).
 
 ### Subagents first
 
@@ -199,9 +199,9 @@ sentence offering to spawn them now, in this session, with `autoaccept`, naming 
 that it applies its own recommended choices without showing diffs, asking only on a choice that
 would reshape the change, and that the self-improve one waits for the execute one ("Recommended: I
 spawn subagents to apply <requirements-file> and run validation, then persist the 2 lessons; they
-pick on their own, without diffs, and stop only on a scope change. Yes, or pick one."); nothing is
-spawned before the yes, and the line before the blocks then starts "Or". On the yes, spawn each as
-one subagent briefed with nothing else from the session:
+pick on their own, without diffs, and stop only on a design or scope decision. Yes, or pick
+one."); nothing is spawned before the yes, and the line before the blocks then starts "Or". On the
+yes, spawn each as one subagent briefed with nothing else from the session:
 
 - **Execute** — applies when the change set is the small mechanical kind and the REQUIREMENTS file
   has no Open questions entry, blocking or not. Brief: the REQUIREMENTS path; the branch and head
@@ -242,7 +242,8 @@ decisions:"
 /create-implementation-plan <requirements-file>
 ```
 
-`/harden-artifact` available — "or harden the requirements first, for a substantial change set:"
+`/harden-artifact` available — "or harden the requirements first, recommended for a substantial
+change set:"
 
 ```
 /harden-artifact <requirements-file>
