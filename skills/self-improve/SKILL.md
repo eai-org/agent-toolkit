@@ -4,7 +4,7 @@ description: Capture durable user feedback into the governing skill, doc or chec
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
-  version: "1.14"
+  version: "1.15"
 ---
 
 # Self-improve
@@ -90,8 +90,9 @@ Whenever unsure whether it generalizes, ask the user.
    - **Place by context cost.** Always-loaded docs (`AGENTS.md`/`CLAUDE.md`) hold mostly pointers;
      a rule that matters only when reviewing goes in a review-time doc, not implementation context.
 3. **Draft the edit.** Write the rule into the target as the least text that fully captures it:
-   agent-agnostic ("the agent", never a vendor name), no process narration, no restating — a real
-   durable instruction. Prefer tightening or extending an existing rule over appending a new one.
+   agent-agnostic ("the agent", never a vendor name), any example in a shared target generic, never
+   from the project the lesson came from, no process narration, no restating — a real durable
+   instruction. Prefer tightening or extending an existing rule over appending a new one.
    If the lesson **reverses** an existing rule, surface that explicitly — show the old rule, the
    feedback, and the proposed replacement — and never overwrite it silently; the contradiction may
    mean the feedback is context-specific, not a true reversal. A check is drafted outside the
