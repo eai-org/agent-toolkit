@@ -16,6 +16,11 @@ branch already raised it against `main`.
 track the commit SHA, so every push is an update. Ignore the missing-version warning from
 `claude plugin validate`.
 
+## Run-time cost
+
+Steps that spend tokens at run time (searches, file reads, subagents, extra passes) fire only where
+needed and stay bounded; anything broader needs the user's explicit request.
+
 ## Multi-agent quirks
 
 Skills with `disable-model-invocation: true` also need `type: flow`, or Kimi Code hides them even
