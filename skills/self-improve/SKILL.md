@@ -4,7 +4,7 @@ description: Capture durable user feedback into the governing skill, doc or chec
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
-  version: "1.15"
+  version: "1.17"
 ---
 
 # Self-improve
@@ -19,7 +19,7 @@ approves. The skill proposes; the user stays in control of every change. Three w
   each lesson, finish what the user asked for, and offer to persist them once, as one list, when
   that task is done and the corrections have stopped; an offer left unanswered is not repeated.
 - **Driven by another skill** — a caller hands over lessons already phrased as durable guidance
-  (directly, through its launch command pasted by the user, or to a subagent it spawns per
+  (directly, through its hand-off prompt pasted by the user, or to a subagent it spawns per
   [delegate.md](delegate.md)), sometimes with all or part of a target it settled with the user
   (scope, form, path — possibly a new file or a merge into an existing one). Skip
   step 1; skip step 2 for a lesson whose target the caller settled fully, run it for the rest
@@ -98,8 +98,9 @@ unsure whether it generalizes, ask the user.
    - **Place by context cost.** Always-loaded docs (`AGENTS.md`/`CLAUDE.md`) hold mostly pointers;
      a rule that matters only when reviewing goes in a review-time doc, not implementation context.
 3. **Draft the edit.** Write the rule into the target as the least text that fully captures it:
-   agent-agnostic ("the agent", never a vendor name), no process narration, no restating — a real
-   durable instruction. Prefer tightening or extending an existing rule over appending a new one.
+   agent-agnostic ("the agent", never a vendor name), any example in a shared target generic, never
+   from the project the lesson came from, no process narration, no restating — a real durable
+   instruction. Prefer tightening or extending an existing rule over appending a new one.
    If the lesson **reverses** an existing rule, surface that explicitly — show the old rule, the
    feedback, and the proposed replacement — and never overwrite it silently; the contradiction may
    mean the feedback is context-specific, not a true reversal. A check is drafted outside the

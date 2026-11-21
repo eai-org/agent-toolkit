@@ -4,7 +4,7 @@ description: Draft, rewrite, or refine a doc for maximum token economy without l
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
-  version: "1.9"
+  version: "1.11"
 ---
 
 # Compact docs writer
@@ -73,6 +73,12 @@ collapses in every pass.
      After a merge, re-verify the result still carries every item from both sources.
    - Addition audit against the same rendered diff: every added sentence must pass the no-op
      test — cut any that fail.
+   - Changed a passage's meaning, not only its wording, or renamed a term or heading? Search the
+     target's repo for one distinctive phrase of each such passage's old wording, or each form of
+     the old name (case, separator, singular/plural, `&`/`and`, anchor slug); each copy or citation
+     (inline in another doc, or a companion rule) takes the same change in the same diff, under its
+     own doc's conventions (a skill's version bump), except where that contradicts its doc's rules,
+     which the presentation names.
    - [scripts/check-doc.sh](scripts/check-doc.sh) passes on the draft, run with
      `CHECK_DOC_AS=<target path>` while it sits in scratch? Wrap and link conventions a script
      can hold; fix every failure.

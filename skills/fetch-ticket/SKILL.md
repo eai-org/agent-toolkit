@@ -3,7 +3,7 @@ name: fetch-ticket
 description: Fetch one or more tickets/issues from their tracker (Azure DevOps, Jira, GitHub, …) and save each as a self-contained markdown ticket file. Fetch only — no analysis or planning.
 license: MIT
 metadata:
-  version: "1.18"
+  version: "1.19"
 ---
 
 # Ticket Fetcher
@@ -60,7 +60,7 @@ so stop and tell the user to install and authenticate the matching MCP server, t
 
 The input may list several tickets — before picking slugs and directories, read
 [multiple-tickets.md](multiple-tickets.md): it governs grouping into shared directories, the
-`## Ticket set` section, and per-ticket launch commands.
+`## Ticket set` section, and per-ticket hand-off blocks.
 
 ## Ticket file structure
 
@@ -147,19 +147,10 @@ downloaded, **first emit a clear warning headed by ⚠️** listing each missing
 source URL, instructing the user to download it and save it under that exact name so the embeds
 resolve — or, with `/attach-to-ticket` available, to paste it (or its saved path) and run that
 skill. Without
-refine-ticket available the result ends there; with it, hand off the next phase as a **single
-copy-pasteable launch command** in a fenced block — session name and prompt combined, so one paste
-starts the session — in the launch syntax of the agent tool in use (vendor-agnostic — `claude`
-below is only the example), naming the session `refine-<slug>`; several tickets → one block per
-ticket, in the suggested execution order, under a label naming it:
-
-```
-claude --name refine-<slug> "/refine-ticket <output-dir>/<id>-<slug>.TICKET.md"
-```
-
-Then offer the alternative: one line offering to clear the current session (vendor-agnostic —
-`/clear` is only the example; use the clear command of the agent tool in use) and run the next
-phase here, then the same block(s) with the bare prompt:
+refine-ticket available the result ends there; with it, hand off the next phase as a fenced block
+holding the bare prompt, after one line saying to run it in a fresh session or after clearing this
+one (`/clear` is only the example); several tickets → one block per ticket, in the suggested
+execution order, under a label naming it:
 
 ```
 /refine-ticket <output-dir>/<id>-<slug>.TICKET.md
@@ -167,6 +158,5 @@ phase here, then the same block(s) with the bare prompt:
 
 On a re-fetch, when the highest earlier version (`-v(N-1)` … down to the unsuffixed
 `<id>-<slug>`) already has a `.REQUIREMENTS.md`: say those requirements predate the re-fetch and
-put that `.REQUIREMENTS.md` in both commands in place of the new ticket file (session still
-`refine-<slug>`), noting that refining from scratch means running refine-ticket on the new
-`.TICKET.md` instead.
+put that `.REQUIREMENTS.md` in the prompt in place of the new ticket file, noting that refining
+from scratch means running refine-ticket on the new `.TICKET.md` instead.

@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "0.6"
+  version: "0.7"
 ---
 
 # Split plan into tasks
@@ -76,25 +76,15 @@ Done when every task from the approved breakdown is in the file.
 
 ## Close
 
-State the plan's project-relative path and the tally (tasks, groups). Then hand off as a single
-copy-pasteable launch command — session name and prompt combined, in the launch syntax of the agent
-tool in use (vendor-agnostic — `claude` below is only the example), naming the session
-`execute-tasks-<slug>`, `<slug>` being the plan filename without id prefix or extension:
-
-```
-claude --name execute-tasks-<slug> "/execute-plan-tasks <plan-path>"
-```
-
-Then offer the alternative — clearing the current session instead (vendor-agnostic — `/clear` is
-only the example):
-
-OR /clear and run:
+State the plan's project-relative path and the tally (tasks, groups). Then hand off as one fenced
+block holding the bare prompt, after one line saying to run it in a fresh session or after
+clearing this one (`/clear` is only the example):
 
 ```
 /execute-plan-tasks <plan-path>
 ```
 
-Done when the path, the tally, and both commands are printed.
+Done when the path, the tally, and the prompt are printed.
 
 ## Boundaries
 
