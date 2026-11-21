@@ -80,9 +80,12 @@ collapses in every pass.
      (inline in another doc, or a companion rule) takes the same change in the same diff, under its
      own doc's conventions (a skill's version bump), except where that contradicts its doc's rules,
      which the presentation names.
-   - [scripts/check-doc.sh](scripts/check-doc.sh) passes on the draft, run with
-     `CHECK_DOC_AS=<target path>` while it sits in scratch? Wrap and link conventions a script
-     can hold; fix every failure.
+   - [scripts/check-doc.sh](scripts/check-doc.sh) passes on each draft, run with
+     `CHECK_DOC_AS=<its target path>` while it sits in scratch? Wrap and link conventions a script
+     can hold; fix every failure. Links then resolve in the working tree too, so when the draft
+     set removes or renames a file, add `CHECK_DOC_DRAFT_LINKS=1` and lay the drafts out in a
+     scratch tree with every unchanged file their links reach, at repo-relative paths, never a
+     removed file or a renamed file's old path.
    - Restructured files an agent navigates by (an entry file and the docs it links)? When the
      harness has subagents, offer a fresh-reader test in the presentation: read-only subagents on
      a cheaper model answer realistic task questions from the docs alone ("you must add X: what do
