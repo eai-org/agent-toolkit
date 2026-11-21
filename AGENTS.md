@@ -9,6 +9,9 @@ Test harnesses, for a skill or an install script, live in `test/<name>/` — rep
 installed; their `runs/` output dirs are gitignored. Planning documents go in `.agents/plans/`
 (gitignored).
 
+`workflow-band/` is a Claude Code mod with its tests inside it: run them with `claude plugin test .`
+from the repo root, validate with `claude plugin validate .`.
+
 ## Docs
 
 - [docs/authoring-conventions.md](docs/authoring-conventions.md) — read before editing any skill,
