@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "0.7"
+  version: "0.8"
 ---
 
 # Execute plan tasks
@@ -98,35 +98,31 @@ check handed to the user never holds the task's tick back, while a manual-only A
 stays unticked even when its tasks are ticked; both are listed as pending the user's check. Then
 print the files touched, any deviation logged, any fail-first test's failure seen in one line, and
 the task's *Commit* subject (absent → propose one in the repo's style) to commit once the change is
-reviewed. Finally hand off the next unticked
-task as its own fenced block under the label "Next task:", holding a single copy-pasteable launch
-command — session name and prompt combined, in the launch syntax of the agent tool in use
-(vendor-agnostic — `claude` below is only the example; `<slug>` is the plan filename without id
-prefix or extension):
+reviewed. Finally hand off the next unticked task as its own fenced block under the label "Next
+task:", holding the bare prompt:
 
 ```
-claude --name execute-tasks-<slug> "/execute-plan-tasks <plan-path> <next-task-id>"
+/execute-plan-tasks <plan-path> <next-task-id>
 ```
-
-Then offer the alternative: one line offering to clear the current session (vendor-agnostic —
-`/clear` is only the example) and run the next phase here, then the same labelled block(s) with the
-bare prompt, `/execute-plan-tasks <plan-path> <next-task-id>`.
 
 When the finished task completes its group, say so first: the group is one PR, so its tasks get
-committed and reviewed before the next group starts. With `/self-review` available, add in both
-forms, ahead of the next-task block, a block labelled "Review the group first:" (same `<slug>`),
-also when the no-task-left line replaces the next-task block:
+committed and reviewed before the next group starts. With `/self-review` available, add ahead of
+the next-task block a block labelled "Review the group first:", also when the no-task-left line
+replaces the next-task block:
 
 ```
-claude --name self-review-<slug> "/self-review"
+/self-review
 ```
 
-When no task is left, say in place of the next-task blocks that the plan is done, or, while an
+When no task is left, say in place of the next-task block that the plan is done, or, while an
 AC is pending the user's check, that its tasks are done and acceptance is pending.
 
+One line before the blocks says to run one in a fresh session or after clearing this one (`/clear`
+is only the example).
+
 Done when the touched files, any fail-first test's failure seen, the commit subject, the checks
-pending the user, both `/self-review` forms when a group completed and it is available, and either
-both next-task forms or the no-task-left line are printed.
+pending the user, the `/self-review` block when a group completed and it is available, either the
+next-task block or the no-task-left line, and the line before any block are printed.
 
 ## Stop to re-plan
 
@@ -143,9 +139,8 @@ Report, in order:
    each with whether it is worth keeping and a one-line why; one recording an approach that then
    failed is not, since a later run reads it as outranking the plan. Leave them all in place,
    never revert on your own.
-3. A recommendation to revisit the plan, as next-phase hand-off blocks — the agent tool's launch
-   syntax, `claude` below only the example, `<slug>` as in Close — each printed only when its
-   skill is available:
+3. A recommendation to revisit the plan, as next-phase hand-off blocks in Close's form, the line
+   before them included, each printed only when its skill is available:
    - "Re-plan from the requirements, when the task's approach has to change:", on the plan's
      upstream (`<upstream-path>`): its name with `.PLAN` replaced by `.REQUIREMENTS` when that
      exists, else with `.PLAN` removed when that exists. Printed → warn ahead of the blocks that
@@ -156,26 +151,24 @@ Report, in order:
      written from.
 
      ```
-     claude --name create-plan-<slug> "/create-implementation-plan <upstream-path>"
+     /create-implementation-plan <upstream-path>
      ```
 
    - "or harden the plan, so a fresh reviewer checks it against its ticket and the code:" —
      starting "or" only after the re-plan block:
 
      ```
-     claude --name harden-plan-<slug> "/harden-artifact <plan-path>"
+     /harden-artifact <plan-path>
      ```
 
-   With a block printed, add Close's clear-session alternative: the same labelled blocks with the
-   bare prompts, `/create-implementation-plan <upstream-path>` and `/harden-artifact <plan-path>`,
-   same order. No block and no in-words re-plan line → recommend revisiting the plan in words.
+   No block and no in-words re-plan line → recommend revisiting the plan in words.
 4. Last, tell the user to pass what happened on to the session they start, and to discard the
    edits not worth keeping before starting it; a redone task → also that it stays ticked, so later
    runs take it as done until they untick it.
 
-Done when what happened, every edit with its keep verdict, the recommendation — both forms of
-each printed block, the re-plan one warned, and each in-words line its case calls for — and the
-closing advice are printed.
+Done when what happened, every edit with its keep verdict, the recommendation — the printed blocks
+with the line before them, the re-plan one warned, and each in-words line its case calls for — and
+the closing advice are printed.
 
 ## Boundaries
 

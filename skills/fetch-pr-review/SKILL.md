@@ -3,7 +3,7 @@ name: fetch-pr-review
 description: Fetch all reviewer comments left on your own pull request (GitHub, Azure DevOps, …) and save them as a self-contained markdown PR-REVIEW file in the task's planning directory. Fetch only — no fixing or replying.
 license: MIT
 metadata:
-  version: "1.10"
+  version: "1.11"
 ---
 
 # PR review fetcher
@@ -127,23 +127,13 @@ strings **verbatim** — never alter or translate them.
 
 State clearly when done, using **project-relative paths**. List any thread whose status needed a
 user decision and how it was marked. Then, when refine-pr-review is available, hand off the next
-phase as a **single copy-pasteable launch command** — session name and prompt combined, so one
-paste starts the session. Use the launch syntax of the agent tool in use (vendor-agnostic — `claude`
-below is only the example), naming the session `refine-pr-<slug>`:
-
-```
-claude --name refine-pr-<slug> "/refine-pr-review <pr-review-file>"
-```
-
-Then offer the alternative — clearing the current session instead (vendor-agnostic — `/clear` below
-is only the example; use the clear command of the agent tool in use):
-
-OR /clear and run:
+phase as one fenced block holding the bare prompt, after one line saying to run it in a fresh
+session or after clearing this one (`/clear` is only the example):
 
 ```
 /refine-pr-review <pr-review-file>
 ```
 
-A refresh hands off the latest existing file with ` head=<sha>` — the head it confirmed — appended
-to both forms: `/refine-pr-review <pr-review-file> head=<sha>`. Without refine-pr-review, report
-the written file, or for a refresh the latest file and the current head.
+A refresh hands off the latest existing file with ` head=<sha>` — the head it confirmed — appended:
+`/refine-pr-review <pr-review-file> head=<sha>`. Without refine-pr-review, report the written file,
+or for a refresh the latest file and the current head.

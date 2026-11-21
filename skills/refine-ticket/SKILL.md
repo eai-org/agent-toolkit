@@ -3,7 +3,7 @@ name: refine-ticket
 description: Refine a development ticket — or brainstorm a raw idea — into a validated, self-contained REQUIREMENTS document — the "what", verified against the codebase. Invoke manually only.
 license: MIT
 metadata:
-  version: "1.22"
+  version: "1.23"
 ---
 
 # Refine ticket
@@ -236,33 +236,24 @@ Done when the six parts, plus Reproduction for a bug, are present and
   question writes.
 
 When done, state — in **project-relative paths** — that the requirements file is ready, then hand
-off each next phase as its own fenced block under the label quoted below, holding one
-copy-pasteable launch command — phase-prefixed session name and prompt combined, so one paste starts
-the session — in the launch syntax of the agent tool in use (vendor-agnostic — `claude` below is
-only the example), the session named with the phase prefix plus the requirements file's slug; a
-block only when its skill is available, in either form:
+off each next phase as its own fenced block under the label quoted below, holding the bare prompt,
+after one line saying to run one in a fresh session or after clearing this one (`/clear` is only the
+example); a block only when its skill is available:
 
 "Harden the requirements first, so a fresh reviewer challenges them before planning:"
 
 ```
-claude --name harden-requirements-<slug> "/harden-artifact <path>.REQUIREMENTS.md"
+/harden-artifact <path>.REQUIREMENTS.md
 ```
 
 "Plan the implementation:" (starting "or" when the harden block precedes it)
 
 ```
-claude --name create-plan-<slug> "/create-implementation-plan <path>.REQUIREMENTS.md"
+/create-implementation-plan <path>.REQUIREMENTS.md
 ```
 
 "Write the QA manual test:"
 
 ```
-claude --name create-manual-test-<slug> "/create-manual-test-instructions <path>.REQUIREMENTS.md"
+/create-manual-test-instructions <path>.REQUIREMENTS.md
 ```
-
-The phase prefix (`create-plan-`, `execute-plan-`, …) keeps the pipeline phases distinguishable in
-the session list.
-
-Then offer the alternative: one line offering to clear the current session (vendor-agnostic —
-`/clear` is only the example; use the clear command of the agent tool in use) and run the next
-phase here, then the same labelled blocks with the bare prompts.
