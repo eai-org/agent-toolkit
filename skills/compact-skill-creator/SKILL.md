@@ -4,7 +4,7 @@ description: Author or refine a skill for maximum token economy without losing i
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
-  version: "1.25"
+  version: "1.26"
 ---
 
 # Compact skill creator
@@ -123,8 +123,9 @@ disclosed doc).
    branch of the skill's design tree, resolving dependencies between decisions one at a time —
    never fire a fixed batch of questions once and then draft. Cover at least the purpose, **trigger
    type**, and any unavoidable coupling, plus whatever each answer opens up. Ask one question at a
-   time, each with your recommended answer, worded via `explain-in-simple-language` when
-   available; if a question can be answered by exploring the codebase, explore instead of asking.
+   time, each with your recommended answer and its reason, worded via `explain-in-simple-language`
+   when available; if the codebase or the user's own edits can answer a question, explore instead
+   of asking.
    A skill reading what other skills produce, or stepping into their hand-offs, takes its input
    types, the options its own hand-off carries on, and the files it must never write from a search
    of every such skill — never from the one pipeline in mind.
@@ -156,22 +157,25 @@ disclosed doc).
        invocation work?
 
      Reword until all hold.
-   - Body consistent with itself? Every "never" checked against each step and source it could
-     forbid; every advertised input type handled by each step that touches it (a check fitting
-     only one type fails the rest); every write surfaced where its reader looks — when a later
-     phase reads only a document derived from the edited one, the addition reaches that one too.
+   - Body consistent with itself? Every "never" and every new rule checked against each step,
+     source and bundled script it binds; every advertised input type handled by each step that
+     touches it (a check fitting only one type fails the rest); every write surfaced where its
+     reader looks — when a later phase reads only a document derived from the edited one, the
+     addition reaches that one too.
    - Spawns a subagent, reviewer or fork? Its brief and its return are defined: what it receives,
      what it reports back (paths written, verdicts, blockers, edits made, what it did not check),
-     and that it hands nothing off itself.
+     and that it hands nothing off itself. It, or a check, reads a not-yet-applied draft laid out
+     in scratch at its repo-relative paths with the unchanged files its links reach, never the
+     working-tree originals or a removed or renamed file.
    - Creating: hand a fresh agent (a subagent when the tool offers one, else a prompt the user
-     runs in a clean session) only the draft and one realistic input; have it walk the draft dry,
-     writing, committing and posting nothing, narrating step by step and listing each point where
-     the text is ambiguous, contradictory or silent. Each point loops back to draft; done when the
-     run reports none. Improving: offer the run, never require it.
+     runs in a clean session) only the draft, laid out as above, and one realistic input; have it
+     walk the draft dry, writing, committing and posting nothing, narrating step by step and
+     listing each point where the text is ambiguous, contradictory or silent. Each point loops
+     back to draft; done when the run reports none. Improving: offer the run, never require it.
    - No new or grown inline chunk meets the split test (progressive disclosure)?
    - Steps end on checkable, exhaustive completion criteria?
-   - [scripts/check-skill.sh](scripts/check-skill.sh) `<skill-dir>` passes? While the draft sits
-     in scratch, set `CHECK_SKILL_AS=<real folder>`. It holds the conventions above that a script
+   - [scripts/check-skill.sh](scripts/check-skill.sh) `<skill-dir>` passes on the draft laid out
+     as above, with `CHECK_SKILL_AS=<real folder>`? It holds the conventions above that a script
      can check (wrap, links, frontmatter) and prints the version at HEAD, merge base and working
      tree for step 6; fix every failure before presenting.
 6. **Present & confirm** through compact-docs-writer (diff + word delta measured from the files,

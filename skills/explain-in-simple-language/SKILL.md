@@ -3,7 +3,7 @@ name: explain-in-simple-language
 description: Explain code, a decision, a recap, or a question to the user, or write a document a human reads, so a fluent but often non-native reader understands it on the first read. Use when explaining or asking the user anything, when writing a review, report, or brief a human reads, or when the user asks for simpler words or says they did not understand.
 license: MIT
 metadata:
-  version: "1.2"
+  version: "1.3"
 ---
 
 # Explain in simple language
@@ -27,8 +27,11 @@ up to your desk understand this?
 
 - **Name things concretely.** Never a stand-in for something you know and the reader doesn't: a
   reference ("both directions", "the fallback", "the second approach"), a term you coined where
-  the subject already has a name ("the baseline" for the saved count), or shorthand for a case the
-  reader didn't watch you work out ("a pick closes its finding"); say what it is, in their words.
+  the subject already has a name ("the baseline" for the saved count), a figure of speech the
+  reader's field doesn't use ("the tool plays the crowd" for "the tool simulates many users at
+  once"), or shorthand for a case the reader didn't watch you work out ("a pick closes its
+  finding"); say what it is, in their words. Short of room (a label, a title), cut words; never
+  swap in a shorter stand-in.
   Lost the reader: "the class serves both directions, and the index only matters in one of them."
   Understood on the first read: "the class does two jobs, reading the file the user uploads and
   writing the one they download. The index only matters for the reading job." Longer, and better.
@@ -44,9 +47,12 @@ up to your desk understand this?
   mechanism.
 - **Depth.** Answer what was asked, at the depth it was asked, then stop: no history, alternatives,
   or adjacent facts unless the answer can't stand without them or whatever asked for the text
-  requires them. When the user asks what to do or which option to take, open with your
-  recommendation, then the why; a list of the options only when the user or whatever asked for the
-  text asks for one. Prefer brevity, never at the expense of clarity:
+  requires them. The first sentence is the answer: yes or no, the number or range, the fact that
+  decides it, the command for the common case, your recommendation when the user asks what to do
+  or which option to take (then the why; a list of the options only when the user or whatever
+  asked for the text asks for one), and in a recap what needs the reader now. Other cases and
+  caveats follow only when they change what the reader does; a user checking their own reading
+  gets a confirmation or a correction in a line. Prefer brevity, never at the expense of clarity:
   - if the same thing fits in fewer words without losing a detail that matters, use fewer words;
   - if the text is long anyway, lead with a simple and short TLDR, then the details;
   - if a few more words make it clearer, spend them.

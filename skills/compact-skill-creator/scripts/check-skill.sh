@@ -13,8 +13,8 @@
 #
 # Usage: check-skill.sh <skill-dir>
 #   CHECK_SKILL_AS=<dir>  check a draft folder as if it were <dir> (the skill's real folder: name,
-#                         links and git versions are judged there; a link may also resolve inside
-#                         the draft, for a file the draft adds).
+#                         .editorconfig and git versions are judged there; a link resolves only
+#                         beside the draft, so copy in the unchanged files its links reach).
 #   CHECK_SKILL_BASE=<ref> base ref for the merge-base version (e.g. origin/main, trunk).
 #   CHECK_DOC=<path>      check-doc.sh to use; default: ../../compact-docs-writer/scripts/check-doc.sh
 #                         relative to this script.
@@ -41,7 +41,7 @@ report() { printf '%s:%s: %s\n' "$skill" "$1" "$2"; fail=1; }
 [ -f "$skill" ] || { echo "$skill:1: no SKILL.md in $dir"; exit 1; }
 
 while IFS= read -r -d '' f; do
-  CHECK_DOC_AS="$as/${f#"$dir"/}" bash "$check_doc" "$f" || fail=1
+  CHECK_DOC_AS="$as/${f#"$dir"/}" CHECK_DOC_DRAFT_LINKS=1 bash "$check_doc" "$f" || fail=1
 done < <(find "$dir" -name '*.md' -print0 | sort -z)
 
 # Frontmatter: lines between the opening `---` on line 1 and the next `---`.
