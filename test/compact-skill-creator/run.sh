@@ -11,10 +11,11 @@
 # `as-draft-new` and `as-draft-new-cfg` point CHECK_SKILL_AS at a folder that does not exist yet
 # (create mode), the latter proving the .editorconfig walk starts from that folder:
 # fixtures/.editorconfig sets 99, the repo root 100. `as-draft-added` adds a linked file only the
-# draft holds. The `crlf-*` cases are runtime CRLF copies of a fixture (no CRLF bytes are
-# committed), checked as the LF original. `version-shrunk` commits a skill in a throwaway repo
-# under runs/, then drops frontmatter lines in the working tree, so HEAD's version sits past the
-# draft's closing `---`; `version-root` does the same with the skill folder as the repo root;
+# draft holds; `as-draft-removed` deletes a linked file from the draft while the original keeps
+# it. The `crlf-*` cases are runtime CRLF copies of a fixture (no CRLF bytes are committed),
+# checked as the LF original. `version-shrunk` commits a skill in a throwaway repo under runs/,
+# then drops frontmatter lines in the working tree, so HEAD's version sits past the draft's
+# closing `---`; `version-root` does the same with the skill folder as the repo root;
 # `version-crlf` commits the skill with CRLF line endings. The `base-*` cases build throwaway
 # repos whose refs exercise the base-ref resolution of the version line. The `desc-*` fixtures
 # hold multi-line descriptions (folded, literal, plain, quoted, next-line).
@@ -46,6 +47,7 @@ brace-list|1|brace-list/SKILL.md:11: line is 70 characters, max 60
 md-off|0|
 double-backtick|0|
 as-draft-added|0|
+as-draft-removed|1|draft-removed/SKILL.md:13: dangling link: reference.md
 crlf-clean|0|
 crlf-long-frontmatter|0|
 crlf-long-line|1|crlf-long-line/SKILL.md:11: line is 100 characters, max 99
@@ -137,6 +139,10 @@ run_case() {
       printf '# Added\n' >"$RUNS/draft-added/added.md"
       printf '\nSee [added.md](added.md).\n' >>"$RUNS/draft-added/SKILL.md"
       CHECK_SKILL_AS="$FIXTURES/clean" bash "$CHECK_SKILL" "$RUNS/draft-added" >"$log" 2>&1 ;;
+    as-draft-removed)
+      cp -R "$FIXTURES/clean" "$RUNS/draft-removed"
+      rm "$RUNS/draft-removed/reference.md"
+      CHECK_SKILL_AS="$FIXTURES/clean" bash "$CHECK_SKILL" "$RUNS/draft-removed" >"$log" 2>&1 ;;
     crlf-clean)
       crlf_copy "$FIXTURES/clean" "$RUNS/$name"
       printf '%s\r\n' "$(head -c 99 /dev/zero | tr '\0' a)" >>"$RUNS/$name/SKILL.md"

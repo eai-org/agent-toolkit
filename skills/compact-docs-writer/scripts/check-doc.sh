@@ -12,6 +12,8 @@
 #   CHECK_DOC_AS=<path>  check a single file as if it lived at <path> (a draft in a scratch dir:
 #                        .editorconfig lookup uses <path>'s directory; a link resolves beside
 #                        <path> or beside the draft, so a file new in the draft counts).
+#   CHECK_DOC_DRAFT_LINKS=1  a link resolves only beside the draft, never beside <path>, so a
+#                        file the draft removes fails even while <path>'s folder still holds it.
 # One line per failure, `file:line: message`; exit 1 when any was found, 2 on usage errors.
 
 set -u
@@ -101,6 +103,7 @@ check_file() {
   case "$cfgdir" in /*) ;; *) cfgdir="$PWD/$cfgdir" ;; esac
   draftdir="$(cd "$(dirname "$f")" && pwd -P)"
   dir="$(cd "$cfgdir" 2>/dev/null && pwd -P)" || dir="$draftdir"
+  [ "${CHECK_DOC_DRAFT_LINKS:-}" = 1 ] && dir="$draftdir"
   max="$(max_line_length "$cfgdir")"
   while IFS= read -r line || [ -n "$line" ]; do
     n=$((n + 1))

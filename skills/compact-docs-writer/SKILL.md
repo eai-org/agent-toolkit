@@ -31,10 +31,10 @@ it.
 
 **Durable only.** No state that changes as work moves on (status, progress, a decision's date,
 current counts, "so far" lists) outside a doc that exists to record it (a decision record, a
-changelog, a progress log), and no rule or name for a case that has not come up: a draft adds none
-and writes a decision as the rule it sets; state already in the doc is proposed for a move to where
-the project keeps state. ("Auth: `src/auth/`", not "Auth: `src/auth/` (12 files; reviewed in full
-on 3 Mar)".)
+changelog, a progress log), and no unrequested rule or name for a case that has not come up: a draft
+adds none and writes a decision as the rule it sets; state already in the doc is proposed for a move
+to where the project keeps state. ("Auth: `src/auth/`", not "Auth: `src/auth/` (12 files; reviewed
+in full on 3 Mar)".)
 
 Compaction counts words and information density, not whitespace. Blank lines between distinct chunks
 cost effectively nothing and aid the human reader, so keep them where they help; never collapse a
@@ -72,7 +72,8 @@ collapses in every pass.
      filler, or a verified no-op, never a load-bearing rule, instruction, edge case, or nuance.
      After a merge, re-verify the result still carries every item from both sources.
    - Addition audit against the same rendered diff: every added sentence must pass the no-op
-     test — cut any that fail.
+     test — cut any that fail; a ban on what the agent may add on its own says it never drops
+     what the user or agreed requirements asked for.
    - Changed a passage's meaning, not only its wording, or renamed a term or heading? Search the
      target's repo for one distinctive phrase of each such passage's old wording, or each form of
      the old name (case, separator, singular/plural, `&`/`and`, anchor slug); each copy or citation
