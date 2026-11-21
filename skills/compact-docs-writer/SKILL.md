@@ -74,12 +74,13 @@ collapses in every pass.
    - Addition audit against the same rendered diff: every added sentence must pass the no-op
      test — cut any that fail; a ban on what the agent may add on its own says it never drops
      what the user or agreed requirements asked for.
-   - Changed a passage's meaning, not only its wording, or renamed a term or heading? Search the
-     target's repo for one distinctive phrase of each such passage's old wording, or each form of
-     the old name (case, separator, singular/plural, `&`/`and`, anchor slug); each copy or citation
-     (inline in another doc, or a companion rule) takes the same change in the same diff, under its
-     own doc's conventions (a skill's version bump), except where that contradicts its doc's rules,
-     which the presentation names.
+   - Changed a passage's meaning, not only its wording, renamed a term or heading, or changed how
+     one caller runs a shared script or check (a new mode, flag or argument)? Search the target's
+     repo for one distinctive phrase of each such passage's old wording, each form of the old name
+     (case, separator, singular/plural, `&`/`and`, anchor slug), or the script's name; each copy or
+     citation (inline in another doc, or a companion rule), and each other caller with the same
+     gap, takes the same change in the same diff, under its own doc's conventions (a skill's
+     version bump), except where that contradicts its doc's rules, which the presentation names.
    - [scripts/check-doc.sh](scripts/check-doc.sh) passes on each draft, run with
      `CHECK_DOC_AS=<its target path>` while it sits in scratch? Wrap and link conventions a script
      can hold; fix every failure. Links then resolve in the working tree too, so when the draft
