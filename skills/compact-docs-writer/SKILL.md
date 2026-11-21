@@ -74,19 +74,21 @@ collapses in every pass.
    - Addition audit against the same rendered diff: every added sentence must pass the no-op
      test — cut any that fail; a ban on what the agent may add on its own says it never drops
      what the user or agreed requirements asked for.
-   - Changed a passage's meaning, not only its wording, renamed a term or heading, or changed how
-     one caller runs a shared script or check (a new mode, flag or argument)? Search the target's
-     repo for one distinctive phrase of each such passage's old wording, each form of the old name
-     (case, separator, singular/plural, `&`/`and`, anchor slug), or the script's name; each copy or
-     citation (inline in another doc, or a companion rule), and each other caller with the same
-     gap, takes the same change in the same diff, under its own doc's conventions (a skill's
-     version bump), except where that contradicts its doc's rules, which the presentation names.
-   - [scripts/check-doc.sh](scripts/check-doc.sh) passes on each draft, run with
-     `CHECK_DOC_AS=<its target path>` while it sits in scratch? Wrap and link conventions a script
-     can hold; fix every failure. Links then resolve in the working tree too, so when the draft
-     set removes or renames a file, add `CHECK_DOC_DRAFT_LINKS=1` and lay the drafts out in a
-     scratch tree with every unchanged file their links reach, at repo-relative paths, never a
-     removed file or a renamed file's old path.
+   - Changed a passage's meaning, not only its wording, renamed a term or heading, removed or
+     renamed a file, or changed how one caller runs a shared script or check (a new mode, flag or
+     argument)? Search the target's repo for one distinctive phrase of each such passage's old
+     wording, each form of the old name (case, separator, singular/plural, `&`/`and`, anchor slug),
+     the file's old path and name as docs link it, or the script's name; each copy or citation
+     (inline in another doc, or a companion rule), each doc linking the file, and each other caller
+     with the same gap, takes the same change in the same diff and joins the draft set, under its
+     own doc's conventions (a skill's version bump), except where that contradicts its doc's
+     rules, which the presentation names.
+   - [scripts/check-doc.sh](scripts/check-doc.sh) passes on each draft, those that search added
+     included, run with `CHECK_DOC_AS=<its target path>` while it sits in scratch? Wrap and link
+     conventions a script can hold; fix every failure. Links then resolve in the working tree too,
+     so when the draft set removes or renames a file, add `CHECK_DOC_DRAFT_LINKS=1` and lay the
+     drafts out in a scratch tree with every unchanged file their links reach, at repo-relative
+     paths, never a removed file or a renamed file's old path.
    - Restructured files an agent navigates by (an entry file and the docs it links)? When the
      harness has subagents, offer a fresh-reader test in the presentation: read-only subagents on
      a cheaper model answer realistic task questions from the docs alone ("you must add X: what do
