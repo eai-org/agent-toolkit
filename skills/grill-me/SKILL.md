@@ -3,7 +3,7 @@ name: grill-me
 description: Interview the user relentlessly about a plan, design, or idea until reaching shared understanding, resolving each branch of the decision tree. Use when the user wants to stress-test a plan, validate an idea, get grilled on their design, or says "grill me".
 license: MIT
 metadata:
-  version: "0.3"
+  version: "0.4"
   author: Matt Pocock + additional edits
 ---
 
@@ -12,7 +12,9 @@ a shared understanding. Walk down each branch of the design tree, resolving depe
 decisions one by one.
 
 - One question at a time, each with your recommended answer and its reason, worded so that "yes"
-  accepts it, via `explain-in-simple-language` when available.
+  accepts it, via `explain-in-simple-language` when available. Weigh an answer the user already
+  suggested against the alternatives first: recommend it only when it wins on its merits, never
+  because they said it, and say so when you recommend another.
 - Ask only what changes the plan; when every likely answer leads to the same plan, state the
   assumption instead.
 - Facts are yours to find (codebase, docs, tool output, what the user's own edits show): look them
