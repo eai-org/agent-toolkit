@@ -26,13 +26,20 @@ session that did not write it.
   invocation; else from this session when clear there (a launch command a writing skill printed,
   what the user said the document is for), stated in one line before the reader starts; else
   asked once.
+- **Excluded paths** — the files the document was written from and must stand without: its
+  ticket, earlier-phase documents (a plan's requirements), this session's notes and scratch
+  files. They typically sit beside it in the planning directory, but only a source is excluded,
+  never a file the document itself sends the next session to. Worked out by this session and
+  stated before the reader starts, in one line with the starting instruction, also when there are
+  none (a prompt written from the conversation, a document that points to all its sources).
 
 A session that neither wrote the document nor discussed its decisions (a fresh one run on an
 older document) can answer little: say so, and that every question that matters will go to the
 user; continue only on the user's yes. Editing an existing document after discussing it counts as
 writing it.
 
-Done when document and starting instruction are settled and a non-author session has that yes.
+Done when document, starting instruction and excluded paths are settled and a non-author session
+has that yes.
 
 ## Reader
 
@@ -47,7 +54,8 @@ You are a fresh session, just told:
 
 The document is <path>. Plan that work step by step, as if about to do it, thinking each step
 through far enough to know what it needs from the document. Read whatever you need in the
-project; write nothing, run nothing, delegate nothing.
+project. Never read <excluded paths>: the document must stand without them. Write nothing, run
+nothing, delegate nothing.
 
 Before reporting a question, try to answer it from the document and the project (its docs, its
 code, the skill the task uses). Report three lists, "none" for an empty one:
@@ -58,6 +66,8 @@ code, the skill the task uses). Report three lists, "none" for an empty one:
 3. Assumptions: each point the document was silent on and you settled yourself, with where in it
    you looked and the choice you made.
 ```
+
+Nothing excluded → the brief drops its "Never read" sentence.
 
 A subagent cannot run a slash command: when the starting instruction is one, the brief adds,
 right after it, to read that skill's file (by path, when this session can resolve it) and plan
@@ -71,17 +81,25 @@ Done when the reader's three lists are back, possibly all empty.
 
 ## Sort
 
-Every reported item gets exactly one outcome:
+A report that a claim of the document is false (a function it names does not exist, it disagrees
+with the code or another source), in whichever list, is a **claim to check**: never sorted or
+verified, and the document does not change for it.
 
-- **Added** — the user stated the answer or this session verified it, and without it the next
-  session would be blocked or do the wrong thing.
+Every other reported item gets exactly one outcome:
+
+- **Added** — the user stated the answer, this session verified it or, when it wrote the
+  document, only an excluded path holds it, and without it the next session would be blocked or
+  do the wrong thing.
 - **Yours** — needed, but this session does not know the answer or would have to infer it. An
-  inferred answer is never written as decided.
-- **Not needed** — any reasonable choice works, so the next session can decide alone: nothing
-  added.
-- **Already findable** — the answer is in the document or the project and the reader missed it:
-  nothing added, except a one-line pointer when it is hard to find, which the reader's miss alone
-  does not show.
+  inferred answer is never written as decided. A session that did not write the document sorts
+  here an answer only an excluded path holds, recommending what that file says: the document may
+  depart from it on purpose.
+- **Not needed** — the next session can decide it: any reasonable choice works, or deciding it is
+  that session's own task, alone or with the user as its instruction or skill says (a design fork
+  a planning skill puts to the user). Nothing added.
+- **Already findable** — the answer is in the document or the project, excluded paths aside, and
+  the reader missed it: nothing added, except a one-line pointer, never to an excluded path, when
+  it is hard to find, which the reader's miss alone does not show.
 
 Nothing is added only because the reader asked.
 
@@ -89,7 +107,7 @@ Check each assumption against what was decided: a wrong one is a gap like an una
 and the kind that matters most, since a real next session would not stop to ask. A contradiction
 is settled only from what this session decided, never by checking the code.
 
-Done when every item of the three lists has one outcome.
+Done when every item of the three lists has one outcome or is a claim to check.
 
 ## Write
 
@@ -111,24 +129,35 @@ A round that changed the document earns one more, its new reader given the same 
 nothing of the earlier round. Rounds stop when one changes nothing, or after 2; the user may stop
 earlier or ask for more.
 
-An item a later reader reports again keeps its earlier outcome, is not asked again and appears
-once in the summary. Only a report that shows something the earlier one did not (a wrong
-assumption where there was only a question) is sorted again.
+An item a later reader reports again:
+
+- Not needed, Already findable with nothing written, or a Yours written as an open question → it
+  keeps that outcome, is not sorted or asked again and appears once in the summary;
+- an Added answer, a Yours answer the user gave or a pointer that this check wrote → the text did
+  not work: the item keeps its outcome, is not sorted again and is never Already findable, and
+  the text is repaired in place, by rewording or moving it, never by adding a second copy. The
+  repair counts as a change to the document, for the rounds and the summary;
+- the report shows something the earlier one did not (a wrong assumption where there was only a
+  question) → sorted again, whatever its earlier outcome.
 
 Done when a stop condition has ended the rounds.
 
 ## Summary
 
-Print the items under their four outcomes:
+Print how many rounds ran, then every item under its outcome or as a claim to check:
 
 - **Added** and **Yours** — per item, the reader's question, contradiction or wrong assumption,
   then the exact text written and its section, plus the text it replaced for a contradiction:
   planning files are often untracked, so no diff would show it.
 - **Not needed** and **Already findable** — per item, a one-line reason, so the user can overrule
   it; a pointer written is shown like an Added text.
+- **Claims to check** — each once, as reported, to check in a session that did not write the
+  document.
 
-Then name as possibly stale each document derived from the edited one (a plan written from the
-edited requirements) that this session knows of or finds beside it. No next-phase command.
+When the last round changed the document, name its edits as read by no reader, so the user knows
+another round can be asked for. Then name as possibly stale each document derived from the edited
+one (a plan written from the edited requirements) that this session knows of or finds beside it.
+No next-phase command.
 
 Done when all are printed.
 
