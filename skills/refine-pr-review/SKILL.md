@@ -67,8 +67,8 @@ spawn none, the re-fetch offer is still asked.
 Still asked: a dirty or mismatched checkout (after any re-fetch); anything the agent is unsure of or
 has no recommendation for (a comment's status, a moved head on a REQUIREMENTS input); a reply only
 the author can give (their intent or plans, which the code can't show); a blocking requirement gap;
-a design decision beyond what the comments ask; a subagent's `blocked`. The Next step offer still
-waits for the user's yes.
+a run on shared or external state; a design decision beyond what the comments ask; a subagent's
+`blocked`. The Next step offer still waits for the user's yes.
 
 Before Next step, list what was decided, one line each: every verdict whose reply is not a canned
 one-liner, with its comment; each verdict, reply or lesson changed on a REQUIREMENTS input; each
