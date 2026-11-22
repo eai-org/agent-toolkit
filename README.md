@@ -59,6 +59,12 @@ then let a fresh session execute them one at a time and consolidate the changes.
 - **[create-implementation-plan](./skills/create-implementation-plan/SKILL.md)** — define the
   "how" of a task: turn the requirements into an implementation plan, settling the technical
   decisions together, then save it for a fresh session to execute.
+- **[ensure-self-contained-doc](./skills/ensure-self-contained-doc/SKILL.md)** — before closing
+  the session that wrote a document for a fresh session (requirements, a plan, a brief, a saved
+  prompt), make sure it is self-contained: a fresh-context reader plans the work from it and reports
+  every question, contradiction and silent assumption, and the session fills in what the next
+  session needs from what it knows, asking you the rest. It never checks whether the document's
+  claims are true, which is harden-artifact's job.
 - **[harden-artifact](./skills/harden-artifact/SKILL.md)** — harden a requirements doc or a plan
   before the next phase picks it up: a fresh-context reviewer tests every deviation from the
   ticket and every claim against the code and related tickets, the session challenges each
@@ -315,6 +321,7 @@ flowchart TD
   agentify["agentify-project"] -. when available .-> simple
   agentify -. when available .-> self
   grill_me["grill-me"] -. when available .-> simple
+  ensure_doc["ensure-self-contained-doc"] -. when available .-> simple
   self_review -. when available .-> simple
   agentify -. when available .-> compact_docs
   agentify -. when available .-> memory_doctor
