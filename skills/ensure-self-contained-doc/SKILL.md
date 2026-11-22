@@ -87,13 +87,13 @@ verified, and the document does not change for it.
 
 Every other reported item gets exactly one outcome:
 
-- **Added** — the user stated the answer, this session verified it or, when it wrote the
-  document, only an excluded path holds it, and without it the next session would be blocked or
-  do the wrong thing.
+- **Added** — the user stated the answer, this session verified it or, for a part of the document
+  this session wrote or decided, only an excluded path holds it, and without it the next session
+  would be blocked or do the wrong thing.
 - **Yours** — needed, but this session does not know the answer or would have to infer it. An
-  inferred answer is never written as decided. A session that did not write the document sorts
-  here an answer only an excluded path holds, recommending what that file says: the document may
-  depart from it on purpose.
+  inferred answer is never written as decided. An answer only an excluded path holds, for a part
+  this session neither wrote nor decided, is sorted here, recommending what that file says: the
+  document may depart from it there on purpose.
 - **Not needed** — the next session can decide it: any reasonable choice works, or deciding it is
   that session's own task, alone or with the user as its instruction or skill says (a design fork
   a planning skill puts to the user). Nothing added.
@@ -129,14 +129,16 @@ A round that changed the document earns one more, its new reader given the same 
 nothing of the earlier round. Rounds stop when one changes nothing, or after 2; the user may stop
 earlier or ask for more.
 
-An item a later reader reports again:
+A later reader reporting an item this check wrote a text for (an Added answer, a Yours answer the
+user gave, a pointer), as a question again or as a point it settled itself, shows the text did
+not work: the item keeps its outcome, is not sorted again, and the text is repaired in place, by
+rewording or moving it, never by adding a second copy. The repair counts as a change to the
+document, for the rounds and the summary.
+
+Any other item a later reader reports again:
 
 - Not needed, Already findable with nothing written, or a Yours written as an open question → it
   keeps that outcome, is not sorted or asked again and appears once in the summary;
-- an Added answer, a Yours answer the user gave or a pointer that this check wrote → the text did
-  not work: the item keeps its outcome, is not sorted again and is never Already findable, and
-  the text is repaired in place, by rewording or moving it, never by adding a second copy. The
-  repair counts as a change to the document, for the rounds and the summary;
 - the report shows something the earlier one did not (a wrong assumption where there was only a
   question) → sorted again, whatever its earlier outcome.
 
