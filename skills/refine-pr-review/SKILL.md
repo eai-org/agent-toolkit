@@ -3,7 +3,7 @@ name: refine-pr-review
 description: Triage a fetched PR review with the user, comment by comment, drafting each reply and producing a REQUIREMENTS file for the accepted code changes. Takes the PR-REVIEW file produced by fetch-pr-review, or a PR URL. Invoke manually only.
 license: MIT
 metadata:
-  version: "1.13"
+  version: "1.14"
 ---
 
 # Refine PR review
@@ -53,6 +53,26 @@ Never refer to a comment by index or position, anywhere — questions, batch lis
 Quote its opening words instead, truncated to the shortest unique prefix — the comment "the null
 check here misses …". Always verbatim, never translated or corrected, so the quote can be searched
 on the page. Only the ANSWERS table's own row numbers stay, for in-file cross-references.
+
+## Autoaccept
+
+The word `autoaccept`, in the invocation (by the user or a calling skill) or said at any point, is
+the go-ahead given in advance: wherever this skill or refine-ticket would ask, show a draft or wait
+for confirmation, the agent takes its own recommendation, which then counts as user-confirmed —
+verdicts, replies (drafted as usual, written unshown), lessons, the existing-file question, and
+non-blocking requirement gaps, written as settled requirements tagged `(Autoaccept)`. A PR head that
+moved before triage is re-fetched first by a subagent, as on the URL path; where that path would
+spawn none, the re-fetch offer is still asked.
+
+Still asked: a dirty or mismatched checkout (after any re-fetch); anything the agent is unsure of or
+has no recommendation for (a comment's status, a moved head on a REQUIREMENTS input); a reply only
+the author can give (their intent or plans, which the code can't show); a blocking requirement gap;
+a run on shared or external state; a design decision beyond what the comments ask; a subagent's
+`blocked`. The Next step offer still waits for the user's yes.
+
+Before Next step, list what was decided, one line each: every verdict whose reply is not a canned
+one-liner, with its comment; each verdict, reply or lesson changed on a REQUIREMENTS input; each
+lesson; each `(Autoaccept)` requirement.
 
 ## Phase 1 — triage every comment with the user
 

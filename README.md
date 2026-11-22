@@ -93,10 +93,11 @@ Review helpers that check the codebase while assisting with code or ticket revie
   reviewers on your PR and save them into a markdown doc, pinned to the PR head, ready to address
   (or push back on), for example via refine-pr-review.
 - **[refine-pr-review](./skills/refine-pr-review/SKILL.md)** — go through a fetched PR review
-  together, comment by comment — address, partial, or push back — drafting the replies, turning
-  the accepted changes into a requirements doc, and recording the durable lessons, which
-  self-improve persists when installed; a small change set and the lessons can be handed to
-  subagents from the same session. Takes the fetched file, or a PR URL a subagent fetches first.
+  together, comment by comment — address, partial, or push back (or say `autoaccept` to let the
+  agent decide, asking only when unsure) — drafting the replies, turning the accepted changes into a
+  requirements doc, and recording the durable lessons, which self-improve persists when installed; a
+  small change set and the lessons can be handed to subagents from the same session. Takes the
+  fetched file, or a PR URL a subagent fetches first.
 - **[extract-pr-review-rules](./skills/extract-pr-review-rules/SKILL.md)** — mine the conventions
   your reviewers actually enforce out of every PR review comment in a repo, triage them with you in
   one batch, and persist them through self-improve into the project's topic docs, so each rule
