@@ -4,7 +4,7 @@ description: Capture durable user feedback into the governing skill, doc or chec
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 license: MIT
 metadata:
-  version: "1.17"
+  version: "1.18"
 ---
 
 # Self-improve
@@ -86,7 +86,7 @@ unsure whether it generalizes, ask the user.
    target — and if that rule already existed yet failed to steer the agent, the discoverability gap
    *is* the lesson, not a no-op: don't stop at "the rule exists." Diagnose why it didn't fire
    (buried, in a doc the agent wouldn't open for this action, scoped or worded too narrowly, or
-   unenforced) and fix that root cause: surface it where the agent looks, tighten its scope,
+   unenforced) and fix that root cause: surface it where the agent looks, widen its scope,
    cross-reference it, or enforce it mechanically. If none fits, propose a new target and ask
    before drafting: a check for a mechanical lesson (below), a new skill for a recurring workflow,
    a new rule for a standing constraint, or the most fitting doc otherwise; a new doc comes with its
@@ -100,7 +100,9 @@ unsure whether it generalizes, ask the user.
 3. **Draft the edit.** Write the rule into the target as the least text that fully captures it:
    agent-agnostic ("the agent", never a vendor name), any example in a shared target generic, never
    from the project the lesson came from, no process narration, no restating — a real durable
-   instruction. Prefer tightening or extending an existing rule over appending a new one.
+   instruction. Prefer tightening an existing rule, or widening its subject so the case falls
+   under it but no further than the lesson holds, over appending a sub-case, and a sub-case over
+   a new rule.
    If the lesson **reverses** an existing rule, surface that explicitly — show the old rule, the
    feedback, and the proposed replacement — and never overwrite it silently; the contradiction may
    mean the feedback is context-specific, not a true reversal. A check is drafted outside the
