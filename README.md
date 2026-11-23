@@ -85,6 +85,25 @@ then let a fresh session execute them one at a time and consolidate the changes.
   session's work to a fresh session — what exists, what is open, what to do and in what form, the
   facts it cannot derive — as short as the next session allows.
 
+#### Workflow band
+
+A Claude Code mod that shows the current task above the prompt: a steps row (☑ done, ▣ current,
+☐ to do, ? unknown, ⚠ stopped; a done step opens its file) with `▶ Run <step>` for the next skill,
+which first asks whether to clear a session that already has a conversation, and a numbers row
+(cost, last turn, agent time, reuse, open callers, tests, tokens, turns) with Copy (as Markdown) and
+Expand. Expand opens a side pane with a task picker, every step with its file and skill buttons, a
+progress bar of the tasks executed, the PR's tasks, and the task's other files. It follows the task
+the last workflow skill ran on (this session, then this checkout, then the repo), else the newest
+under `.agents/plans/`.
+Each workflow's folder can be set in `.agents/workflow-band.json`, e.g.
+`{ "folders": { "rpac": ".agents/plans" } }`.
+A clicked file opens in VS Code when Claude Code runs in VS Code's terminal, else in the system's
+default app.
+
+`/workflow-band off` hides it, `/workflow-band on` brings it back, across sessions. Claude Code
+2.1.319 or later, plugin install only (`install.sh` and agentwheel don't install it).
+Numbers adapted from [ponytail's band](https://github.com/DietrichGebert/ponytail) (MIT, copyright 2026 DietrichGebert).
+
 ### Review assistants
 
 Review helpers that check the codebase while assisting with code or ticket reviews.

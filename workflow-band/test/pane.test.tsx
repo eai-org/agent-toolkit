@@ -1,0 +1,145 @@
+import { expect, test, type Engine } from 'claude-code/testing'
+import { PLN, ROOT, SKILLS, STOPPED, band } from './world'
+
+const PANE = {
+  plugin: 'agent-toolkit',
+  surface: 'terminal',
+  component: 'Pane',
+  requestId: 'workflow',
+  props: { title: 'x', isFocused: false, bodyColumns: 100, placement: 'dock', scroll: { offset: 0, bodyRows: 30 }, view: {} },
+} as const
+
+async function pane($: Engine, on: Parameters<typeof band>[1], w: Parameters<typeof band>[2] = {}) {
+  on('ui.open', () => ({ value: { isPlaced: true } }))
+  const w0 = await band($, on, w)
+  return { ...w0, pane: await $.ui.mount(PANE) }
+}
+
+test('expand opens the pane and the band drops its steps', async ($, on) => {
+  const opened: unknown[] = []
+  on('ui.open', (_, e) => {
+    opened.push(e)
+    return { value: { isPlaced: true } }
+  })
+  const { ui } = await band($, on)
+  await ui.press({ key: 'expand' })
+  expect(opened).toEqual([{ id: 'workflow', title: 'RPAC · 123-x' }])
+  expect(await ui.find({ key: 'run' })).toBeUndefined()
+  expect(await ui.find({ key: 'compact' })).toBeDefined()
+  await ui.unmount()
+})
+
+test('a stopped step opens the pane', async ($, on) => {
+  const opened: unknown[] = []
+  on('ui.open', (_, e) => {
+    opened.push(e)
+    return { value: { isPlaced: true } }
+  })
+  const { ui } = await band($, on, { runs: STOPPED })
+  await ui.press({ key: 'item-group-2' })
+  expect(opened).toEqual([{ id: 'workflow', title: 'RPAC · 123-x' }])
+  expect(await ui.find({ key: 'compact' })).toBeDefined()
+  await ui.unmount()
+})
+
+test('the pane lists every step and the current group\'s tasks', async ($, on) => {
+  const { pane: p } = await pane($, on)
+  expect(await p.find({ type: 'Text', text: /Refine/ })).toBeDefined()
+  expect(await p.find({ type: 'Text', text: '▣ Execute 3/5' })).toBeDefined()
+  expect(await p.find({ type: 'Text', text: /2\.2 Add reject dialog/ })).toBeDefined()
+  expect(await p.find({ type: 'Text', text: /PR 1 Approval API/ })).toBeDefined()
+  expect(await p.find({ type: 'Text', text: /1\.1 Add endpoint/ })).toBeUndefined()
+  await p.unmount()
+})
+
+test('a row\'s file and skill are one press away', async ($, on) => {
+  const { pane: p, argv, commands } = await pane($, on)
+  await p.press({ key: 'file-plan' })
+  expect(argv).toContainEqual(['open', PLN])
+  await p.press({ key: 'act-task-2.2' })
+  expect(commands).toEqual([{ command: 'execute-plan-tasks', args: `${PLN} 2.2` }])
+  await p.unmount()
+})
+
+test('the switcher pins another task', async ($, on) => {
+  const { pane: p } = await pane($, on)
+  await p.press({ key: 'pick' })
+  expect(await p.find({ type: 'Text', text: 'RPAC · 123-x' })).toBeDefined()
+  await p.press({ key: 'task-99-old' })
+  expect(await p.find({ type: 'Text', text: 'RPAC · 99-old' })).toBeDefined()
+  expect(await p.find({ key: 'task-99-old' })).toBeUndefined()
+  await p.press({ key: 'pick' })
+  await p.press({ key: 'task-123-x' })
+  expect(await p.find({ type: 'Text', text: 'RPAC · 123-x' })).toBeDefined()
+  await p.unmount()
+})
+
+test('compacting closes the pane and brings the steps row back', async ($, on) => {
+  on('ui.close', () => ({ value: undefined }))
+  const { ui } = await pane($, on)
+  await ui.press({ key: 'expand' })
+  expect(await ui.find({ key: 'run' })).toBeUndefined()
+  await ui.press({ key: 'compact' })
+  expect(await ui.find({ key: 'run' })).toBeDefined()
+  await ui.unmount()
+})
+
+test('a missing skill has no button', async ($, on) => {
+  const { pane: p } = await pane($, on, { skills: SKILLS.filter((s) => s !== 'self-review') })
+  expect(await p.find({ key: 'act-self-review-2' })).toBeUndefined()
+  expect(await p.find({ key: 'act-handover-2' })).toBeDefined()
+  await p.unmount()
+})
+
+test('a pane that cannot open says so', async ($, on) => {
+  on('ui.open', () => {
+    throw new Error('boom')
+  })
+  const { ui, toasts } = await band($, on)
+  await ui.press({ key: 'expand' })
+  expect(toasts).toContain('Could not open the pane')
+  expect(await ui.find({ key: 'run' })).toBeDefined()
+  await ui.unmount()
+})
+
+test('a restarted session drops a pane flag with no pane behind it', async ($, on) => {
+  on('ui.open', () => ({ value: { isPlaced: true } }))
+  on('ui.panes', () => ({ value: [] }))
+  const { ui } = await band($, on)
+  await ui.press({ key: 'expand' })
+  expect(await ui.find({ key: 'run' })).toBeUndefined()
+  await $.session.start({ cwd: '/r', surface: null } as never)
+  expect(await ui.find({ key: 'run' })).toBeDefined()
+  await ui.unmount()
+})
+
+test('a file label keeps every suffix after the task name', async ($, on) => {
+  const dir = '/r/.agents/plans/123-x'
+  const tree = { [dir]: ['TICKET', 'REQUIREMENTS', 'PLAN', 'PR-REVIEW.PLAN'].map((s) => ({ name: `123-x.${s}.md`, kind: 'file' as const })) }
+  const { pane: p } = await pane($, on, { tree })
+  expect((await p.find({ key: 'other-0' }))?.text).toBe('PR-REVIEW.PLAN.md')
+  await p.unmount()
+})
+
+test('a row shows every installed action', async ($, on) => {
+  const { pane: p, commands } = await pane($, on)
+  expect((await p.find({ key: 'act-manual-test' }))?.text).toBe('▶ create-manual-test-instructions')
+  await p.press({ key: 'act-manual-test' })
+  expect(commands).toEqual([{ command: 'create-manual-test-instructions', args: `${ROOT}/123-x/123-x.REQUIREMENTS.md` }])
+  await p.unmount()
+})
+
+test('a done row has no run button', async ($, on) => {
+  const { pane: p } = await pane($, on)
+  expect(await p.find({ key: 'act-plan' })).toBeUndefined()
+  expect(await p.find({ key: 'act-task-2.1' })).toBeUndefined()
+  expect(await p.find({ key: 'file-plan' })).toBeDefined()
+  await p.unmount()
+})
+
+test('a stopped row still shows its two actions', async ($, on) => {
+  const { pane: p } = await pane($, on, { runs: STOPPED })
+  expect(await p.find({ key: 'act-task-2.2-2' })).toBeDefined()
+  expect(await p.find({ key: 'act-task-2.2-3' })).toBeUndefined()
+  await p.unmount()
+})
