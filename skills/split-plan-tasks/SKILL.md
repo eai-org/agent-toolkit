@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "0.7"
+  version: "0.8"
 ---
 
 # Split plan into tasks
@@ -32,8 +32,8 @@ Done when the plan is read and, where a section already existed, the user has ch
 - **Task** — the smallest chunk that leaves the project building and its tests passing, so it can be
   reviewed and committed on its own. Steps that only make sense together are one task, never two —
   building alone isn't the test: a step that only re-runs a generator (API clients, specs,
-  snapshots) lands with the change it regenerates, and a step whose test must fail before the fix
-  is written lands with that fix.
+  snapshots) lands with the change it regenerates, and a step touching only tests lands with the
+  step whose code they cover.
 - **Group** — one PR: independently mergeable, delivering something coherent. Order the groups and
   state each one's dependency on earlier groups.
 - Respect the plan's ordering: a task never precedes what it depends on.
