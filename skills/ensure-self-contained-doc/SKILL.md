@@ -87,9 +87,10 @@ verified, and the document does not change for it.
 
 Every other reported item gets exactly one outcome:
 
-- **Added** — the user stated the answer, this session verified it or, for a part of the document
-  this session wrote or decided, only an excluded path holds it, and without it the next session
-  would be blocked or do the wrong thing.
+- **Added** — the user stated the answer, this session verified it (other than by reading the
+  project: that is Already findable) or, for a part of the document this session wrote or
+  decided, only an excluded path holds it, and without it the next session would be blocked or
+  could do the wrong thing.
 - **Yours** — needed, but this session does not know the answer or would have to infer it. An
   inferred answer is never written as decided. An answer only an excluded path holds, for a part
   this session neither wrote nor decided, is sorted here, recommending what that file says: the
@@ -98,14 +99,17 @@ Every other reported item gets exactly one outcome:
   that session's own task, alone or with the user as its instruction or skill says (a design fork
   a planning skill puts to the user). Nothing added.
 - **Already findable** — the answer is in the document or the project, excluded paths aside, and
-  the reader missed it: nothing added, except a one-line pointer, never to an excluded path, when
-  it is hard to find, which the reader's miss alone does not show.
+  the reader missed it. Nothing added, except a one-line pointer (the answer and where it lives,
+  never an excluded path) when finding it takes a search: it is in neither the document, a file
+  the document points to, nor the docs every session loads.
 
 Nothing is added only because the reader asked.
 
 Check each assumption against what was decided: a wrong one is a gap like an unanswered question,
-and the kind that matters most, since a real next session would not stop to ask. A contradiction
-is settled only from what this session decided, never by checking the code.
+and the kind that matters most, since a real next session would not stop to ask. A right one is a
+gap too when another reasonable choice would have been wrong, as the next session may make that
+one; otherwise it is Not needed. A contradiction is settled only from what this session decided,
+never by checking the code.
 
 Done when every item of the three lists has one outcome or is a claim to check.
 
@@ -148,9 +152,9 @@ Done when a stop condition has ended the rounds.
 
 Print how many rounds ran, then every item under its outcome or as a claim to check:
 
-- **Added** and **Yours** — per item, the reader's question, contradiction or wrong assumption,
-  then the exact text written and its section, plus the text it replaced for a contradiction:
-  planning files are often untracked, so no diff would show it.
+- **Added** and **Yours** — per item, the reader's question, contradiction or assumption, then
+  the exact text written and its section, plus the text it replaced for a contradiction: planning
+  files are often untracked, so no diff would show it.
 - **Not needed** and **Already findable** — per item, a one-line reason, so the user can overrule
   it; a pointer written is shown like an Added text.
 - **Claims to check** — each once, as reported, to check in a session that did not write the
