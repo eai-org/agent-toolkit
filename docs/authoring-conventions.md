@@ -42,7 +42,8 @@ first printed start "or" ("Execute the plan:", then "or split it into tasks firs
 reviewable increments:"), while a further step rather than an alternative keeps a plain label, and
 a lone option needs none. One line before the blocks says to run one in a fresh session or after
 clearing this one (`/clear` only the example). An option naming an optional sibling is printed only
-when that skill is available.
+when that skill is available, and its skill says where to look: the agent's skills and plugin dirs,
+as manual-only skills are missing from the in-session list.
 
 When the harness has subagents and a next phase needs no decision the user has not taken (a small
 mechanical change set, no open question), the skill may lead with one short sentence offering to

@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.9"
+  version: "1.10"
 ---
 
 # Review ticket
@@ -214,9 +214,10 @@ question bar dropped, with the default assumed.
 
 Close by handing off each next phase as its own fenced block under the label quoted below, holding
 the bare prompt, after one line saying to run one in a fresh session or after clearing this one
-(`/clear` is only the example). A block only when its skill is available; the refine blocks only
-with no blockers, one per ticket in the set's suggested execution order, each label naming its
-ticket:
+(`/clear` is only the example). A block only when its skill is available (look in the agent's
+skills and plugin dirs, as manual-only skills are missing from the in-session list); the refine
+blocks only with no blockers, one per ticket in the set's suggested execution order, each label
+naming its ticket:
 
 "Verify your understanding of the set first:"
 

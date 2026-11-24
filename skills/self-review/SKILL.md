@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.2"
+  version: "1.3"
 ---
 
 # Self-review
@@ -278,9 +278,10 @@ with its number and the why, a deferred one also with what to file:
 - Dismissed (<count>): …
 
 Fixed or deferred findings sharing a cause that a governing skill or doc covers, or should — a
-rule missing, or present yet not followed — are a lesson: when `self-improve` is available, print
-it in one line with its target and offer to run it — never run it unasked, never put it in the
-report. One-off slips earn no offer.
+rule missing, or present yet not followed — are a lesson: when `self-improve` is available (look
+in the agent's skills and plugin dirs, as manual-only skills are missing from the in-session
+list), print it in one line with its target and offer to run it — never run it unasked, never put
+it in the report. One-off slips earn no offer.
 
 Done when all are printed.
 

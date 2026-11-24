@@ -3,7 +3,7 @@ name: refine-ticket
 description: Refine a development ticket — or brainstorm a raw idea — into a validated, self-contained REQUIREMENTS document — the "what", verified against the codebase. Invoke manually only.
 license: MIT
 metadata:
-  version: "1.24"
+  version: "1.25"
 ---
 
 # Refine ticket
@@ -238,7 +238,8 @@ Done when the six parts, plus Reproduction for a bug, are present and
 When done, state — in **project-relative paths** — that the requirements file is ready, then hand
 off each next phase as its own fenced block under the label quoted below, holding the bare prompt,
 after one line saying to run one in a fresh session or after clearing this one (`/clear` is only the
-example); a block only when its skill is available:
+example); a block only when its skill is available (look in the agent's skills and plugin dirs, as
+manual-only skills are missing from the in-session list):
 
 "Harden the requirements first, so a fresh reviewer challenges them before planning:"
 

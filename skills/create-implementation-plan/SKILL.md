@@ -3,7 +3,7 @@ name: create-implementation-plan
 description: Turn a refined requirements document into a structured implementation PLAN.md a fresh session can execute. Planning only — decides the "how", not the "what". Invoke manually only.
 license: MIT
 metadata:
-  version: "1.24"
+  version: "1.25"
 ---
 
 # Create Implementation Plan
@@ -207,14 +207,15 @@ or after clearing this one (`/clear` is only the example):
    ```
 
 2. "or split it into tasks first, for small reviewable increments:" — when `split-plan-tasks` is
-   available:
+   available (look in the agent's skills and plugin dirs, as manual-only skills are missing from
+   the in-session list):
 
    ```
    /split-plan-tasks .agents/plans/123-report-approval/123-report-approval.PLAN.md
    ```
 
 3. "or harden it first, so a fresh reviewer challenges it before anything is built:" — when
-   `harden-artifact` is available:
+   `harden-artifact` is available, looked up the same way:
 
    ```
    /harden-artifact .agents/plans/123-report-approval/123-report-approval.PLAN.md
