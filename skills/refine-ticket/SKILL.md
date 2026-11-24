@@ -56,7 +56,9 @@ the code here is for *validating* requirements, not for designing the solution.
   existing ones don't cover Z"), search every repo the feature spans for the concept — "not found
   under the name the ticket used" is not "not present".
 - Verify both sides of an integration: if a requirement relies on another layer behaving a certain
-  way, open that layer and confirm it.
+  way, open that layer and confirm it. Whatever consumes what the ticket delivers (a dependent
+  ticket, a second build tool, a client) is such a layer: confirm it accepts every value the
+  requirements fix (a language standard, a format, where a value is defined).
 
 ## Reconcile against the design when one is referenced
 
@@ -73,7 +75,9 @@ part of the spec. Visual decisions made without seeing it lock in wrong defaults
 ## Read relevant related tickets — context, not scope
 
 When the ticket references others that matter to it (BE/FE counterparts, dependencies, follow-ups),
-read them too — they complete the picture and sharpen how this ticket's requirements are meant. A
+or others build on it — a ticket seldom names its dependents, so search the tracker and the ticket
+set for those referencing it — read them too — they complete the picture and sharpen how this
+ticket's requirements are meant. A
 `## Ticket set` section in the ticket file lists locally fetched siblings: read every linked
 `.TICKET.md` before grilling; for tracker-only references, judge relevance before fetching, then
 fetch one the way Input does. What a sibling supplies — execution order, contracts it owns,
