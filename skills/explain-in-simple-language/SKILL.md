@@ -3,7 +3,7 @@ name: explain-in-simple-language
 description: Explain code, a decision, a recap, or a question to the user, or write a document a human reads, so a fluent but often non-native reader understands it on the first read. Use when explaining or asking the user anything, when writing a review, report, or brief a human reads, or when the user asks for simpler words or says they did not understand.
 license: MIT
 metadata:
-  version: "1.5"
+  version: "1.6"
 ---
 
 # Explain in simple language
@@ -44,8 +44,10 @@ up to your desk understand this?
 - **Words.** Plainer words preferred; a fancy or technical term only when the reader uses it day
   to day, so one mostly found in specs or a tool's docs gets the everyday name ("the default
   case", not "the default arm" of a switch). When the everyday name says less, keep the term and
-  say once what it means. Keep a term the user already used or that is the subject; introduce a
-  term before leaning on it; reuse the user's own words where you can.
+  say once what it means. Plain words for a term mean exactly what it means ("p95: the time 95 in
+  100 requests stay under", not "how slow the slowest 5 were"). Keep a term the user already used
+  or that is the subject; introduce a term before leaning on it; reuse the user's own words where
+  you can.
 - **Sentences.** One idea per sentence, one point per paragraph. Concrete case before general
   mechanism.
 - **Depth.** Answer what was asked, at the depth it was asked, then stop: no history, alternatives,
