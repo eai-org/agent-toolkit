@@ -3,7 +3,7 @@ name: refine-pr-review
 description: Triage a fetched PR review with the user, comment by comment, drafting each reply and producing a REQUIREMENTS file for the accepted code changes. Takes the PR-REVIEW file produced by fetch-pr-review, or a PR URL. Invoke manually only.
 license: MIT
 metadata:
-  version: "1.14"
+  version: "1.15"
 ---
 
 # Refine PR review
@@ -209,8 +209,9 @@ only who must answer it and the command for once the answer is in:
 leading with your recommendation, then each option as its own fenced block under the label quoted
 below, holding the bare prompt. The recommendation names only options printed below: without
 create-implementation-plan, a substantial change set is recommended to harden first (when
-available), else to execute directly. One line before any block printed below says to run one in a
-fresh session or after clearing this one (`/clear` is only the example).
+available), else to execute directly. A skill is available when the agent's skills or plugin dirs
+hold it: manual-only skills are missing from the in-session list. One line before any block printed
+below says to run one in a fresh session or after clearing this one (`/clear` is only the example).
 
 ### Subagents first
 

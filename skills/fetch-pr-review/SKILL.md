@@ -3,7 +3,7 @@ name: fetch-pr-review
 description: Fetch all reviewer comments left on your own pull request (GitHub, Azure DevOps, …) and save them as a self-contained markdown PR-REVIEW file in the task's planning directory. Fetch only — no fixing or replying.
 license: MIT
 metadata:
-  version: "1.11"
+  version: "1.12"
 ---
 
 # PR review fetcher
@@ -11,7 +11,8 @@ metadata:
 **Fetch only** — capture the review feedback left on a pull request; never fix code, reply, or
 judge the comments. Output is a self-contained `.PR-REVIEW.md` a fresh session can pick up and act
 on (e.g. via `/refine-pr-review`). Someone else's PR to review is not this skill's job: use
-`review-code-assistant` or `maintainer-review` when available.
+`review-code-assistant` or `maintainer-review` when available (look in the agent's skills and
+plugin dirs, as manual-only skills are missing from the in-session list).
 
 ## Source & access
 

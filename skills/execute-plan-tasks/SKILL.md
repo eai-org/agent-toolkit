@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "0.8"
+  version: "0.9"
 ---
 
 # Execute plan tasks
@@ -106,9 +106,10 @@ task:", holding the bare prompt:
 ```
 
 When the finished task completes its group, say so first: the group is one PR, so its tasks get
-committed and reviewed before the next group starts. With `/self-review` available, add ahead of
-the next-task block a block labelled "Review the group first:", also when the no-task-left line
-replaces the next-task block:
+committed and reviewed before the next group starts. With `/self-review` available (look in the
+agent's skills and plugin dirs, as manual-only skills are missing from the in-session list), add
+ahead of the next-task block a block labelled "Review the group first:", also when the no-task-left
+line replaces the next-task block:
 
 ```
 /self-review

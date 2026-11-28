@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "0.7"
+  version: "0.8"
 ---
 
 # Harden artifact
@@ -171,8 +171,10 @@ Print — no review file is written; what a later reader needs lives in the arti
   tasks), as possibly stale.
 
 Fixed findings sharing a cause that a governing skill or doc covers, or should — the skill
-that wrote the artifact, a project doc — are a lesson: when `self-improve` is available, print it
-in one line with its target and offer to run it, never unasked. One-off slips earn no offer.
+that wrote the artifact, a project doc — are a lesson: when `self-improve` is available (look in
+the agent's skills and plugin dirs, as manual-only skills are missing from the in-session list),
+print it in one line with its target and offer to run it, never unasked. One-off slips earn no
+offer.
 
 Ready → hand off the next phase, each option as its own fenced block under the label quoted below,
 holding the bare prompt, after one line saying to run one in a fresh session or after clearing this

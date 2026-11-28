@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.5"
+  version: "1.6"
 ---
 
 # Verify understanding
@@ -29,7 +29,8 @@ given review at most context; none → the overtaken handling stands. The `.REQU
 newest ticket file's base (none: the ticket's latest across `-vN` versions) is read for its
 Overrides, which win over the ticket text.
 Given a ticket file and no review, never improvise one: say a review is needed and stop, handing
-off `/review-ticket <ticket-file>` (format at the close) when review-ticket is available.
+off `/review-ticket <ticket-file>` (format at the close) when review-ticket is available (look in
+the agent's skills and plugin dirs, as manual-only skills are missing from the in-session list).
 
 ## The conversation
 

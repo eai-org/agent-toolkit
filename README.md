@@ -191,6 +191,9 @@ How the symlink install works and the other install methods — hand-picking ski
 A set of generic, project-agnostic, opinionated rules that apply to any codebase. They are opt-in,
 installed separately from the skills.
 
+- **[assert-literal-expected-values](./rules/assert-literal-expected-values.md)** — in tests,
+  write the expected value as a literal and assert it where it leaves the code, not against the
+  code's own constant or at a mocked step.
 - **[compact-governing-docs](./rules/compact-governing-docs.md)** — run the matching compaction
   skill before writing or editing a governing doc, so it stays compact.
 - **[git-read-only-by-default](./rules/git-read-only-by-default.md)** — never commit, push, merge,

@@ -3,7 +3,7 @@ name: refine-ticket
 description: Refine a development ticket — or brainstorm a raw idea — into a validated, self-contained REQUIREMENTS document — the "what", verified against the codebase. Invoke manually only.
 license: MIT
 metadata:
-  version: "1.24"
+  version: "1.25"
 ---
 
 # Refine ticket
@@ -56,7 +56,9 @@ the code here is for *validating* requirements, not for designing the solution.
   existing ones don't cover Z"), search every repo the feature spans for the concept — "not found
   under the name the ticket used" is not "not present".
 - Verify both sides of an integration: if a requirement relies on another layer behaving a certain
-  way, open that layer and confirm it.
+  way, open that layer and confirm it. Whatever consumes what the ticket delivers (a dependent
+  ticket, a second build tool, a client) is such a layer: confirm it accepts every value the
+  requirements fix (a language standard, a format, where a value is defined).
 
 ## Reconcile against the design when one is referenced
 
@@ -73,7 +75,9 @@ part of the spec. Visual decisions made without seeing it lock in wrong defaults
 ## Read relevant related tickets — context, not scope
 
 When the ticket references others that matter to it (BE/FE counterparts, dependencies, follow-ups),
-read them too — they complete the picture and sharpen how this ticket's requirements are meant. A
+or others build on it — a ticket seldom names its dependents, so search the tracker and the ticket
+set for those referencing it — read them too — they complete the picture and sharpen how this
+ticket's requirements are meant. A
 `## Ticket set` section in the ticket file lists locally fetched siblings: read every linked
 `.TICKET.md` before grilling; for tracker-only references, judge relevance before fetching, then
 fetch one the way Input does. What a sibling supplies — execution order, contracts it owns,
@@ -238,7 +242,8 @@ Done when the six parts, plus Reproduction for a bug, are present and
 When done, state — in **project-relative paths** — that the requirements file is ready, then hand
 off each next phase as its own fenced block under the label quoted below, holding the bare prompt,
 after one line saying to run one in a fresh session or after clearing this one (`/clear` is only the
-example); a block only when its skill is available:
+example); a block only when its skill is available (look in the agent's skills and plugin dirs, as
+manual-only skills are missing from the in-session list):
 
 "Harden the requirements first, so a fresh reviewer challenges them before planning:"
 
