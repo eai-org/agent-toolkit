@@ -5,7 +5,7 @@ disable-model-invocation: true
 type: flow
 license: MIT
 metadata:
-  version: "1.15"
+  version: "1.16"
 ---
 
 # Review code assistant
@@ -142,7 +142,8 @@ generated or binary file committed by accident). Nothing to flag there → say n
 
 **Zero comments is a valid and common outcome.** Finding few or none is success, not failure. Never
 pad to look thorough. No praise, no restating what the code does, no test-coverage lectures, nothing
-on lines the PR did not touch.
+on lines the PR did not touch, except inside a finding whose check should have caught it (see
+*Output*).
 
 ## Output
 
@@ -200,6 +201,11 @@ long text, and no "here" or "this call" standing in for something the user hasn'
   - **The tool behaviour it rests on**, in a sentence or two, when the finding holds only because
     of how a specific tool or subsystem behaves (how a mock server picks a mapping, which
     environments run a seed step). A judgement call: skip what any developer on the project knows.
+  - **The check that should have caught it**, when one meant to catch the defect (a test helper,
+    assertion, validator, lint rule) passes instead: that is the deeper bug. Name it, outside the
+    diff too, with the other places where a quick search shows the same defect passing it. The
+    suggested comment stays on the PR's line and says the check should have failed; the check's
+    fix can go to a separate ticket.
   - **The fix as code**, current next to replacement, when it is a few lines you are certain of
     and no suggestion block (below) already carries it.
 
