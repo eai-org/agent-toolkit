@@ -3,7 +3,7 @@ name: explain-in-simple-language
 description: Explain code, a decision, a recap, or a question to the user, or write a document a human reads, so a fluent but often non-native reader understands it on the first read. Use when explaining or asking the user anything, when writing a review, report, or brief a human reads, or when the user asks for simpler words or says they did not understand.
 license: MIT
 metadata:
-  version: "1.4"
+  version: "1.5"
 ---
 
 # Explain in simple language
@@ -29,9 +29,10 @@ up to your desk understand this?
   reference ("both directions", "the fallback", "the second approach"), a term you coined where
   the subject already has a name ("the baseline" for the saved count), a figure of speech the
   reader's field doesn't use ("the tool plays the crowd" for "the tool simulates many users at
-  once"), or shorthand for a case the reader didn't watch you work out ("a pick closes its
-  finding"); say what it is, in their words. Short of room (a label, a title), cut words; never
-  swap in a shorter stand-in.
+  once"), a general word for a specific thing ("the job cleans the data" for "the job deletes
+  orders older than 30 days"), or shorthand for a case the reader didn't watch you work out ("a
+  pick closes its finding"); say what it is, in their words. Short of room (a label, a title),
+  cut words; never swap in a shorter stand-in.
   Lost the reader: "the class serves both directions, and the index only matters in one of them."
   Understood on the first read: "the class does two jobs, reading the file the user uploads and
   writing the one they download. The index only matters for the reading job." Longer, and better.
@@ -42,8 +43,9 @@ up to your desk understand this?
   accuracy.
 - **Words.** Plainer words preferred; a fancy or technical term only when the reader uses it day
   to day, so one mostly found in specs or a tool's docs gets the everyday name ("the default
-  case", not "the default arm" of a switch). Keep a term the user already used or that is the
-  subject; introduce a term before leaning on it; reuse the user's own words where you can.
+  case", not "the default arm" of a switch). When the everyday name says less, keep the term and
+  say once what it means. Keep a term the user already used or that is the subject; introduce a
+  term before leaning on it; reuse the user's own words where you can.
 - **Sentences.** One idea per sentence, one point per paragraph. Concrete case before general
   mechanism.
 - **Depth.** Answer what was asked, at the depth it was asked, then stop: no history, alternatives,
